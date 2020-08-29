@@ -1,0 +1,70 @@
+
+确保首次使用工具
+安装apk
+把SGSI-build-tool.tar放置ubuntu安装文件夹的home目录内
+Linux Deploy安装Ubuntu arm64
+使用ssh进入ubuntu以后执行命令
+su
+tar -xf SGSI-build-tool.tar
+cd SGSI-build-tool/10
+安装工具依赖环境(建议挂t)
+./setup.sh
+
+制造SGSI:
+把刷机包放至tmp文件夹内 然后执行./make.sh即可
+也可单独使用./SGSI.sh
+如果原包是super.img 把super.img放置工具根目录
+然后使用./unpacksuper.sh解包然后把解出来的img丢到工具更目录直接执行./SGSI.sh即可
+
+本工具制造的SGSI也支持动态分区机型刷入 不过要打包成super.img
+使用./makesuper.sh打包
+Patch1 Patch3的内容需要自行把他打包至vendor.img 把system vendor打包生成super.img然后刷入 然后刷入patch2格式化data即可
+
+本工具仅仅制作system.img部分 Patch部分需要手动
+本工具是半自动工具 因为有些处理自动化并不理想 多变 所以手动更好 如果你不清楚这些东西的处理 也可以不处理 直接制造也行
+成品输出在SGSI文件夹 然后手动制造Patch1 2 3即可
+
+本工具打包接包脚本
+img打包解包: makeimg2.sh unpackimg.sh(单独可使用 支持任意分区打包解包)
+super.img打包解包: makesuper.sh unpacksuper.sh
+boot.img打包解包: makeboot.sh unpackboot.sh
+dat/br生成: img2sdat.sh simg2sdat.sh 
+
+本工具推荐所需内存空间大小:30G
+清理工具 执行更目录的rm.sh即可
+
+如果想捐赠我请随意 QQ群:967161723
+
+工具手动部分处理 数据均来自vendor 自行添加
+vintf为 对应patch1所添加的oem主体服务
+build为的东西为odm和 根目录的build 如果你没有把握该加些什么可以跳过
+patch制作 样本以放置专属文件夹
+
+Patch1
+app（app层）
+bin（服务主体层）
+etc（配置文件层）
+lib （驱动层）
+lib64 （驱动层）
+overlay（系统覆盖层）
+media （系统媒体服务层)
+ 
+这里还要主意一下你所有的文件里面的权限设置 你只要设置bin文件夹里面的所有东西的权限即可 其他的可以保持默认也就是可以不用写 如果你不清楚vendor的bin权限规范 你可以看看你底包的bin 因为安卓文件的权限都是固定的 都可以参考
+
+添加app层里面所有东西
+bin层找到oem添加的所有的oem添加的服务 通常在bin bin/hw（比如MIUI移植的话 搜索关键字xiaomi flyme移植搜索关键字 meizu 总之靠你自行找到所有oem的服务）
+（小提示：一个服务完整依赖分别在bin etc/init lib lib64 system服务的话部分在framework也有依赖）
+etc层 添加bin服务的指定启用服务的rc 位置etc/init 
+添加etc所有的media_profiles开头的xml文件 和 oem添加的定制xml文件（比如 xxx.MIUI.xxx.xml）
+删掉你底包vendor/etc/permissions的qti_permissions.xml文件
+添加permissions文件夹里面oem定制的权限文件（比如vendor.xxx.miui.xxx.xml）
+以及你没见过的或者你不太确定的 oem多余的所有你感觉有用的东西
+lib/lib64层 添加所有bin的oem服务所要依赖的驱动 通常以对应bin服务的名字命名 以及自带的音频驱动文件夹soundfx当然你也可以不添加 不过添加了可以防止一堆系统开机后音频出现问题
+添加media overlay 文件夹里的所有东西 刷入的时候记得先删除你底包的vendor的这些文件夹 因为不干净的话可能导致一堆问题而不开机 所以推荐纯净刷入
+此Patch1是SGSI的精髓所在 一个Patch1做不做得好直接影响到此SGSI的稳定性和系统启动 因此需要自行根据log的实际情况来变化
+
+Patch2 为oem厂商服务的对应的se安全下文注册 注意与Ptach1 bin下添加的oem服务的se上下文保持一致 修改文件为 vendor_hwservice_contexts
+
+Patch3 为boot补丁 其作用是为底包的boot打开宽容权限 用于开机
+
+ps:凡事以log为主自行调试修改 并不是死板就行
