@@ -1,0 +1,29 @@
+ui_print("xiaoxindada SGSI Patch1 ZUI12 10.0");
+
+ui_print("部分手机的rec不支持自动挂载vendor，请手动挂载后重新刷入");
+
+run_program("/sbin/busybox", "mount", "/vendor");
+
+package_extract_dir("vendor", "/vendor");
+
+#etc
+set_metadata_recursive("/vendor/etc", "uid", 0, "gid", 0, "dmode", 0755, "fmode", 0644, "capabilities", 0x0, "selabel", "u:object_r:vendor_configs_file:s0");
+
+#bin/hw
+set_metadata("/vendor/bin/hw/hostapd", "uid", 0, "gid", 2000, "mode", 0755, "capabilities", 0x0, "selabel", "u:object_r:hal_wifi_hostapd_default_exec:s0");
+set_metadata("/vendor/bin/hw/wpa_supplicant", "uid", 0, "gid", 2000, "mode", 0755, "capabilities", 0x0, "selabel", "u:object_r:hal_wifi_supplicant_default_exec:s0");
+
+set_metadata("/vendor/bin/hw/vendor.lenovo.hardware.hcamera.provider@2.4-service_64", "uid", 0, "gid", 2000, "mode", 0755, "capabilities", 0x0, "selabel", "u:object_r:hal_fido_default_exec:s0");
+set_metadata("/vendor/bin/hw/vendor.zui.hardware.ifaa@1.0-service", "uid", 0, "gid", 2000, "mode", 0755, "capabilities", 0x0, "selabel", "u:object_r:hal_ifaa_default_exec:s0");
+
+#bin
+
+#overlay
+set_metadata_recursive("/vendor/overlay", "uid", 0, "gid", 0, "dmode", 0755, "fmode", 0644, "capabilities", 0x0, "selabel", "u:object_r:vendor_overlay_file:s0");
+
+#lib&lib64
+set_metadata_recursive("/vendor/lib", "uid", 0, "gid", 0, "dmode", 0755, "fmode", 0644, "capabilities", 0x0, "selabel", "u:object_r:same_process_hal_file:s0");
+
+set_metadata_recursive("/vendor/lib64", "uid", 0, "gid", 0, "dmode", 0755, "fmode", 0644, "capabilities", 0x0, "selabel", "u:object_r:same_process_hal_file:s0");
+
+ui_print("Installation complete!");

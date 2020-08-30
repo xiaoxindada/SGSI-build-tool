@@ -1,0 +1,108 @@
+# init.moba.rc
+
+# Add factest service
+service factest /vendor/bin/factest
+	class main
+	user root
+	group root system vendor_qti_diag sdcard_rw cache drmrpc
+
+service pnx /vendor/bin/pnscr -p empty
+	class main
+	user system
+	group nfc
+	oneshot
+	disabled
+
+on boot
+	start factest
+	mkdir /mnt/vendor/persist/camera 0775 system system
+
+on post-fs
+    #goodix
+    chown system system /dev/goodix_fp
+    chmod 666 /dev/goodix_fp
+    mkdir /mnt/vendor/persist/fpdata 0775 system system
+    chmod 775 /mnt/vendor/persist/fpdata/
+    chmod 666 /mnt/vendor/persist/fpdata/BMatrix.so
+    chmod 666 /mnt/vendor/persist/fpdata/caliParamsInfo.so
+    chmod 666 /mnt/vendor/persist/fpdata/cali_data.so
+    chmod 666 /mnt/vendor/persist/fpdata/chartbase.so
+    restorecon_recursive  /mnt/vendor/persist/fpdata
+    chown system system /sys/class/dsi_hbm/hbm/enable
+    chown system system /sys/class/backlight/panel0-hbm/brightness
+    chmod 666 /sys/class/backlight/panel0-hbm/brightness
+    chmod 666 /sys/class/backlight/panel0-backlight/brightness
+    chown system system /sys/class/leds/aw9106_led/aw_brightness
+    chown system system /sys/class/leds/aw9106_led/brightness
+    chmod 666 /sys/class/leds/vibrator/activate
+    chmod 666 /sys/class/leds/vibrator/duration
+    chmod 666 /sys/class/leds/vibrator/double_duration
+    chmod 666 /sys/class/leds/vibrator/state
+    chmod 666 /sys/class/leds/vibrator/cali_lra
+    chmod 666 /sys/class/leds/vibrator/cali
+    chmod 666 /sys/class/leds/vibrator/dual_cancel
+	chmod 666 /sys/class/leds/vibrator/trig
+    chmod 666 /sys/class/leds/vibrator_aw8697x/cali
+    chmod 666 /sys/class/leds/vibrator_aw8697x/cali_lra
+	chmod 666 /sys/class/leds/vibrator_aw8697x/trig
+#awinic
+    chown system system /sys/bus/i2c/drivers/aw882xx_smartpa/1-0035/cali
+    chmod 0664 /sys/bus/i2c/drivers/aw882xx_smartpa/1-0035/cali
+    chown system system /sys/bus/i2c/drivers/aw882xx_smartpa/1-0034/cali
+    chmod 0664 /sys/bus/i2c/drivers/aw882xx_smartpa/1-0034/cali
+    mkdir /mnt/vendor/persist/factory 0775 system system
+    mkdir /mnt/vendor/persist/factory/audio 0775 system system
+    chmod 0666 /mnt/vendor/persist/factory/audio/aw_cali.bin
+#Awinic haptic ZUIQ-5009
+    chown audioserver audioserver /dev/awinic_haptic
+    chown audioserver audioserver /sys/class/leds/vibrator/haptic_audio
+#sona key
+    chown system system /sys/snt8100fsr/force_threshold
+    chown system system /sys/snt8100fsr/raw_report
+    chown system system /sys/snt8100fsr/misc_cmd
+    chown system system /sys/snt8100fsr/set_reg
+#thermal
+    chown system system /dev/lenovo_sys_temp
+    chmod 666 /dev/lenovo_sys_temp
+    chmod 0666 /sys/devices/system/cpu/cpu0/rq-stats/mpctl
+    chown system system /sys/devices/system/cpu/cpu0/rq-stats/mpctl
+    chmod 0666 /sys/class/power_supply/thermal/charge_thermal_status
+    chown system system /sys/class/power_supply/thermal/charge_thermal_status
+    chmod 0666 /sys/class/power_supply/thermal/therm_display_rate_level
+    chown system system /sys/class/power_supply/thermal/therm_display_rate_level
+    chmod 0666 /sys/class/power_supply/thermal/therm_speaker_level
+    chown system system /sys/class/power_supply/thermal/therm_speaker_level
+    chmod 0666 /sys/class/power_supply/thermal/therm_modem_5g_level
+    chown system system /sys/class/power_supply/thermal/therm_modem_5g_level
+    chmod 0666 /sys/class/power_supply/thermal/therm_camera_level
+    chown system system /sys/class/power_supply/thermal/therm_camera_level
+
+on init
+#added touch gesture wake node permission
+    chown system /sys/devices/virtual/touch/tp_dev/gesture_on
+    chown system /sys/devices/virtual/touch/tp_dev/touch_key
+    chown system /sys/devices/virtual/touch/tp_dev/touch_key1
+    chown system /sys/devices/virtual/touch/tp_dev/touch_key2
+    chown system /sys/devices/virtual/touch/tp_dev/finger_match
+    chown system /sys/devices/virtual/touch/tp_dev/report_rate
+
+
+on property:ro.boot.bootreason=usb_chg
+#start qcom post cpu settings
+	start qcom-post-boot
+
+#set powersave governor
+    write /sys/devices/system/cpu/cpufreq/policy0/scaling_governor powersave
+    write /sys/devices/system/cpu/cpufreq/policy4/scaling_governor powersave
+    write /sys/devices/system/cpu/cpufreq/policy7/scaling_governor powersave
+
+#shutdown snt8100fsr
+    write /sys/snt8100fsr/set_reg "0x02 0xff"
+#stop unused services
+	stop cameraserver
+	stop audioserver
+
+# Factory reset
+on property:vendor.wipe_data=1
+    factory_data_misc
+

@@ -1,0 +1,5 @@
+service ifaa-1-0 /vendor/bin/hw/vendor.zui.hardware.ifaa@1.0-service
+    class hal
+    user system
+    group system
+

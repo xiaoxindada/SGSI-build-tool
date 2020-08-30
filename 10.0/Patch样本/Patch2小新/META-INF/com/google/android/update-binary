@@ -1,0 +1,24 @@
+#!/sbin/sh
+
+#为vendor/selinux注册oem服务的安全上下文
+
+contexts="/system/vendor/etc/selinux/vendor_hwservice_contexts"
+
+mount /system
+
+#删除原有se上下文
+sed -i '/vendor.zui.hardware.ifaa::IIFAADevice/d' $contexts
+sed -i '/vendor.lenovo.hardware.hcamera.provider::ICameraProvider/d' $contexts
+
+#添加oem服务se安全上下文
+echo "
+vendor.zui.hardware.ifaa::IIFAADevice u:object_r:hal_allocator_default_exec:s0
+vendor.lenovo.hardware.hcamera.provider::ICameraProvider             u:object_r:hal_allocator_default_exec:s0
+" >> $contexts
+
+#清理空行
+sed -i '/^\s*$/d' $contexts
+
+#apex更新清理
+sed -i '/ro.apex.updatable/d' /system/vendor/build.prop
+
