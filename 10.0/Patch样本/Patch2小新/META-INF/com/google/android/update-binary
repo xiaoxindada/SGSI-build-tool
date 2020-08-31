@@ -2,23 +2,49 @@
 
 #为vendor/selinux注册oem服务的安全上下文
 
-contexts="/system/vendor/etc/selinux/vendor_hwservice_contexts"
+file_contexts="/vendor/etc/selinux/vendor_file_contexts"
+hwservice_contexts="/vendor/etc/selinux/vendor_hwservice_contexts"
 
-mount /system
+mount /vendor
 
 #删除原有se上下文
-sed -i '/vendor.zui.hardware.ifaa::IIFAADevice/d' $contexts
-sed -i '/vendor.lenovo.hardware.hcamera.provider::ICameraProvider/d' $contexts
+sed -i '/mlipayd@1.1/d' $file_contexts
+sed -i '/mtd@1.2/d' $file_contexts
+sed -i '/tidad@1.2/d' $file_contexts
+sed -i '/fidoca/d' $file_contexts
+sed -i '/vsimd/d' $file_contexts
+
+sed -i '/vendor.xiaomi.hardware.displayfeature::IDisplayFeature/d' $hwservice_contexts
+sed -i '/vendor.xiaomi.hardware.misys::IMiSys/d' $hwservice_contexts
+sed -i '/vendor.xiaomi.hardware.mfidoca::IFidoService/d' $hwservice_contexts
+sed -i '/vendor.xiaomi.hardware.mlipay::IMlipayService /d' $hwservice_contexts
+sed -i '/vendor.xiaomi.hardware.mtdservice::IMTService/d' $hwservice_contexts
+sed -i '/vendor.xiaomi.hardware.tidaservice::ITidaServiced' $hwservice_contexts
+sed -i '/vendor.xiaomi.hardware.vsimapp::IVSIMService/d' $hwservice_contexts
 
 #添加oem服务se安全上下文
 echo "
-vendor.zui.hardware.ifaa::IIFAADevice u:object_r:hal_allocator_default_exec:s0
-vendor.lenovo.hardware.hcamera.provider::ICameraProvider             u:object_r:hal_allocator_default_exec:s0
-" >> $contexts
+vendor.xiaomi.hardware.displayfeature::IDisplayFeature       u:object_r:hal_allocator_default_exec:s0
+vendor.xiaomi.hardware.misys::IMiSys       u:object_r:hal_allocator_default_exec:s0
+vendor.xiaomi.hardware.mfidoca::IFidoService       u:object_r:hal_allocator_default_exec:s0
+vendor.xiaomi.hardware.mlipay::IMlipayService       u:object_r:hal_allocator_default_exec:s0
+vendor.xiaomi.hardware.mtdservice::IMTService       u:object_r:hal_allocator_default_exec:s0
+vendor.xiaomi.hardware.tidaservice::ITidaService       u:object_r:hal_allocator_default_exec:s0
+vendor.xiaomi.hardware.vsimapp::IVSIMService       u:object_r:hal_allocator_default_exec:s0
+" >> $hwservice_contexts
+
+echo "
+/(vendor|system/vendor)/bin/mlipayd@1.1		u:object_r:hal_allocator_default_exec:s0
+/(vendor|system/vendor)/bin/mtd@1.2		u:object_r:hal_allocator_default_exec:s0
+/(vendor|system/vendor)/bin/tidad@1.2		u:object_r:hal_allocator_default_exec:s0
+/(vendor|system/vendor)/bin/fidoca		u:object_r:hal_allocator_default_exec:s0
+/(vendor|system/vendor)/bin/vsimd		u:object_r:hal_allocator_default_exec:s0
+" >> $file_contexts
 
 #清理空行
-sed -i '/^\s*$/d' $contexts
+sed -i '/^\s*$/d' $file_contexts
+sed -i '/^\s*$/d' $hwservice_contexts
 
 #apex更新清理
-sed -i '/ro.apex.updatable/d' /system/vendor/build.prop
+sed -i '/ro.apex.updatable/d' /vendor/build.prop
 

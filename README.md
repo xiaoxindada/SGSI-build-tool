@@ -18,6 +18,7 @@ MToolkot https://github.com/Nightmare-MY
 su
 tar -xf SGSI-build-tool.tar
 cd SGSI-build-tool/10
+
 # 安装工具依赖环境(建议挂t)
 ./setup.sh
 
@@ -42,6 +43,7 @@ boot.img打包解包: makeboot.sh unpackboot.sh
 dat/br生成: img2sdat.sh simg2sdat.sh 
 解压img的apex: apex.sh (apex扁平化)
 局部deodex: bin/oat2dex/deodex.sh
+ozip解密: oppo_ozip
 
 # 本工具推荐所需内存空间大小:30G
  清理工具 执行更目录的rm.sh即可

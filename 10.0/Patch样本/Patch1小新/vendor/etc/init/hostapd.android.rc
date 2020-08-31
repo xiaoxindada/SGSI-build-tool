@@ -1,0 +1,22 @@
+#
+# init.rc fragment for hostapd on Android
+# Copyright (c) 2002-2016, Jouni Malinen <j@w1.fi>
+#
+# This software may be distributed under the terms of the BSD license.
+# See README for more details.
+#
+
+on post-fs-data
+    mkdir /data/vendor/wifi 0770 wifi wifi
+    mkdir /data/vendor/wifi/hostapd 0770 wifi wifi
+    mkdir /data/vendor/wifi/hostapd/sockets 0770 wifi wifi
+
+service hostapd /vendor/bin/hw/hostapd
+    interface android.hardware.wifi.hostapd@1.0::IHostapd default
+    interface android.hardware.wifi.hostapd@1.1::IHostapd default
+    class main
+    capabilities NET_ADMIN NET_RAW
+    user wifi
+    group wifi net_raw net_admin
+    disabled
+    oneshot

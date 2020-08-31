@@ -1,8 +1,0 @@
-service vendor.hcamera-provider-2-4 /vendor/bin/hw/vendor.lenovo.hardware.hcamera.provider@2.4-service_64
-    interface vendor.lenovo.hardware.hcamera.provider@2.4::ICameraProvider hlegacy/0
-    class hal
-    user cameraserver
-    group audio camera input drmrpc
-    ioprio rt 4
-    capabilities SYS_NICE
-    writepid /dev/cpuset/camera-daemon/tasks /dev/stune/foreground/tasks

@@ -1,0 +1,4 @@
+service vendor.mlipay-1-1 /vendor/bin/mlipayd@1.1
+    class hal
+    user system
+    group system

@@ -1,29 +1,34 @@
-ui_print("xiaoxindada SGSI Patch1 ZUI12 10.0");
-
-ui_print("部分手机的rec不支持自动挂载vendor，请手动挂载后重新刷入");
+ui_print("xiaoxindada SGSI Patch1 MIUI12 10.0");
 
 run_program("/sbin/busybox", "mount", "/vendor");
 
 package_extract_dir("vendor", "/vendor");
 
-#etc
-set_metadata_recursive("/vendor/etc", "uid", 0, "gid", 0, "dmode", 0755, "fmode", 0644, "capabilities", 0x0, "selabel", "u:object_r:vendor_configs_file:s0");
-
 #bin/hw
 set_metadata("/vendor/bin/hw/hostapd", "uid", 0, "gid", 2000, "mode", 0755, "capabilities", 0x0, "selabel", "u:object_r:hal_wifi_hostapd_default_exec:s0");
 set_metadata("/vendor/bin/hw/wpa_supplicant", "uid", 0, "gid", 2000, "mode", 0755, "capabilities", 0x0, "selabel", "u:object_r:hal_wifi_supplicant_default_exec:s0");
 
-set_metadata("/vendor/bin/hw/vendor.lenovo.hardware.hcamera.provider@2.4-service_64", "uid", 0, "gid", 2000, "mode", 0755, "capabilities", 0x0, "selabel", "u:object_r:hal_fido_default_exec:s0");
-set_metadata("/vendor/bin/hw/vendor.zui.hardware.ifaa@1.0-service", "uid", 0, "gid", 2000, "mode", 0755, "capabilities", 0x0, "selabel", "u:object_r:hal_ifaa_default_exec:s0");
+set_metadata("/vendor/bin/hw/vendor.xiaomi.hardware.citsensorservice@1.1-service", "uid", 0, "gid", 2000, "mode", 0755, "capabilities", 0x0, "selabel", "u:object_r:hal_allocator_default_exec:s0");
+set_metadata("/vendor/bin/hw/vendor.xiaomi.hardware.displayfeature@1.0-service", "uid", 0, "gid", 2000, "mode", 0755, "capabilities", 0x0, "selabel", "u:object_r:hal_allocator_default_exec:s0");
+set_metadata("/vendor/bin/hw/vendor.xiaomi.hardware.misys@1.0-service", "uid", 0, "gid", 2000, "mode", 0755, "capabilities", 0x0, "selabel", "u:object_r:hal_allocator_default_exec:s0");
+set_metadata("/vendor/bin/hw/vendor.xiaomi.hardware.misys@2.0-service", "uid", 0, "gid", 2000, "mode", 0755, "capabilities", 0x0, "selabel", "u:object_r:hal_allocator_default_exec:s0");
+set_metadata("/vendor/bin/hw/vendor.xiaomi.hardware.misys@3.0-service", "uid", 0, "gid", 2000, "mode", 0755, "capabilities", 0x0, "selabel", "u:object_r:hal_allocator_default_exec:s0");
+set_metadata("/vendor/bin/hw/vendor.xiaomi.hardware.motor@1.0-service", "uid", 0, "gid", 2000, "mode", 0755, "capabilities", 0x0, "selabel", "u:object_r:hal_allocator_default_exec:s0");
+set_metadata("/vendor/bin/hw/vendor.xiaomi.hardware.touchfeature@1.0-service", "uid", 0, "gid", 2000, "mode", 0755, "capabilities", 0x0, "selabel", "u:object_r:hal_allocator_default_exec:s0");
+set_metadata("/vendor/bin/hw/android.hardware.dumpstate@1.0-service.xiaomi", "uid", 0, "gid", 2000, "mode", 0755, "capabilities", 0x0, "selabel", "u:object_r:hal_allocator_default_exec:s0");
+set_metadata("/vendor/bin/hw/android.hardware.drm@1.2-service.widevine", "uid", 0, "gid", 2000, "mode", 0755, "capabilities", 0x0, "selabel", "u:object_r:hal_allocator_default_exec:s0");
 
 #bin
+set_metadata("/vendor/bin/mlipayd@1.1", "uid", 0, "gid", 2000, "mode", 0755, "capabilities", 0x0, "selabel", "u:object_r:hal_allocator_default_exec:s0");
+set_metadata("/vendor/bin/mtd@1.2", "uid", 0, "gid", 2000, "mode", 0755, "capabilities", 0x0, "selabel", "u:object_r:hal_allocator_default_exec:s0");
+set_metadata("/vendor/bin/tidad@1.2", "uid", 0, "gid", 2000, "mode", 0755, "capabilities", 0x0, "selabel", "u:object_r:hal_allocator_default_exec:s0");
+set_metadata("/vendor/bin/fidoca", "uid", 0, "gid", 2000, "mode", 0755, "capabilities", 0x0, "selabel", "u:object_r:hal_allocator_default_exec:s0");
+set_metadata("/vendor/bin/vsimd", "uid", 0, "gid", 2000, "mode", 0755, "capabilities", 0x0, "selabel", "u:object_r:hal_allocator_default_exec:s0");
+set_metadata("/vendor/bin/xiaomi_extend_cmd", "uid", 0, "gid", 2000, "mode", 0755, "capabilities", 0x0, "selabel", "u:object_r:hal_allocator_default_exec:s0");
+set_metadata("/vendor/bin/vendor.xiaomi.hardware.otrpagent@1.0-service", "uid", 0, "gid", 2000, "mode", 0755, "capabilities", 0x0, "selabel", "u:object_r:hal_allocator_default_exec:s0");
 
 #overlay
-set_metadata_recursive("/vendor/overlay", "uid", 0, "gid", 0, "dmode", 0755, "fmode", 0644, "capabilities", 0x0, "selabel", "u:object_r:vendor_overlay_file:s0");
-
-#lib&lib64
-set_metadata_recursive("/vendor/lib", "uid", 0, "gid", 0, "dmode", 0755, "fmode", 0644, "capabilities", 0x0, "selabel", "u:object_r:same_process_hal_file:s0");
-
-set_metadata_recursive("/vendor/lib64", "uid", 0, "gid", 0, "dmode", 0755, "fmode", 0644, "capabilities", 0x0, "selabel", "u:object_r:same_process_hal_file:s0");
+set_metadata_recursive("/vendor/overlay", "uid", 0, "gid", 0, "fmode", 0644, "capabilities", 0x0, "selabel", "u:object_r:vendor_overlay_file:s0");
+set_metadata("/vendor/overlay", "uid", 0, "gid", 2000, "mode", 0755, "capabilities", 0x0, "selabel", "u:object_r:vendor_overlay_file:s0");
 
 ui_print("Installation complete!");
