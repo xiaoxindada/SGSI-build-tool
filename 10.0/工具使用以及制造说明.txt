@@ -1,8 +1,4 @@
 
-
-工具手动部分处理 数据均来自vendor 自行添加
-vintf为 对应patch1所添加的oem主体服务
-build为的东西为odm和 根目录的build 如果你没有把握该加些什么可以跳过
 patch制作 样本以放置专属文件夹
 
 Patch1
