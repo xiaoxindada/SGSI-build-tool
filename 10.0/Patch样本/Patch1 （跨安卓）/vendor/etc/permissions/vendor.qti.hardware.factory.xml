@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Copyright (c) 2017 Qualcomm Technologies, Inc.
+    All Rights Reserved.
+    Confidential and Proprietary - Qualcomm Technologies, Inc.
+-->
+<permissions>
+    <library name="vendor.qti.hardware.factory-V1.0"
+            file="/system/framework/vendor.qti.hardware.factory-V1.0-java.jar" />
+    <library name="vendor.qti.hardware.factory-V1.1"
+            file="/system/framework/vendor.qti.hardware.factory-V1.1-java.jar" />
+</permissions>
