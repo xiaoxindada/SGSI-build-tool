@@ -15,9 +15,16 @@ MToolkot https://github.com/Nightmare-MY
 把SGSI-build-tool.tar放置ubuntu安装文件夹的home目录内
 使用Linux Deploy安装Ubuntu arm64
 使用ssh进入ubuntu以后执行命令
+
+```bash
 su
+```
+```bash
 tar -xf SGSI-build-tool.tar
+```
+```bash
 cd SGSI-build-tool/10
+```
 
 # 安装工具依赖环境(建议挂t)
 ./setup.sh
