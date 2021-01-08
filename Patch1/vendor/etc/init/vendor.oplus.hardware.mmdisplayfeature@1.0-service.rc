@@ -1,0 +1,6 @@
+service ommdisplay-hal-1-0 /odm/bin/hw/vendor.oplus.hardware.mmdisplayfeature@1.0-service
+    class hal animation
+    user system
+    group graphics drmrpc
+    capabilities SYS_NICE
+    onrestart restart surfaceflinger

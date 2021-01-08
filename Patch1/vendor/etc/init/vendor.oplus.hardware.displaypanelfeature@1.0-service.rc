@@ -1,0 +1,6 @@
+on boot
+    chown system system /dev/oplus_display
+service displaypanelfeature-1-0 /odm/bin/hw/vendor.oplus.hardware.displaypanelfeature@1.0-service
+    class main
+    user system
+    group system

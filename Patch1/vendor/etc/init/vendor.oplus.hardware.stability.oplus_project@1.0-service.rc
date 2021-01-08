@@ -1,0 +1,5 @@
+service vendor.oplus_project-1-0 /odm/bin/hw/vendor.oplus.hardware.stability.oplus_project@1.0-service
+    class hal
+    user system
+    group system
+

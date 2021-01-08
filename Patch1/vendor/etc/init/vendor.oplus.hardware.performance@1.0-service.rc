@@ -1,0 +1,4 @@
+service vendor.performance-1-0 /odm/bin/hw/vendor.oplus.hardware.performance@1.0-service
+    class hal
+    user system
+    group system
