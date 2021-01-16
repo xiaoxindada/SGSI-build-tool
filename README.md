@@ -1,65 +1,69 @@
 # SGSI-build-tool
 **Copyright (C) 2020 Xiaoxindada (2245062854@qq.com)  
-未经过本人许可 不可进行商用**
+Not for commercial use without my permission**
  
-# 本工具将会持续更新  
-## 本工具部分依赖来自:  
-* Erfan GSIs开源项目:https://github.com/erfanoabdi/ErfanGSIs  
-* MToolkot:https://github.com/Nightmare-MY  
-* 对上述列表表示感谢  
+# This tool will continue to be updated  
+## This tool partly relies on:  
+* Erfan GSIs Open source project: https://github.com/erfanoabdi/ErfanGSIs  
+* MToolkot: https://github.com/Nightmare-MY
+* This Tool Translated By @Priiiyo   
+* Thanks for the above list  
 
-## 感谢九雨梦舟 https://github.com/rsyhan 的帮助  
+## Thanks Nine Rain Dream Boat https://github.com/rsyhan for help
 
-***因为部分原因 开源形式不采用文件夹上传 tar解压就是源码 没封包***
+***For some reasons, the open source format does not use folder upload, tar decompression is the source code, no package***
 
-# 确保首次使用工具
+# Make sure to use the tool for the first time
 ```
-安装apk  
-把SGSI-build-tool.tar放置ubuntu安装文件夹的home目录内  
-使用Linux Deploy安装Ubuntu arm64  
+installation apk  
+Put SGSI-build-tool.tar place ubuntu Installation folder home In the catalog  
+use Linux Deploy installation Ubuntu arm64  
 ```
 
-# 使用ssh进入ubuntu以后执行命令
+# Use ssh enter ubuntu Execute commands later
 ```
 su  
 tar -xf SGSI-build-tool.tar  
 cd SGSI-build-tool/10  
 ```
 
-# 安装工具依赖环境(建议挂t)
+# The installation tool depends on the environment(Suggest hanging t)
 ```
 ./setup.sh  
 ```
 
-# 制造SGSI:
+# manufacture SGSI:
 ```
-把刷机包放至tmp文件夹内 
-制造A-only:./make.sh A  
-制造AB:./make.sh AB
-也可单独使用./SGSI.sh A 或 ./SGSI.sh AB 
-如果原包是super.img 把super.img放置工具根目录   
-然后使用./unpacksuper.sh解包然后把解出来的img丢到工具更目录直接执行./SGSI.sh即可  
-本工具制造的SGSI也支持动态分区机型刷入 不过要打包成super.img
-使用./makesuper.sh打包
-Patch1 Patch2 的内容需要自行把他打包至vendor.img 把system vendor打包生成super.img然后刷入 然后刷入patch3格式化data即可
-本工具仅仅制作system.img部分Patch部分需要手动  
-本工具是半自动工具 因为有些处理自动化并不理想 多变 所以手动更好 如果你不清楚这些东西的处理 也可以不处理 直接制造也行  
-成品输出在SGSI文件夹 然后手动制造Patch1 2 3即可  
-```
+Put the flash package to tmp In folder
+ 
+* manufacture A-only:./make.sh A  
+* manufacture AB:./make.sh AB
+* Can also be used alone ./SGSI.sh A or ./SGSI.sh AB 
+If the original package is super.img Put super.img Place the tool root directory   
+Then use ./unpacksuper.sh Unpack and unpack it img Throw it to the tool directory and execute it directly ./SGSI.sh
 
-# 本工具打包解包脚本
-```
-img打包解包: makeimg2.sh unpackimg.sh(单独可使用 支持任意分区打包解包)  
-super.img打包解包: makesuper.sh unpacksuper.sh  
-boot.img打包解包: makeboot.sh unpackboot.sh  
-dat/br生成: img2sdat.sh simg2sdat.sh  
-解压img的apex: apex.sh (apex扁平化)  
-局部deodex: bin/oat2dex/deodex.sh  
-ozip解密: oppo_ozip  
+* Made by this tool SGSI It also supports dynamic partition model flashing super.img
+use ./makesuper.sh Bale
+
+Patch1 Patch2 Needs to be packaged to vendor.img Put system vendor Package generation super.img Then swipe in then swipe in patch3 format data Can
+This tool only makes system.img section Patch Some need to be manually  
+This tool is a semi-automatic tool, because some processing automation is not ideal and changeable, so manual is better. If you don’t know how to deal with these things, you can just not process them and make them directly.  
+Finished product output in SGSI Folder and then manually made Patch1 2 3 Can  
 ```
 
-# 本工具推荐所需内存空间大小:30G
+# This tool packs and unpacks scripts
+```
+* img Unpack: makeimg2.sh unpackimg.sh(Can be used alone Support any partition to pack and unpack)  
+* super.img Unpack: makesuper.sh unpacksuper.sh  
+* boot.img Unpack: makeboot.sh unpackboot.sh  
+* dat/br Generate: img2sdat.sh simg2sdat.sh  
+* Unzip img of apex: apex.sh (apex Flat)  
+* Partial deodex: bin/oat2dex/deodex.sh  
+* ozip Decrypt: oppo_ozip  
+```
 
-**清理工具 执行更目录的rm.sh即可**
+# This tool recommends the required memory space:30G
 
-**如果想捐赠我请随意 QQ群:967161723**
+**Cleanup tool to perform more directory rm.sh Can**
+
+**If you want to donate me please feel free QQ Group:967161723**
