@@ -6,7 +6,7 @@ Not for commercial use without my permission**
 ## This tool partly relies on:  
 * Erfan GSIs Open source project: https://github.com/erfanoabdi/ErfanGSIs  
 * MToolkot: https://github.com/Nightmare-MY
-* This Tool Translated By @Priiiyo   
+* This Tool README.md Translated By @Priiiyo   
 * Thanks for the above list  
 
 ## Thanks Nine Rain Dream Boat https://github.com/rsyhan for help
