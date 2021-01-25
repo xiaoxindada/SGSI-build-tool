@@ -1,3 +1,7 @@
+<div align="center">
+	<span style="font-weight: bold"> 中文 | <a href=README_EN.md> English </a> </span>
+</div>
+
 # SGSI-build-tool
 **Copyright (C) 2020 Xiaoxindada (2245062854@qq.com)  
 未经过本人许可 不可进行商用**
