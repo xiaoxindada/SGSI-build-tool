@@ -4,70 +4,72 @@
 
 # SGSI-build-tool
 **Copyright (C) 2020 Xiaoxindada (2245062854@qq.com)  
-Not for commercial use without my permission**
+No commercial use without my permission**
  
-# This tool will continue to be updated  
-## This tool partly relies on:  
+# This tool will be continously updated
+## This tool relies on:  
 * Erfan GSIs Open source project: https://github.com/erfanoabdi/ErfanGSIs  
 * MToolkot: https://github.com/Nightmare-MY
-* This Tool README.md Translated By @Priiiyo   
+* Translation fixup by @JamieHoSzeYui
 * Thanks for the above list  
 
-## Thanks Nine Rain Dream Boat https://github.com/rsyhan for help
+## Thanks rsyhan https://github.com/rsyhan for help
 
-***For some reasons, the open source format does not use folder upload, tar decompression is the source code, no package***
+***For some reasons, the tool is not posted opensource on github. Decompress the .tar on releases tab.***
 
-# Make sure to use the tool for the first time
+# Setting up the tool on Android
 ```
-installation apk  
-Put SGSI-build-tool.tar place ubuntu Installation folder home In the catalog  
-use Linux Deploy installation Ubuntu arm64  
+Install the apk
+Place SGSI-build-tool.tar in /home/ after ubuntu is installed
+Use Linux Deploy and insatll Ubuntu Arm64
 ```
 
-# Use ssh enter ubuntu Execute commands later
+# After ssh into ubuntu, run the following commands
 ```
 su  
 tar -xf SGSI-build-tool.tar  
 cd SGSI-build-tool/10  
 ```
 
-# The installation tool depends on the environment(Suggest hanging t)
+# Install binaries required by the tool(Wakelock recommended)
 ```
 ./setup.sh  
 ```
 
-# manufacture SGSI:
+# Making sGSI:
 ```
-Put the flash package to tmp In folder
+Put the zip package into temp folder (tmp/)
  
-* manufacture A-only:./make.sh A  
-* manufacture AB:./make.sh AB
-* Can also be used alone ./SGSI.sh A or ./SGSI.sh AB 
-If the original package is super.img Put super.img Place the tool root directory   
-Then use ./unpacksuper.sh Unpack and unpack it img Throw it to the tool directory and execute it directly ./SGSI.sh
+* Make A-only:./make.sh A  
+* Make AB:./make.sh AB
+* You can also run ./SGSI.sh A or ./SGSI.sh AB 
+If the original firmware is dynamic (as in super.img format), unzip super.img and place at the tool's directory.   
+Then use ./unpacksuper.sh to unpack the super image. Pkace it to the tools subdirectory and then run ./SGSI.sh
 
-* Made by this tool SGSI It also supports dynamic partition model flashing super.img
-use ./makesuper.sh Bale
+* MThis tool supports dynamic parititons flashing (make as super image?)
+use ./makesuper.sh 
 
-Patch1 Patch2 Needs to be packaged to vendor.img Put system vendor Package generation super.img Then swipe in then swipe in patch3 format data Can
-This tool only makes system.img section Patch Some need to be manually  
-This tool is a semi-automatic tool, because some processing automation is not ideal and changeable, so manual is better. If you don’t know how to deal with these things, you can just not process them and make them directly.  
-Finished product output in SGSI Folder and then manually made Patch1 2 3 Can  
+For dynamic phones, contents of Patch1 and Patch2 needs to be repacked manually if you wanna add it into vendor. Repack system and vendor, use makesuper.sh to generate super image, and then flash the super image and patch3 and format data. It should boot if procedures are correct.
+This tool only modifies system, you'll have to modify other partiions yourself.
+This tool is a semi-automatic tool, because not all processes are ideal to be automated as they vary. If you're not familiar with their workaround, you can also skip it.
+SGSI output is in SGSI Folder. You should make patch1 patch2 and patch3 manually after that.
 ```
 
-# This tool packs and unpacks scripts
+# Unpack and repack scripts used in tool
 ```
 * img Unpack: makeimg2.sh unpackimg.sh(Can be used alone Support any partition to pack and unpack)  
 * super.img Unpack: makesuper.sh unpacksuper.sh  
 * boot.img Unpack: makeboot.sh unpackboot.sh  
-* dat/br Generate: img2sdat.sh simg2sdat.sh  
-* Unzip img of apex: apex.sh (apex Flat)  
+* dat/br unpack / repack: img2sdat.sh simg2sdat.sh  
+* extract apex of image: apex.sh (apex flattening)  
 * Partial deodex: bin/oat2dex/deodex.sh  
 * ozip Decrypt: oppo_ozip  
 ```
 
-# This tool recommends the required memory space:30G
+# At least 30GB is recommended for this tool.
 
-**Cleanup tool to perform more directory rm.sh Can**
+**You can run ```rm.sh``` to cleanup tool (Delete staging directories).**
 
-**If you want to donate me please feel free QQ Group:967161723**
+**If you want to donate me please feel free ***
+
+***QQ Group:967161723**
