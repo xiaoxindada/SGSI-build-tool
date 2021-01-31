@@ -10,7 +10,8 @@ No commercial use without my permission**
 ## This tool relies on:  
 * Erfan GSIs Open source project: https://github.com/erfanoabdi/ErfanGSIs  
 * MToolkot: https://github.com/Nightmare-MY
-* Translation fixup by @JamieHoSzeYui
+* Translation by @priiiyo (For Initial translate)
+* Translation fixup by @JamieHoSzeYui (Fixup all mistakes)
 * Thanks for the above list  
 
 ## Thanks rsyhan https://github.com/rsyhan for help
