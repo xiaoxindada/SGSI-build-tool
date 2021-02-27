@@ -9,10 +9,10 @@
 # 本工具将会持续更新  
 ## 本工具部分依赖来自:  
 * Erfan GSIs开源项目:https://github.com/erfanoabdi/ErfanGSIs  
-* MToolkot:https://github.com/Nightmare-MY  
+* MToolkit:https://github.com/Nightmare-MY  
 * 对上述列表表示感谢  
 
-## 感谢九雨梦舟 https://github.com/rsyhan 的帮助  
+## 感谢九雨梦舟 https://github.com/pomelohan 的帮助  
 
 ***因为部分原因 开源形式不采用文件夹上传 tar解压就是源码 没封包***
 

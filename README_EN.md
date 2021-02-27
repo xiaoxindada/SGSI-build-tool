@@ -9,12 +9,12 @@ No commercial use without my permission**
 # This tool will be continously updated
 ## This tool relies on:  
 * Erfan GSIs Open source project: https://github.com/erfanoabdi/ErfanGSIs  
-* MToolkot: https://github.com/Nightmare-MY
+* MToolkit: https://github.com/Nightmare-MY
 * Translation by @priiiyo (For Initial translate)
 * Translation fixup by @JamieHoSzeYui (Fixup all mistakes)
 * Thanks for the above list  
 
-## Thanks rsyhan https://github.com/rsyhan for help
+## Thanks rsyhan https://github.com/pomelohan for help
 
 ***For some reasons, the tool is not posted opensource on github. Decompress the .tar on releases tab.***
 
