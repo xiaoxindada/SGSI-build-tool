@@ -3,15 +3,16 @@
 未经过本人许可 不可进行商用**
  
 ## 本工具部分依赖来自:  
-* Erfan GSIs开源项目:https://github.com/erfanoabdi/ErfanGSIs  
-* MToolkit:https://github.com/Nightmare-MY  
+* Erfan GSIs: https://github.com/erfanoabdi/ErfanGSIs  
+* MToolkit: https://github.com/Nightmare-MY
+* AndroidDump: https://github.com/AndroidDump/dumper
 * 对上述列表表示感谢  
 
-## 感谢九雨梦舟 https://github.com/rsyhan 的帮助  
+## 感谢九雨梦舟 https://github.com/pomelohan 的帮助  
 
 ***因为部分原因 开源形式不采用文件夹上传 tar解压就是源码 没封包***
 
-# 本工具为PC版， 因为精力有限加上普遍Aandroid 11 rom太大原因手机太拖生产力， 因而抛弃手机端支持
+# 本工具为PC版， 因为精力有限加上普遍Android 11 rom太大 导致手机太拖生产力， 因而抛弃手机端支持
 
 # 确保首次使用工具
 ```
@@ -56,6 +57,8 @@ dat/br生成: img2sdat.sh simg2sdat.sh
 ozip解密: oppo_ozip 
 dtboimg打包解包： makedtbo.sh unpackdtbo.sh
 apk签名： bin/tools/signapk/signapk.sh
+LG kdz解包：unpack_kdz.sh
+oppo/oneplus ops解包：unpack_ops.sh
 ```
 
 # Patch1制作方法
