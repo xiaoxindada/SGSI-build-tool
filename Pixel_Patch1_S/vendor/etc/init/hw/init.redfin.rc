@@ -1,0 +1,63 @@
+#
+# Copyright (C) 2017 The Android Open-Source Project
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+import /vendor/etc/init/hw/init.${ro.boot.hardware.platform}.rc
+
+on property:graphics.display.kernel_idle_timer.enabled=true
+    # Switch display mode to 60hz when idle
+    write /sys/devices/platform/soc/soc:qcom,dsi-display-primary/idle_mode "@60"
+
+on property:graphics.display.kernel_idle_timer.enabled=false
+    # Disable aggressive idle mode switching
+    write /sys/devices/platform/soc/soc:qcom,dsi-display-primary/idle_mode "none"
+
+on property:vendor.all.modules.ready=1
+    chown system system /sys/devices/virtual/sec/tsp/fw_version
+    chown system system /sys/devices/virtual/sec/tsp/cmd
+    chown system system /sys/devices/virtual/sec/tsp/cmd_result
+    chown system system /sys/devices/virtual/sec/tsp/status
+
+service vendor.mdm_helper /vendor/bin/mdm_helper
+    class core
+    group system wakelock
+
+on property:sys.retaildemo.enabled=1
+    write /sys/class/thermal/cdev-by-name/dc_icl/cur_state 2
+
+on property:sys.retaildemo.enabled=0
+    write /sys/class/thermal/cdev-by-name/dc_icl/cur_state 0
+
+# Toggle glove_mode according to touch_sensitivity_mode
+on property:persist.vendor.touch_sensitivity_mode=0 && property:sys.boot_completed=1
+    write /sys/devices/virtual/sec/tsp/cmd "glove_mode,0"
+
+on property:persist.vendor.touch_sensitivity_mode=1 && property:sys.boot_completed=1
+    write /sys/devices/virtual/sec/tsp/cmd "glove_mode,1"
+
+# Route touch_sensitivity_mode to persist
+on property:debug.touch_sensitivity_mode=0
+    setprop persist.vendor.touch_sensitivity_mode 0
+
+on property:debug.touch_sensitivity_mode=1
+    setprop persist.vendor.touch_sensitivity_mode 1
+
+on late-init
+    chown system system /sys/devices/virtual/thermal/tz-by-name/skin-therm-monitor/trip_point_0_temp
+    chown system system /sys/devices/virtual/thermal/tz-by-name/skin-therm-monitor/trip_point_0_hyst
+    chown system system /sys/devices/virtual/thermal/tz-by-name/panel-audio-therm/trip_point_0_temp
+    chown system system /sys/devices/virtual/thermal/tz-by-name/panel-audio-therm/trip_point_0_hyst
+    chown system system /sys/devices/virtual/thermal/tz-by-name/usbc-virt-monitor/trip_point_0_temp
+    chown system system /sys/devices/virtual/thermal/tz-by-name/usbc-virt-monitor/trip_point_0_hyst
