@@ -10,46 +10,18 @@ echo "
 
 支持的ROM:
 
-MIUI
-
-Flyme
-
-H2OS
-
-Color
+Pixel
 --------------------
 "
-read -p "请选择系统种类(用小写输出): " fix
-
-if [ $fix = "miui" ];then
- ./miui.sh
- echo "修复完成"
- cd ../
-else
- echo "" > /dev/null 2>&1
-fi
-
-if [ $fix = "flyme" ];then
- ./flyme.sh
- echo "修复完成"
- cd ../
-else
- echo "" > /dev/null 2>&1
-fi
- 
-if [ $fix = "h2os" ];then
- ./h2os.sh
- echo "修复完成"
- cd ../
-else
- echo "" > /dev/null 2>&1
-fi
- 
-if [ $fix = "color" ];then
- ./color.sh
- echo "修复完成"
- cd ../
-else
- echo "" > /dev/null 2>&1
-fi
-
+while true ;do
+  read -p "请选择系统种类(用小写输出): " fix
+  case "$fix" in
+   "pixel")
+      echo "正在修复"
+      ./pixel.sh
+      break;;
+    *)
+      echo "输入错误，清重试"
+      ;;
+  esac
+done
