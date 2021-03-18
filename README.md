@@ -21,7 +21,7 @@ tar使用:
 进入工具所在目录内，执行以下命令：  
 su  
 tar -xf SGSI-build-tool-12.tar  
-cd SGSI-build-tool-11/12
+cd SGSI-build-tool-12/12
 
 从v12-1.2开始以及以后:
 su  
