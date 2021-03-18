@@ -1,0 +1,8 @@
+service colorosbrightness /system/bin/sh -c "settings put system screen_brightness_mode 0"
+    seclabel u:r:shell:s0
+    user root
+    oneshot
+    disabled
+
+on property:sys.boot_completed=1
+    start colorosbrightness

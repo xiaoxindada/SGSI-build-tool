@@ -1,0 +1,9 @@
+service hw /system/bin/sh -c "service call SurfaceFlinger 1008 i32 1"
+
+    seclabel u:r:shell:s0
+    user root
+    oneshot
+    disabled
+
+on property:sys.boot_completed=1
+    start hw

@@ -1,0 +1,141 @@
+import /system/etc/init/hw/init.${ro.zygote}.rc
+
+on early-init
+    mkdir /mnt/runtime/full 0755 root root
+    mkdir /mnt/runtime/full/self 0755 root root
+    mkdir /apex 0777 root root
+    mount tmpfs tmpfs /apex mode=0755,uid=0,gid=0
+    restorecon /apex
+
+    mkdir /data_mirror 0777 root root
+    mount tmpfs tmpfs /data_mirror nodev noexec nosuid mode=0700,uid=0,gid=1000
+    restorecon /data_mirror
+    
+    # Create CE and DE data directory for default volume
+    mkdir /data_mirror/data_ce 0700 root root
+    mkdir /data_mirror/data_de 0700 root root
+    mkdir /data_mirror/data_ce/null 0700 root root
+    mkdir /data_mirror/data_de/null 0700 root root
+
+    # Bind mount CE and DE data directory to mirror's default volume directory
+    mount none /data/user /data_mirror/data_ce/null bind
+    mount none /data/user_de /data_mirror/data_de/null bind
+    
+    mkdir /product 0 0 0777 root root
+    mount tmpfs tmpfs /product mode=0755,uid=0,gid=0
+    restorecon /product
+    
+    mkdir /system_ext 0 0 0777 root root
+    mount tmpfs tmpfs /system_ext mode=0755,uid=0,gid=0
+    restorecon /system_ext
+    
+    symlink /system/product /product
+    symlink /system/system_ext /system_ext
+    
+    mkdir /apex/com.android.mediaprovider 0777 root root
+    mkdir /apex/com.android.apex.cts.shim.v1_with_prebuilts 0777 root root
+    mkdir /apex/com.android.vndk.v30 0777 root root
+    mkdir /apex/com.android.vndk.v28 0777 root root
+    mkdir /apex/com.android.vndk.v29 0777 root root
+    mkdir /apex/com.android.sdkext 0777 root root
+    mkdir /apex/com.android.i18n 0777 root root
+    mkdir /apex/com.android.art.debug 0777 root root
+    mkdir /apex/com.android.art.release 0777 root root
+    mkdir /apex/com.android.media.swcodec 0777 root root
+    mkdir /apex/com.android.media 0777 root root
+    mkdir /apex/com.android.os.statsd 0777 root root
+    mkdir /apex/com.android.extservices 0777 root root
+    mkdir /apex/com.android.runtime 0777 root root
+    mkdir /apex/com.android.neuralnetworks 0777 root root
+    mkdir /apex/com.android.cellbroadcast 0777 root root
+    mkdir /apex/com.android.adbd 0777 root root
+    mkdir /apex/com.android.tzdata 0777 root root
+    mkdir /apex/com.android.permission 0777 root root
+    mkdir /apex/com.android.tethering 0777 root root
+    mkdir /apex/com.android.resolv 0777 root root
+    mkdir /apex/com.android.ipsec 0777 root root
+    mkdir /apex/com.android.conscrypt 0777 root root
+    mkdir /apex/com.android.wifi 0777 system system
+
+    mount none /system/apex/com.android.mediaprovider /apex/com.android.mediaprovider bind
+    mount none /system/apex/com.android.apex.cts.shim.v1_with_prebuilts /apex/com.android.apex.cts.shim.v1_with_prebuilts bind
+    mount none /system/apex/com.android.sdkext /apex/com.android.sdkext bind
+    mount none /system/apex/com.android.i18n /apex/com.android.i18n bind
+    mount none /system/apex/com.android.art.debug /apex/com.android.art.debug bind
+    mount none /system/apex/com.android.art.release /apex/com.android.art.release bind
+    mount none /system/apex/com.android.media.swcodec /apex/com.android.media.swcodec bind
+    mount none /system/apex/com.android.media /apex/com.android.media bind
+    mount none /system/apex/com.android.os.statsd /apex/com.android.os.statsd bind
+    mount none /system/apex/com.android.extservices /apex/com.android.extservices bind
+    mount none /system/apex/com.android.runtime /apex/com.android.runtime bind
+    mount none /system/apex/com.android.neuralnetworks /apex/com.android.neuralnetworks bind
+    mount none /system/apex/com.android.cellbroadcast /apex/com.android.cellbroadcast bind
+    mount none /system/apex/com.android.adbd /apex/com.android.adbd bind
+    mount none /system/apex/com.android.tzdata /apex/com.android.tzdata bind
+    mount none /system/apex/com.android.permission /apex/com.android.permission bind
+    mount none /system/apex/com.android.tethering /apex/com.android.tethering bind
+    mount none /system/apex/com.android.resolv /apex/com.android.resolv bind
+    mount none /system/apex/com.android.ipsec /apex/com.android.ipsec bind
+    mount none /system/apex/com.android.conscrypt /apex/com.android.conscrypt bind
+    mount none /system/apex/com.android.wifi /apex/com.android.wifi bind
+    
+    mount none /system/apex/com.android.vndk.current /apex/com.android.vndk.v30 bind
+    mount none /system/system_ext/apex/com.android.vndk.v29 /apex/com.android.vndk.v29 bind
+    mount none /system/system_ext/apex/com.android.vndk.v28 /apex/com.android.vndk.v28 bind
+    
+    mkdir /apex/com.android.art 0777 root root
+    mount none /apex/com.android.art.debug /apex/com.android.art bind
+    mount none /apex/com.android.art.release /apex/com.android.art bind
+
+    exec -- /system/bin/apexd --bootstrap
+
+    mkdir /linkerconfig 0777 root root
+    mount tmpfs tmpfs /linkerconfig mode=0755,uid=0,gid=0
+    restorecon /linkerconfig
+    exec -- /system/bin/linkerconfig --target /linkerconfig
+    
+on fs
+    symlink /system/product /product
+    symlink /system/system_ext /system_ext    
+
+on post-fs-data
+    mkdir /data/apex 0755 root system encryption=None
+    mkdir /data/apex/active 0755 root system
+    mkdir /data/apex/backup 0700 root system
+    mkdir /data/apex/hashtree 0700 root system
+    mkdir /data/apex/sessions 0700 root system
+    mkdir /data/app-staging 0750 system system encryption=None
+
+    mkdir /data/misc/installd 0700 root root
+    mkdir /data/misc/credstore 0777 system system
+    
+    mkdir /data/system_de 0770 system system
+    mkdir /data/system_ce 0770 system system
+    mkdir /data/misc_de 01771 system misc
+    mkdir /data/misc_ce 01771 system misc
+    mkdir /data/user 0711 system system
+    mkdir /data/user_de 0711 system system
+    mkdir /data/vendor 0711 system system
+    mkdir /data/vendor_de 0711 system system
+    mkdir /data/misc/installd 0700 root root
+    mkdir /data/misc/credstore 0777 system system
+    mkdir /data/rollback 0700 system system
+
+    # Create mirror directory for jit profiles
+    mkdir /data_mirror/cur_profiles 0700 root root
+    mount none /data/misc/profiles/cur /data_mirror/cur_profiles bind
+
+    init_user0
+
+service adbd_apex /apex/com.android.adbd/bin/adbd --root_seclabel=u:r:su:s0
+    class core
+    socket adbd stream 660 system system
+    disabled
+    override
+    seclabel u:r:adbd:s0
+
+on property:sys.usb.state=adb
+    restart adbd_apex
+
+on property:sys.usb.state=mtp,adb
+    restart adbd_apex        

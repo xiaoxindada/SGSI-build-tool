@@ -1,0 +1,39 @@
+# Copyright (C) 2012 The Android Open Source Project
+#
+# IMPORTANT: Do not create world writable files or directories.
+# This is a common source of Android security bugs.
+#
+
+on early-init
+    # Android doesn't need kernel module autoloading, and it causes SELinux
+    # denials.  So disable it by setting modprobe to the empty string.  Note: to
+    # explicitly set a sysctl to an empty string, a trailing newline is needed.
+    write /proc/sys/kernel/modprobe \n
+
+    # memory.pressure_level used by lmkd
+    chown root system /dev/memcg/memory.pressure_level
+    chmod 0040 /dev/memcg/memory.pressure_level
+    # app mem cgroups, used by activity manager, lmkd and zygote
+    mkdir /dev/memcg/apps/ 0755 system system
+    # cgroup for system_server and surfaceflinger
+    mkdir /dev/memcg/system 0550 system system
+
+    # symlink the Android specific /dev/tun to Linux expected /dev/net/tun
+    mkdir /dev/net 0755 root root
+    symlink ../tun /dev/net/tun
+    
+    # Create metadata and its context
+    mkdir /metadata 0755 root system
+    mkdir /metadata/password_slots 0771 root system
+    mkdir /metadata/apex 0700 root system
+    chmod 0755 /metadata
+    mkdir /metadata/apex/sessions 0700 root system
+    restorecon /metadata
+
+    exec - system system -- /system/bin/vdc checkpoint prepareCheckpoint
+    
+on post-fs-data
+    # Load fsverity keys. This needs to happen before apexd, as post-install of
+    # APEXes may rely on keys.
+    exec -- /system/bin/fsverity_init
+
