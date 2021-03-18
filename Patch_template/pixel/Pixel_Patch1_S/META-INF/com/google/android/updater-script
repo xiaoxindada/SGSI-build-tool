@@ -1,0 +1,16 @@
+ui_print("xiaoxindada SGSI Patch1 Pixel S");
+
+run_program("/sbin/busybox", "mount", "/vendor");
+
+package_extract_dir("vendor", "/vendor");
+
+
+#bin/hw
+set_metadata("/vendor/bin/hw/hostapd", "uid", 0, "gid", 2000, "mode", 0755, "capabilities", 0x0, "selabel", "u:object_r:hal_wifi_hostapd_default_exec:s0");
+set_metadata("/vendor/bin/hw/wpa_supplicant", "uid", 0, "gid", 2000, "mode", 0755, "capabilities", 0x0, "selabel", "u:object_r:hal_wifi_supplicant_default_exec:s0");
+
+#overlay
+set_metadata_recursive("/vendor/overlay", "uid", 0, "gid", 0, "fmode", 0644, "capabilities", 0x0, "selabel", "u:object_r:vendor_overlay_file:s0");
+set_metadata("/vendor/overlay", "uid", 0, "gid", 2000, "mode", 0755, "capabilities", 0x0, "selabel", "u:object_r:vendor_overlay_file:s0");
+
+ui_print("Installation complete!");
