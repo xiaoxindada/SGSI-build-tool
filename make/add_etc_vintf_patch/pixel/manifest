@@ -1,0 +1,4 @@
+    <hal format="aidl">
+        <name>com.google.hardware.pixel.display</name>
+        <fqname>IDisplay/default</fqname>
+    </hal>

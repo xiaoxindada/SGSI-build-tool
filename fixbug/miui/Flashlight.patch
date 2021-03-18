@@ -1,0 +1,2 @@
+    <!-- Support Android Flashlight Controller -->
+    <bool name="support_android_flashlight">true</bool>

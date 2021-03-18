@@ -1,0 +1,4 @@
+/system/system/bootprof u:object_r:system_file:s0
+/system/system/bootprof/bootprof u:object_r:system_file:s0
+/system/system/etc/init/flymedata\.rc u:object_r:system_file:s0
+/system/system/etc/init/hw\.rc u:object_r:system_file:s0

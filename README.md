@@ -16,11 +16,25 @@
 
 # 确保首次使用工具
 ```
+=======
+tar使用:  
 下载本工具  
 进入工具所在目录内，执行以下命令：  
 su  
 tar -xf SGSI-build-tool-12.tar  
 cd SGSI-build-tool-11/12
+
+从v12-1.2开始以及以后:
+su  
+tar -xf SGSI-build-tool-12.tar  
+cd SGSI-build-tool-12
+```
+
+```
+GitHub:  
+git clone https://github.com/xiaoxindada/SGSI-build-tool.git -b 12
+cd SGSI-build-tool-12
+su
 ```
 
 # 安装工具依赖环境(建议挂t)
@@ -44,6 +58,11 @@ Patch1 Patch2 的内容需要自行把他打包至vendor.img 把system vendor打
 本工具仅仅制作system.img部分Patch部分需要手动  
 本工具是半自动工具 因为有些处理自动化并不理想 多变 所以手动更好 如果你不清楚这些东西的处理 也可以不处理 直接制造也行  
 成品输出在SGSI文件夹 然后手动制造Patch1 2 3即可  
+```
+
+# 同步更新工具:
+```  
+./update.sh
 ```
 
 # 本工具打包解包脚本
