@@ -54,6 +54,11 @@ Patch1 Patch2 的内容需要自行把他打包至vendor.img 把system vendor打
 成品输出在SGSI文件夹 然后手动制造Patch1 2 3即可  
 ```
 
+# 同步更新工具:
+```  
+./update.sh
+```
+
 # 本工具打包解包脚本
 ```
 img打包解包: makeimg2.sh unpackimg.sh(单独可使用 支持任意分区打包解包)  
