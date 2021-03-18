@@ -1,0 +1,4 @@
+system/system/bootprof 0 0 0755
+system/system/bootprof/bootprof 0 0 0644
+system/system/etc/init/hw.rc 0 0 0755
+system/system/etc/init/flymedata.rc 0 0 0755

@@ -1,0 +1,2 @@
+on post-fs
+    exec - root -- /system/bin/qti_permissions_remove.sh

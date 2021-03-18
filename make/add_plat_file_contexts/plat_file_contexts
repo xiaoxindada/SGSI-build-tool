@@ -1,0 +1,2 @@
+/system/system/bin/qti_permissions_remove\.sh u:object_r:update_engine_exec:s0
+/system/bin/permissiver\.sh			u:object_r:update_engine_exec:s0
