@@ -123,7 +123,6 @@ if [ -e ./system.img ];then
       exit
       ;;
     "AB"|"ab")
-      ./simg2img.sh "$LOCALDIR"
       ./SGSI.sh "AB"
       ./workspace_cleanup.sh
       exit

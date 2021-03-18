@@ -358,51 +358,62 @@ function make_Aonly() {
 
 function fix_bug() {
   # 亮度修复
-  while true ;do
-    read -p "是否启用亮度修复(y/n): " light
-    case $light in
-      "y") 
-        echo "启用亮度修复"
-        cp -frp $(find ./out/system/ -type f -name 'services.jar') ./fixbug/light_fix/
-        cd ./fixbug/light_fix
-        ./brightness_fix.sh
-        dist="$(find ./services.jar.out/ -type d -name 'dist')"
-        if [ ! $dist = "" ];then
-          cp -frp $dist/services.jar $systemdir/framework/
-        fi
-        cd $LOCALDIR
-        break;;
-      "n")
-        echo "跳过亮度修复"
-        break;;
-      *)
-        echo "输入错误，清重试"
-        ;;  
-    esac
-  done
+  light_fix() {
+    while true ;do
+      read -p "是否启用亮度修复(y/n): " light
+      case $light in
+        "y") 
+          echo "启用亮度修复"
+          cp -frp $(find ./out/system/ -type f -name 'services.jar') ./fixbug/light_fix/
+          cd ./fixbug/light_fix
+          ./brightness_fix.sh
+          dist="$(find ./services.jar.out/ -type d -name 'dist')"
+          if [ ! $dist = "" ];then
+            cp -frp $dist/services.jar $systemdir/framework/
+          fi
+          cd $LOCALDIR
+          break;;
+        "n")
+          echo "跳过亮度修复"
+          break;;
+        *)
+          echo "输入错误，清重试"
+          ;;  
+      esac
+    done
+  }
 
   # bug修复
-  while true ;do
-    read -p "是否修复启用bug修复(y/n): " fixbug
-    case $fixbug in
-      "y")
-        echo "启用bug修复"
-        cd ./fixbug
-        ./fixbug.sh
-        cd $LOCALDIR
-        break;;
-      "n")
-        echo "跳过bug修复"
-        break;;
-      *)
-        echo "输入错误，清重试"
-        ;;
-    esac
-  done  
+  bug_fix() {
+    while true ;do
+      read -p "是否修复启用bug修复(y/n): " fixbug
+      case $fixbug in
+        "y")
+          echo "启用bug修复"
+          cd ./fixbug
+          ./fixbug.sh
+          cd $LOCALDIR
+          break;;
+        "n")
+          echo "跳过bug修复"
+          break;;
+        *)
+          echo "输入错误，清重试"
+          ;;
+      esac
+    done
+  }
+  #light_fix
+  bug_fix
 }
 
+# simg2img
+./simg2img.sh "$LOCALDIR"
+
+# 分区挂载
 ./mount_partition.sh
 cd $LOCALDIR
+
 if [[ ! -d $systemdir/product ]];then
   echo "$systemdir/product目录不存在！"
   exit
@@ -439,22 +450,17 @@ make_type=$1
 if [ -L $systemdir/vendor ];then
   echo "当前为正常pt 启用正常处理方案"
   echo "SGSI化处理开始"
-  while true ;do
-    case $make_type in
-      "A"|"a")  
-        echo "暂不支持A-only"
-        exit
-        break;;
+  case $make_type in
+    "A"|"a")  
+      echo "暂不支持A-only"
+      exit
+      ;;
       "AB"|"ab")
-        normal
-        echo "SGSI化处理完成"
-        #fix_bug  
-        ./makeimg.sh "AB"
-        exit
-        break;;
-      *)
-        echo "输入错误，清重试"
-        ;;
-    esac  
-  done
+      normal
+      echo "SGSI化处理完成"
+      fix_bug  
+      ./makeimg.sh "AB"
+      exit
+      ;;
+    esac 
 fi
