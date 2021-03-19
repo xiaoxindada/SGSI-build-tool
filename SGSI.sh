@@ -430,7 +430,7 @@ file_contexts() {
 
   cat $systemdir/etc/selinux/plat_file_contexts >> $configdir/$target_contexts
 
-  partition_name="system_ext product"
+  partition_name="system_ext product vendor"
   for partition in $partition_name ;do
     if [ -d $systemdir/$partition/etc/selinux ];then 
       file_contexts=$(ls $systemdir/$partition/etc/selinux | grep file_contexts*)
