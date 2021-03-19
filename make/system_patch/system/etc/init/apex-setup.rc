@@ -76,3 +76,7 @@ on post-fs-data
     mount none /system/apex/com.google.android.tethering /apex/com.android.tethering bind
     mount none /system/apex/com.google.android.tzdata3 /apex/com.android.tzdata3 bind
     mount none /system/apex/com.google.android.wifi /apex/com.android.wifi bind
+    
+    mkdir /apex/com.mainline.primary.libs 0777 root root
+    mount none /system/apex/com.google.mainline.primary.libs /apex/com.google.mainline.primary.libs bind
+    mount none /apex/com.google.mainline.primary.libs /apex/com.mainline.primary.libs bind
