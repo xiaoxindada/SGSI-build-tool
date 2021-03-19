@@ -6,6 +6,18 @@ LOCALDIR=`cd "$( dirname $0 )" && pwd`
 cd $LOCALDIR
 source ./bin.sh
 
+Usage() {
+cat <<EOT
+Usage:
+$0 sparse image path
+EOT
+}
+
+if [ "$1" = "" ];then
+  Usage
+  exit
+fi
+
 imagedir="$1" 
 
 echo "system.img
