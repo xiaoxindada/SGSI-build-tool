@@ -13,11 +13,11 @@ for APEX in $APEXES; do
     #else
         APEXNAME=$(echo "$APEX" | sed 's/.apex//')
     #fi
-    if [[ -d "$APEXDIR/$APEXNAME" ]]; then
+    if [[ -d "$APEXDIR/$APEXNAME" || -d "$APEXDIR/$APEX" ]] ; then
         continue
-    fi
+    fi    
     mkdir -p "$APEXDIR/$APEXNAME"
-    7z e "$APEXDIR/$APEX" apex_payload.img apex_pubkey -o"$APEXDIR/$APEXNAME" >> "$TMPDIR"/zip.log
+    7z e -y "$APEXDIR/$APEX" apex_payload.img apex_pubkey -o"$APEXDIR/$APEXNAME" >> "$TMPDIR"/zip.log
     $EXT4EXTRACT "$APEXDIR/$APEXNAME/apex_payload.img" -D "$APEXDIR/$APEXNAME" >> "$TMPDIR"/zip.log
     rm -rf "$APEXDIR/$APEXNAME/apex_payload.img"
     rm -rf "$APEXDIR/$APEXNAME/lost+found"

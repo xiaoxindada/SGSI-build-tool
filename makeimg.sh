@@ -39,7 +39,7 @@ while true ;do
 done
 
 case $system_type in
-  "A"|"a")
+  "AA"|"aa")
     echo "/ u:object_r:system_file:s0" > ./out/config/system_A_contexts
     echo "/system u:object_r:system_file:s0" >> ./out/config/system_A_contexts
     echo "/system(/.*)? u:object_r:system_file:s0" >> ./out/config/system_A_contexts
@@ -64,7 +64,9 @@ case $system_type in
     ;;
 esac 
 
-if [[ -f "./out/config/system_test_contexts" ]]; then
+case $system_type in
+  "AB"|"ab")
+    if [[ -f "./out/config/system_test_contexts" ]]; then
     echo "/firmware(/.*)?         u:object_r:firmware_file:s0" >> "./out/config/system_test_contexts"
     echo "/bt_firmware(/.*)?      u:object_r:bt_firmware_file:s0" >> "./out/config/system_test_contexts"
     echo "/persist(/.*)?          u:object_r:mnt_vendor_file:s0" >> "./out/config/system_test_contexts"
@@ -101,7 +103,9 @@ if [[ -f "./out/config/system_test_contexts" ]]; then
     echo "/addon.d                u:object_r:rootfs:s0" >> "./out/config/system_test_contexts"
     echo "/op_odm                 u:object_r:rootfs:s0" >> "./out/config/system_test_contexts"
     echo "/avb                    u:object_r:rootfs:s0" >> "./out/config/system_test_contexts"
-fi
+    fi
+    ;;
+  esac  
 
 if [ ! -d $systemdir ];then
   echo "system目录不存在！"
@@ -129,7 +133,8 @@ read -p "按任意键开始打包" var
 
 case $system_type in
   "A"|"a")
-    $bin/mkuserimg_mke2fs.sh "$systemdir" "./out/system.img" "ext4" "/system" $size -j "0" -T "1230768000" -C "./out/config/system_A_fs" -L "system" -I "256" -M "/system" -m "0" "./out/config/system_A_contexts"
+    $bin/mkuserimg_mke2fs.sh "$systemdir" "./out/system.img" "ext4" "/system" $size -j "0" -T "1230768000" -L "system" -I "256" -M "/system" -m "0" "./out/config/system_test_contexts"
+    #$bin/mkuserimg_mke2fs.sh "$systemdir" "./out/system.img" "ext4" "/system" $size -j "0" -T "1230768000" -C "./out/config/system_A_fs" -L "system" -I "256" -M "/system" -m "0" "./out/config/system_A_contexts"
     ;;
   "AB"|"ab")
     $bin/mkuserimg_mke2fs.sh "$systemdir" "./out/system.img" "ext4" "/" $size -j "0" -T "1230768000" -L "/" -I "256" -M "/" -m "0" "./out/config/system_test_contexts"
