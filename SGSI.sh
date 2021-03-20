@@ -44,10 +44,13 @@ function normal() {
     mkdir -p "$systemdir/../firmware"
     mkdir -p "$systemdir/../dsp"
     mkdir -p "$systemdir/../cache"
-    rm -rf "$systemdir/../product"
-    rm -rf "$systemdir/../system_ext"
-    ln -s "/system/product" "$systemdir/../product"
-    ln -s "/system/system_ext" "$systemdir/../system_ext"
+   
+    # ramdisk 链接创建
+    symlink_partition="system_ext product"
+    for partition in $symlink_partition ;do
+      rm -rf "$systemdir/../$partition"
+      ln -s "/system/$partition" "$systemdir/../$partition"
+    done  
   }
   ramdisk_modify
   echo "修改完成"
