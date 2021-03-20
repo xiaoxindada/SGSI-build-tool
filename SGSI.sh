@@ -352,10 +352,7 @@ function make_Aonly() {
     for i in $systemdir/etc/init/$new_oemrc ;do 
       echo "$(cat $i | grep -v "^import")" > $i 
     done
-    # 为新的rc添加fs数据
-    echo "/system/system/etc/init/$new_oemrc u:object_r:system_file:s0" >> $configdir/system_file_contexts
-    echo "system/system/etc/init/$new_oemrc 0 0 0644" >> $configdir/system_fs_config
-  done
+  done  
 
   # 为所有rom禁用/system/etc/ueventd.rc
   rm -rf $systemdir/etc/ueventd.rc
