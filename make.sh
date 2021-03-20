@@ -119,7 +119,8 @@ make_type=$1
 if [ -e ./system.img ];then
   case $make_type in
     "A"|"a") 
-      echo "暂不支持"
+      ./SGSI.sh "A"
+      ./workspace_cleanup.sh
       exit
       ;;
     "AB"|"ab")

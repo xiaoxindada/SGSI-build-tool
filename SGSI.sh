@@ -306,19 +306,16 @@ function make_Aonly() {
     for i in $systemdir/etc/init/$new_oemrc ;do 
       echo "$(cat $i | grep -v "^import")" > $i 
     done
-    # 为新的rc添加fs数据
-    echo "/system/system/etc/init/$new_oemrc u:object_r:system_file:s0" >> $configdir/system_file_contexts
-    echo "system/system/etc/init/$new_oemrc 0 0 0644" >> $configdir/system_fs_config
-  done
+  done  
 
-  # 为所有rom禁用/system/etc/init/ueventd.rc
-  rm -rf $systemdir/etc/init/ueventd.rc
+  # 为所有rom禁用/system/etc/ueventd.rc
+  rm -rf $systemdir/etc/ueventd.rc
 
   # 为所有rom改用内核自带的init.usb.rc
-  rm -rf $systemdir/etc/init/hw/init.usb.rc
-  rm -rf $systemdir/etc/init/hw/init.usb.configfs.rc
-  sed -i '/\/system\/etc\/init\/hw\/init.usb.rc/d' $systemdir/etc/init/hw/init.rc
-  sed -i '/\/system\/etc\/init\/hw\/init.usb.configfs.rc/d' $systemdir/etc/init/hw/init.rc
+  #rm -rf $systemdir/etc/init/hw/init.usb.rc
+  #rm -rf $systemdir/etc/init/hw/init.usb.configfs.rc
+  #sed -i '/\/system\/etc\/init\/hw\/init.usb.rc/d' $systemdir/etc/init/hw/init.rc
+  #sed -i '/\/system\/etc\/init\/hw\/init.usb.configfs.rc/d' $systemdir/etc/init/hw/init.rc
 
   # 去除init.environ.rc重复导入
   sed -i '/\/init.environ.rc/d' $systemdir/etc/init/hw/init.rc
@@ -345,15 +342,20 @@ function make_Aonly() {
   old_rc_flies=$(ls $systemdir/etc/init/hw)
   for old_rc in $old_rc_flies ;do
     new_rc=$(echo "${old_rc%.*}" | sed 's/$/&-treble.rc/g')
-    cp -frp $systemdir/etc/init/hw/$old_rc $system/etc/init/$new_rc
+    cp -frp $systemdir/etc/init/hw/$old_rc $systemdir/etc/init/$new_rc
   done 
   
   # 添加启动A-only必备文件 
-  cp -frp ./make/init_A/system/* $systemdir
+  cp -frp ./make/init_A/system/* $systemdir/
 
-  # fs数据整合
-  cat ./make/add_fs/init-A_fs >> $configdir/system_fs_config
-  cat ./make/add_fs/init-A_contexts >> $configdir/system_file_contexts
+  # 修补apex-setup.rc
+  cat $systemdir/etc/init/apex-setup.rc >> $systemdir/etc/init/add_apex-setup.rc
+  mv -f $systemdir/etc/init/add_apex-setup.rc $systemdir/etc/init/apex-setup.rc
+
+  # apex_vndk调用处理
+  cd ./make/apex_vndk_start
+  ./make_A.sh
+  cd $LOCALDIR 
 }
 
 function fix_bug() {
@@ -451,8 +453,13 @@ if [ -L $systemdir/vendor ];then
   echo "当前为正常pt 启用正常处理方案"
   echo "SGSI化处理开始"
   case $make_type in
-    "A"|"a")  
-      echo "暂不支持A-only"
+    "A"|"a")
+      echo "A"
+      normal
+      make_Aonly
+      echo "SGSI化处理完成"
+      #fix_bug  
+      ./makeimg.sh "A"
       exit
       ;;
       "AB"|"ab")
