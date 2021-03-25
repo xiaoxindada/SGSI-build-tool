@@ -34,6 +34,10 @@ cd SGSI-build-tool-12
 su
 ```
 
+# 使用Actions构建SGSI:
+https://github.com/xiaoxindada/SGSI-build-action
+
+
 # 安装工具依赖环境(建议挂t)
 ```
 测试环境： Ubuntu 20.04
