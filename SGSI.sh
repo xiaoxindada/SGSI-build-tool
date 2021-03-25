@@ -455,7 +455,7 @@ if [ -L $systemdir/vendor ];then
       if [ $bug_fix = "true" ];then
         fix_bug
       fi
-      ./makeimg.sh "--A"
+      ./makeimg.sh "-A"
       exit
       ;;
       "--AB"|"--ab")
