@@ -2,8 +2,9 @@
 
 LOCALDIR=`cd "$( dirname $0 )" && pwd`
 cd $LOCALDIR
-
 ./rm.sh > /dev/null 2>&1
+
+os_type="$1"
 
 echo "
 --------------------
@@ -13,15 +14,14 @@ echo "
 Pixel
 --------------------
 "
-while true ;do
-  read -p "请选择系统种类(用小写输出): " fix
-  case "$fix" in
-   "pixel")
-      echo "正在修复"
-      ./pixel.sh
-      break;;
-    *)
-      echo "输入错误，清重试"
-      ;;
-  esac
-done
+case "$os_type" in
+  "Pixel")
+    echo "正在修复"
+    ./pixel.sh
+    exit
+    ;;
+  *)
+    echo "$os_type 不支持bug修复"
+    exit  
+    ;;
+esac
