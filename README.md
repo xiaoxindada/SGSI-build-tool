@@ -60,7 +60,13 @@ https://github.com/xiaoxindada/SGSI-build-action
 Patch1 Patch2 的内容需要自行把他打包至vendor.img 把system vendor打包生成super.img然后刷入 然后刷入patch3格式化data即可
 本工具仅仅制作system.img部分Patch部分需要手动  
 本工具是半自动工具 因为有些处理自动化并不理想 多变 所以手动更好 如果你不清楚这些东西的处理 也可以不处理 直接制造也行  
-成品输出在SGSI文件夹 然后手动制造Patch1 2 3即可  
+成品输出在SGSI文件夹 然后手动制造Patch1 2 3即可
+
+v12-1.4开始采用脚本传递参数形式进行构建
+su
+制造A-only: ./make.sh -a Pixel ./tmp/redfin-ota-spp2.210219.008-3d61e529.zip --fix-bug
+制造AB: ./make.sh --ab Pixel ./tmp/redfin-ota-spp2.210219.008-3d61e529.zip --fix-bug
+单独使用SGSI.sh: ./SGSI.sh --ab Pixel --fix-bug
 ```
 
 # 同步更新工具:
