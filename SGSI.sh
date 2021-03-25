@@ -6,29 +6,56 @@ LOCALDIR=`cd "$( dirname $0 )" && pwd`
 cd $LOCALDIR
 source ./bin.sh
 
-systemdir="$LOCALDIR/out/system/system"
-configdir="$LOCALDIR/out/config"
-
 Usage() {
 cat <<EOT
 Usage:
-$0 AB|ab or $0 A|a
+$0 <Build Type> <OS Type> [Other args]
+   Build Type: [--AB|--ab] or [-A|-a|--a-only]
+   OS Type: Rom OS type to build
+
+   Other args:
+     [--fix-bug]: Fix bugs in Rom
 EOT
 }
 
 case $1 in 
-  "AB"|"ab")
-    echo "" > /dev/null 2>&1
+  "--AB"|"--ab")
+    build_type="--ab"
     ;;
-  "A"|"a")
+  "-A"|"-a"|"--a-only")
+    #build_type="-a"
     echo "暂不支持A-only"
     exit
-    ;;  
+    ;;
+  "-h"|"--help")
+    Usage
+    exit
+    ;;    
   *)
     Usage
     exit
     ;;
 esac
+
+if [ $# -lt 2 ];then
+  Usage
+  exit
+fi
+
+os_type="$2"
+build_type="$build_type"
+bug_fix="false"
+other_args=""
+systemdir="$LOCALDIR/out/system/system"
+configdir="$LOCALDIR/out/config"
+shift 2
+
+if ! (cat ./make/rom_support_list.txt | grep -qo "$os_type");then
+  echo "此rom未支持!"
+  echo "支持的rom有:"
+  cat ./make/rom_support_list.txt
+  exit
+fi
 
 function normal() {
   # 为所有rom修改ramdisk层面的system
@@ -258,7 +285,7 @@ function normal() {
 
   # 系统种类检测
   cd ./make
-  ./romtype.sh
+  ./romtype.sh "$os_type"
   cd $LOCALDIR 
 
   # rom修补处理
@@ -362,55 +389,20 @@ function make_Aonly() {
 }
 
 function fix_bug() {
-  # 亮度修复
-  light_fix() {
-    while true ;do
-      read -p "是否启用亮度修复(y/n): " light
-      case $light in
-        "y") 
-          echo "启用亮度修复"
-          cp -frp $(find ./out/system/ -type f -name 'services.jar') ./fixbug/light_fix/
-          cd ./fixbug/light_fix
-          ./brightness_fix.sh
-          dist="$(find ./services.jar.out/ -type d -name 'dist')"
-          if [ ! $dist = "" ];then
-            cp -frp $dist/services.jar $systemdir/framework/
-          fi
-          cd $LOCALDIR
-          break;;
-        "n")
-          echo "跳过亮度修复"
-          break;;
-        *)
-          echo "输入错误，清重试"
-          ;;  
-      esac
-    done
-  }
-
-  # bug修复
-  bug_fix() {
-    while true ;do
-      read -p "是否修复启用bug修复(y/n): " fixbug
-      case $fixbug in
-        "y")
-          echo "启用bug修复"
-          cd ./fixbug
-          ./fixbug.sh
-          cd $LOCALDIR
-          break;;
-        "n")
-          echo "跳过bug修复"
-          break;;
-        *)
-          echo "输入错误，清重试"
-          ;;
-      esac
-    done
-  }
-  #light_fix
-  bug_fix
+    echo "启用bug修复"
+    cd ./fixbug
+    ./fixbug.sh "$os_type"
+    cd $LOCALDIR
 }
+
+if [[ "$1" = "--fix-bug" ]];then
+  other_args+="--fix-bug"
+  shift
+fi
+
+if (echo ${other_args} | grep -qo "fix-bug");then
+  bug_fix="true"
+fi
 
 # simg2img
 ./simg2img.sh "$LOCALDIR"
@@ -451,25 +443,29 @@ model="$(cat $systemdir/build.prop | grep 'model')"
 echo "当前原包机型为:"
 echo "$model"
 
-make_type=$1
 if [ -L $systemdir/vendor ];then
   echo "当前为正常pt 启用正常处理方案"
   echo "SGSI化处理开始"
-  case $make_type in
-    "A"|"a")
+  case $build_type in
+    "-A"|"-a"|"--a-only")
       echo "A"
       normal
       make_Aonly
       echo "SGSI化处理完成"
-      #fix_bug  
-      ./makeimg.sh "A"
+      if [ $bug_fix = "true" ];then
+        fix_bug
+      fi
+      ./makeimg.sh "--A"
       exit
       ;;
-      "AB"|"ab")
+      "--AB"|"--ab")
+      echo "AB"
       normal
       echo "SGSI化处理完成"
-      fix_bug  
-      ./makeimg.sh "AB"
+      if [ $bug_fix = "true" ];then
+        fix_bug
+      fi
+      ./makeimg.sh "--AB"
       exit
       ;;
     esac 
