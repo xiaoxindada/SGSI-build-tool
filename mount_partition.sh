@@ -18,7 +18,7 @@ for partition in system ;do
   mkdir -p $LOCALDIR/out/$partition
   mount -o ro $partition.img $partition
   echo "正在复制 $partition 至 $LOCALDIR/out/$partition"
-  ( cd $LOCALDIR/$partition ; tar cf - . ) | ( cd "$LOCALDIR/out/system" ; tar xf - ; cd $LOCALDIR )
+  ( cd $LOCALDIR/$partition ; tar cf - . ) | ( cd "$LOCALDIR/out/$partition" ; tar xf - ; cd $LOCALDIR )
   umount $LOCALDIR/$partition 
   rm -rf $LOCALDIR/$partition
 done
@@ -45,15 +45,17 @@ if [[ -d $systemdir/../system_ext && -L $systemdir/system_ext ]] \
 fi
 
 for partition in $partition_list ;do
-  [ -d $systemdir/$partition ] && continue   
-  umount $partition 2>/dev/null
-  rm -rf $partition
-  rm -rf $systemdir/$partition
-  mkdir -p $partition
-  mkdir -p $systemdir/$partition
-  mount -o ro $partition.img $partition
-  echo "正在复制 $partition 至 $systemdir/$partition"
-  ( cd $LOCALDIR/$partition; tar cf - . ) | ( cd $systemdir/$partition ; tar xf - ; cd $LOCALDIR)
-  umount $LOCALDIR/$partition
-  rm -rf $LOCALDIR/$partition
+  if [ -e $LOCALDIR/${partition}.img ];then
+    [ -d $systemdir/$partition ] && continue   
+    umount $partition 2>/dev/null
+    rm -rf $partition
+    rm -rf $systemdir/$partition
+    mkdir -p $partition
+    mkdir -p $systemdir/$partition
+    mount -o ro $partition.img $partition
+    echo "正在复制 $partition 至 $systemdir/$partition"
+    ( cd $LOCALDIR/$partition; tar cf - . ) | ( cd $systemdir/$partition ; tar xf - ; cd $LOCALDIR)
+    umount $LOCALDIR/$partition
+    rm -rf $LOCALDIR/$partition
+  fi
 done
