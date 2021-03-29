@@ -1,142 +1,169 @@
-#!/usr/bin/env python
+ # -*- coding: UTF-8 -*-
 
-import hashlib
-import os
-import os.path
-import shutil
 import struct
-import subprocess
+import hashlib
+import bz2
 import sys
-import zipfile
+import argparse
+import bsdiff4
+import io
+import os
+import shutil
+try:
+    import lzma
+except ImportError:
+    from backports import lzma
 
-# from https://android.googlesource.com/platform/system/update_engine/+/refs/heads/master/scripts/update_payload/
-import update_metadata_pb2
+import update_metadata_pb2 as um
 
-PROGRAMS = [ 'bzcat', 'xzcat' ]
 
-BRILLO_MAJOR_PAYLOAD_VERSION = 2
+flatten = lambda l: [item for sublist in l for item in sublist]
 
-class PayloadError(Exception):
-  pass
+def u32(x):
+    return struct.unpack('>I', x)[0]
 
-class Payload(object):
-  class _PayloadHeader(object):
-    _MAGIC = b'CrAU'
+def u64(x):
+    return struct.unpack('>Q', x)[0]
 
-    def __init__(self):
-      self.version = None
-      self.manifest_len = None
-      self.metadata_signature_len = None
-      self.size = None
+def verify_contiguous(exts):
+    blocks = 0
 
-    def ReadFromPayload(self, payload_file):
-      magic = payload_file.read(4)
-      if magic != self._MAGIC:
-        raise PayloadError('Invalid payload magic: %s' % magic)
-      self.version = struct.unpack('>Q', payload_file.read(8))[0]
-      self.manifest_len = struct.unpack('>Q', payload_file.read(8))[0]
-      self.size = 20
-      self.metadata_signature_len = 0
-      if self.version != BRILLO_MAJOR_PAYLOAD_VERSION:
-        raise PayloadError('Unsupported payload version (%d)' % self.version)
-      self.size += 4
-      self.metadata_signature_len = struct.unpack('>I', payload_file.read(4))[0]
+    for ext in exts:
+        if ext.start_block != blocks:
+            return False
 
-  def __init__(self, payload_file):
-    self.payload_file = payload_file
-    self.header = None
-    self.manifest = None
-    self.data_offset = None
-    self.metadata_signature = None
-    self.metadata_size = None
+        blocks += ext.num_blocks
 
-  def _ReadManifest(self):
-    return self.payload_file.read(self.header.manifest_len)
+    return True
 
-  def _ReadMetadataSignature(self):
-    self.payload_file.seek(self.header.size + self.header.manifest_len)
-    return self.payload_file.read(self.header.metadata_signature_len);
+def data_for_op(op,out_file,old_file):
+    args.payloadfile.seek(data_offset + op.data_offset)
+    data = args.payloadfile.read(op.data_length)
 
-  def ReadDataBlob(self, offset, length):
-    self.payload_file.seek(self.data_offset + offset)
-    return self.payload_file.read(length)
+    # assert hashlib.sha256(data).digest() == op.data_sha256_hash, 'operation data hash mismatch'
 
-  def Init(self):
-    self.header = self._PayloadHeader()
-    self.header.ReadFromPayload(self.payload_file)
-    manifest_raw = self._ReadManifest()
-    self.manifest = update_metadata_pb2.DeltaArchiveManifest()
-    self.manifest.ParseFromString(manifest_raw)
-    metadata_signature_raw = self._ReadMetadataSignature()
-    if metadata_signature_raw:
-      self.metadata_signature = update_metadata_pb2.Signatures()
-      self.metadata_signature.ParseFromString(metadata_signature_raw)
-    self.metadata_size = self.header.size + self.header.manifest_len
-    self.data_offset = self.metadata_size + self.header.metadata_signature_len
-
-def decompress_payload(command, data, size, hash):
-  p = subprocess.Popen([command, '-'], stdout=subprocess.PIPE, stdin=subprocess.PIPE)
-  r = p.communicate(data)[0]
-  if len(r) != size:
-    print("Unexpected size %d %d" % (len(r), size))
-  elif hashlib.sha256(data).digest() != hash:
-    print("Hash mismatch")
-  return r
-
-def parse_payload(payload_f, partition, out_f):
-  BLOCK_SIZE = 4096
-  for operation in partition.operations:
-    e = operation.dst_extents[0]
-    data = payload_f.ReadDataBlob(operation.data_offset, operation.data_length)
-    out_f.seek(e.start_block * BLOCK_SIZE)
-    if operation.type == update_metadata_pb2.InstallOperation.REPLACE:
-      out_f.write(data)
-    elif operation.type == update_metadata_pb2.InstallOperation.REPLACE_XZ:
-      r = decompress_payload('xzcat', data, e.num_blocks * BLOCK_SIZE, operation.data_sha256_hash)
-      out_f.write(r)
-    elif operation.type == update_metadata_pb2.InstallOperation.REPLACE_BZ:
-      r = decompress_payload('bzcat', data, e.num_blocks * BLOCK_SIZE, operation.data_sha256_hash)
-      out_f.write(r)
+    if op.type == op.REPLACE_XZ:
+        dec = lzma.LZMADecompressor()
+        data = dec.decompress(data)
+        out_file.seek(op.dst_extents[0].start_block*block_size)
+        out_file.write(data)
+    elif op.type == op.REPLACE_BZ:
+        dec = bz2.BZ2Decompressor()
+        data = dec.decompress(data)
+        out_file.seek(op.dst_extents[0].start_block*block_size)
+        out_file.write(data)
+    elif op.type == op.REPLACE:
+        out_file.seek(op.dst_extents[0].start_block*block_size)
+        out_file.write(data)
+    elif op.type == op.SOURCE_COPY:
+        if not args.diff:
+            print ("SOURCE_COPY supported only for differential OTA")
+            sys.exit(-2)
+        out_file.seek(op.dst_extents[0].start_block*block_size)
+        for ext in op.src_extents:
+            old_file.seek(ext.start_block*block_size)
+            data = old_file.read(ext.num_blocks*block_size)
+            out_file.write(data)
+    elif op.type == op.SOURCE_BSDIFF:
+        if not args.diff:
+            print ("SOURCE_BSDIFF supported only for differential OTA")
+            sys.exit(-3)
+        out_file.seek(op.dst_extents[0].start_block*block_size)
+        tmp_buff = io.BytesIO()
+        for ext in op.src_extents:
+            old_file.seek(ext.start_block*block_size)
+            old_data = old_file.read(ext.num_blocks*block_size)
+            tmp_buff.write(old_data)
+        tmp_buff.seek(0)
+        old_data = tmp_buff.read()
+        tmp_buff.seek(0)
+        tmp_buff.write(bsdiff4.patch(old_data, data))
+        n = 0;
+        tmp_buff.seek(0)
+        for ext in op.dst_extents:
+            tmp_buff.seek(n*block_size)
+            n += ext.num_blocks
+            data = tmp_buff.read(ext.num_blocks*block_size)
+            out_file.seek(ext.start_block*block_size)
+            out_file.write(data)
+    elif op.type == op.ZERO:
+        for ext in op.dst_extents:
+            out_file.seek(ext.start_block*block_size)
+            out_file.write(b'\x00' * ext.num_blocks*block_size)
     else:
-      raise PayloadError('Unhandled operation type ({} - {})'.format(operation.type,
-                         update_metadata_pb2.InstallOperation.Type.Name(operation.type)))
+        print ("Unsupported type = %d" % op.type)
+        sys.exit(-1)
 
-def main(filename, output_dir):
-  if filename.endswith('.zip'):
-    print("Extracting 'payload.bin' from OTA file...")
-    ota_zf = zipfile.ZipFile(filename)
-    payload_file = open(ota_zf.extract('payload.bin', output_dir), 'rb')
-  else:
-    payload_file = open(filename, 'rb')
+    return data
 
-  payload = Payload(payload_file)
-  payload.Init()
+def dump_part(part):
+    print("Extracting " + part.partition_name + ".img..." )
+    
 
-  for p in payload.manifest.partitions:
-    name = p.partition_name + '.img'
-    print("Extracting '%s'" % name)
-    fname = os.path.join(output_dir, name)
-    out_f = open(fname, 'wb')
+    out_file = open('%s/%s.img' % (args.out, part.partition_name), 'wb')
+    h = hashlib.sha256()
+
+    if args.diff:
+        if not os.path.exists(args.old):
+            os.makedirs(args.old)
+        if not os.listdir(args.old):
+            raise(IOError(args.old + ' dir not found image file'))
+        old_file = open('%s/%s.img' % (args.old, part.partition_name), 'rb')
+    else:
+        old_file = None
+
+    for op in part.operations:
+        data = data_for_op(op,out_file,old_file) 
+
+
+parser = argparse.ArgumentParser(description='OTA payload dumper')
+parser.add_argument('payloadfile', type=argparse.FileType('rb'),
+                    help='payload file name')
+parser.add_argument('out', default='out',
+                    help='output directory (default: out)')
+parser.add_argument('--diff',action='store_true',
+                    help='extract differential OTA, you need put original images to old dir')
+parser.add_argument('--old', default='old',
+                    help='directory with original images for differential OTA (defaul: old)')
+args = parser.parse_args()
+
+#Check for --out directory exists
+if not os.path.exists(args.out):
+    os.makedirs(args.out)
+
+magic = args.payloadfile.read(4)
+assert magic == b'CrAU'
+
+file_format_version = u64(args.payloadfile.read(8))
+assert file_format_version == 2
+
+manifest_size = u64(args.payloadfile.read(8))
+
+metadata_signature_size = 0
+
+if file_format_version > 1:
+    metadata_signature_size = u32(args.payloadfile.read(4))
+
+manifest = args.payloadfile.read(manifest_size)
+metadata_signature = args.payloadfile.read(metadata_signature_size)
+
+data_offset = args.payloadfile.tell()
+
+dam = um.DeltaArchiveManifest()
+dam.ParseFromString(manifest)
+block_size = dam.block_size
+
+for part in dam.partitions:
+    # for op in part.operations:
+    #     assert op.type in (op.REPLACE, op.REPLACE_BZ, op.REPLACE_XZ), \
+    #             'unsupported op'
+
+    # extents = flatten([op.dst_extents for op in part.operations])
+    # assert verify_contiguous(extents), 'operations do not span full image'
+
     try:
-      parse_payload(payload, p, out_f)
-    except PayloadError as e:
-      print('Failed: %s' % e)
-      out_f.close()
-      os.unlink(fname)
-
-if __name__ == '__main__':
-  try:
-    filename = sys.argv[1]
-  except:
-    print('Usage: %s payload.bin [output_dir]' % sys.argv[0])
-    sys.exit()
-
-  try:
-    output_dir = sys.argv[2]
-  except IndexError:
-    output_dir = os.getcwd()
-
-  if not os.path.exists(output_dir):
-    os.makedirs(output_dir)
-
-  main(filename, output_dir)
+        dump_part(part)
+    except IOError:
+        cwd = os.getcwd()
+        print(cwd + args.old + os.sep + part.partition_name + ".img not found" )
+        os.remove(cwd + os.sep + args.out + os.sep + part.partition_name + ".img")
