@@ -6,25 +6,7 @@ LOCALDIR=`cd "$( dirname $0 )" && pwd`
 cd $LOCALDIR
 source ./bin.sh
 
-echo "
 
-开始打包
-
-请确保要打包的所有img在工具根目录下且为rimg (必须遵守)
-
-当前支持打包super.img的分区(ab 分区): system_a system_b system_ext_a system_ext_b vendor_a vendor_b product_a product_b
-当前支持打包super.img的分区(a_only 分区): system system_ext vendor product odm
-
-super分区大小为要打包的rimg的总大小
-
-super最终实际可用大小等于要打包的rimg的总大小
-
-打包数据用G为单位时候要为整数
-
-如果打包数据不为整数时用M为单位
-
-用B为单位打包时无需带单位
-"
 partition_name="
 system 
 system_ext 
@@ -35,10 +17,12 @@ system_a
 system_ext_a 
 vendor_a 
 product_a 
+odm_a
 system_b 
 system_ext_b 
 vendor_b 
 product_b
+odm_b
 "
 ab_slot="false"
 
@@ -63,7 +47,7 @@ for partition in $partition_name ;do
   fi
 done
 
-cd ./bin/build_super
+cd $bin/build_super
 cat ./misc_into.txt > ./build_super.txt
 if [ $ab_slot = "true" ];then
   cat ./ab_slot.txt >> ./build_super.txt
@@ -101,7 +85,19 @@ else
   printf "\n当前img大小总和为:\n==================\n$(du -sh ./sum | awk '{print $1}') (取整数打包)\n==================\n\n"
 fi
 mv ./sum/* ./
-rm -rf ./sum 
+rm -rf ./sum
+
+echo -e "\033[33m 开始打包
+请确保要打包的所有img在工具根目录下且为rimg (必须遵守)
+当前支持打包super.img的分区(ab 分区): system_a system_b system_ext_a system_ext_b vendor_a vendor_b product_a product_b odm_a odm_b
+当前支持打包super.img的分区(a_only 分区): system system_ext vendor product odm
+super分区大小为要打包的rimg的总大小
+super最终实际可用大小等于要打包的rimg的总大小
+打包数据用G为单位时候要为整数
+如果打包数据不为整数时用M为单位
+用B为单位打包时无需带单位
+\033[0m"
+ 
 read -p "请输入super分区大小: " supersize
 
 superM="$(echo "$supersize" | sed 's/M//g')"
@@ -135,9 +131,14 @@ super_main_group_size=$ssize
 " >> ./build_super.txt
 echo "super.img生成信息整合完毕,正在生成super.img..."
 python3 ./build_super_image.py ./build_super.txt ./super.img
+if [ $? != "0" ];then
+  echo "打包失败 错误日至如上"
+else
+  echo "super.img已生成，已输出至super目录"
+fi
+
 rm -rf ./build_super.txt
    
-echo "super.img已生成，已输出至super目录"
 cd $LOCALDIR
 rm -rf ./super
 mkdir ./super
