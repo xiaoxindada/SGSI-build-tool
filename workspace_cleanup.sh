@@ -9,8 +9,9 @@ if [ -e ./tmp/*.bin ];then
   rm -rf ./tmp/*.bin
 fi
 
-mv ./tmp/*.zip ./
-rm -rf ./compatibility.zip
-rm -rf ./tmp/*
-mv ./*.zip ./tmp/
-
+if [ -e ./tmp/*.zip ];then
+  mv ./tmp/*.zip ./
+  rm -rf ./compatibility.zip
+  rm -rf ./tmp/*
+  mv ./*.zip ./tmp/
+fi
