@@ -48,12 +48,12 @@ pip_module_install(){
     echo -e "\033[33m [INFO] Python2 and Python3 module install... \033[0m"
     if [[ "$USE_MIRROR_FOR_PIP" == "true" ]] ; then
         echo -e "\033[33m [INFO] Installing python packages from mirror... \033[0m"
-        sudo pip install pycryptodome pycrypto -i $PIP_MIRROR
-        sudo pip3 install pycryptodome pycrypto -i $PIP_MIRROR
+        sudo pip install backports.lzma pycryptodome pycrypto -i $PIP_MIRROR
+        sudo pip3 install backports.lzma pycryptodome pycrypto -i $PIP_MIRROR
     elif [[ "$USE_MIRROR_FOR_PIP" == "false" ]] ; then
         echo -e "\033[33m [INFO] Installing python packages from python-pip offical... \033[0m"
-        sudo pip install pycryptodome pycrypto
-        sudo pip3 install pycryptodome pycrypto     
+        sudo pip install backports.lzma pycryptodome pycrypto
+        sudo pip3 install backports.lzma pycryptodome pycrypto
     fi
     
     if [[ "$USE_MIRROR_FOR_PIP" == "true" ]] ; then
