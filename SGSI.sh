@@ -10,20 +10,20 @@ Usage() {
 cat <<EOT
 Usage:
 $0 <Build Type> <OS Type> [Other args]
-   Build Type: [--AB|--ab] or [-A|-a|--a-only]
-   OS Type: Rom OS type to build
+  Build Type: [--AB|--ab] or [-A|-a|--a-only]
+  OS Type: Rom OS type to build
 
-   Other args:
-     [--fix-bug]: Fix bugs in Rom
+  Other args:
+    [--fix-bug]: Fix bugs in Rom
 EOT
 }
 
-case $1 in 
+case $1 in
   "--AB"|"--ab")
     build_type="--ab"
     ;;
   "-A"|"-a"|"--a-only")
-    #build_type="-a"
+    build_type="--a-only"
     echo "暂不支持A-only"
     exit
     ;;
@@ -45,6 +45,7 @@ fi
 os_type="$2"
 build_type="$build_type"
 bug_fix="false"
+use_config="_config"
 other_args=""
 systemdir="$LOCALDIR/out/system/system"
 configdir="$LOCALDIR/out/config"
@@ -64,20 +65,35 @@ function normal() {
     rm -rf "$systemdir/../persist"
     rm -rf "$systemdir/../bt_firmware"
     rm -rf "$systemdir/../firmware"
-    rm -rf "$systemdir/../dsp"
     rm -rf "$systemdir/../cache"
-    mkdir -p "$systemdir/../bt_firmware"
     mkdir -p "$systemdir/../persist"
-    mkdir -p "$systemdir/../firmware"
-    mkdir -p "$systemdir/../dsp"
     mkdir -p "$systemdir/../cache"
-   
-    # ramdisk 链接创建
-    symlink_partition="system_ext product"
-    for partition in $symlink_partition ;do
-      rm -rf "$systemdir/../$partition"
-      ln -s "/system/$partition" "$systemdir/../$partition"
-    done  
+    ln -s "/vendor/bt_firmware" "$systemdir/../bt_firmware"
+    ln -s "/vendor/firmware" "$systemdir/../firmware"
+
+    if [ -f $configdir/system_file_contexts ];then
+      sed -i '/\/system\/persist /d' $configdir/system_file_contexts
+      sed -i '/\/system\/bt_firmware /d' $configdir/system_file_contexts
+      sed -i '/\/system\/firmware /d' $configdir/system_file_contexts
+      sed -i '/\/system\/cache /d' $configdir/system_file_contexts
+
+      echo "/system/persist u:object_r:mnt_vendor_file:s0" >> $configdir/system_file_contexts
+      echo "/system/bt_firmware u:object_r:bt_firmware_file:s0" >> $configdir/system_file_contexts
+      echo "/system/firmware u:object_r:firmware_file:s0" >> $configdir/system_file_contexts
+      echo "/system/cache u:object_r:cache_file:s0" >> $configdir/system_file_contexts
+    fi
+
+    if [ -f $configdir/system_fs_config ];then
+      sed -i '/system\/persist /d' $configdir/system_fs_config
+      sed -i '/system\/bt_firmware /d' $configdir/system_fs_config
+      sed -i '/system\/firmware /d' $configdir/system_fs_config
+      sed -i '/system\/cache /d' $configdir/system_fs_config
+
+      echo "system/persist 0 0 0755" >> $configdir/system_fs_config
+      echo "system/bt_firmware 0 0 0644" >> $configdir/system_fs_config
+      echo "system/firmware 0 0 0644" >> $configdir/system_fs_config
+      echo "system/cache 1000 2001 0770" >> $configdir/system_fs_config
+    fi
   }
   ramdisk_modify
   echo "修改完成"
@@ -89,7 +105,7 @@ function normal() {
 
   echo "正在进行其他处理"
 
-  # 重置make目录
+  # 重置manifest_custom
   true > ./make/add_etc_vintf_patch/manifest_custom
   echo "" >> ./make/add_etc_vintf_patch/manifest_custom
   echo "<!-- oem自定义接口 -->" >> ./make/add_etc_vintf_patch/manifest_custom
@@ -100,8 +116,6 @@ function normal() {
  
   # 为所有rom添加抓logcat的文件
   cp -frp ./make/add_logcat/system/* $systemdir/
-  cat ./make/add_logcat_fs/contexts >> $systemdir/etc/selinux/plat_file_contexts
-  cat ./make/add_logcat_fs/contexts >> $configdir/$target_contexts
 
   # 为所有rom做usb通用化
   cp -frp ./make/aosp_usb/* $systemdir/etc/init/hw/
@@ -211,7 +225,7 @@ function normal() {
       grep -q 'ro.product.property_source_order=' $systemdir/build.prop
     }
     if source_order ;then
-      sed -i '/ro.product.property\_source\_order\=/d' $systemdir/build.prop  
+      sed -i '/ro.product.property\_source\_order\=/d' $systemdir/build.prop
       echo "" >> $systemdir/build.prop
       echo "# 机型专有设备参数默认读取顺序" >> $systemdir/build.prop
       echo "ro.product.property_source_order=system,product,system_ext,vendor,odm" >> $systemdir/build.prop
@@ -226,7 +240,11 @@ function normal() {
   find  ./out/system/ -type f -name "fstab.postinstall" | xargs rm -rf
   rm -rf $systemdir/etc/init/cppreopts.rc    
   cp -frp ./make/fstab/system/* $systemdir
-
+  sed -i '/fstab\\.postinstall/d' $configdir/system_file_contexts
+  sed -i '/fstab.postinstall/d' $configdir/system_fs_config
+  cat ./make/fstab/fstab_contexts >> $configdir/system_file_contexts
+  cat ./make/fstab/fstab_fs >> $configdir/system_fs_config
+  
   # 添加缺少的libs
   cp -frpn ./make/add_libs/system/* $systemdir
  
@@ -272,11 +290,9 @@ function normal() {
 
   # 为phh化注册必要selinux上下文
   cat ./make/add_phh_plat_file_contexts/plat_file_contexts >> $systemdir/etc/selinux/plat_file_contexts
-  cat ./make/add_phh_plat_file_contexts/plat_file_contexts >> $configdir/$target_contexts
 
   # 为添加的文件注册必要的selinux上下文
   cat ./make/add_plat_file_contexts/plat_file_contexts >> $systemdir/etc/selinux/plat_file_contexts
-  cat ./make/add_plat_file_contexts/plat_file_contexts >> $configdir/$target_contexts
 
   # 为所有rom的相机修改为aosp相机
   #cd ./make/camera
@@ -286,7 +302,7 @@ function normal() {
   # 系统种类检测
   cd ./make
   ./romtype.sh "$os_type"
-  cd $LOCALDIR 
+  cd $LOCALDIR
 
   # rom修补处理
   cd ./make/rom_make_patch
@@ -336,7 +352,10 @@ function make_Aonly() {
     for i in $systemdir/etc/init/$new_oemrc ;do 
       echo "$(cat $i | grep -v "^import")" > $i 
     done
-  done  
+    # 为新的rc添加fs数据
+    echo "/system/system/etc/init/$new_oemrc u:object_r:system_file:s0" >> $configdir/system_file_contexts
+    echo "system/system/etc/init/$new_oemrc 0 0 0644" >> $configdir/system_fs_config
+  done
 
   # 为所有rom禁用/system/etc/ueventd.rc
   rm -rf $systemdir/etc/ueventd.rc
@@ -373,6 +392,9 @@ function make_Aonly() {
   for old_rc in $old_rc_flies ;do
     new_rc=$(echo "${old_rc%.*}" | sed 's/$/&-treble.rc/g')
     cp -frp $systemdir/etc/init/hw/$old_rc $systemdir/etc/init/$new_rc
+    # 为新的rc添加fs数据
+    echo "/system/system/etc/init/$new_rc u:object_r:system_file:s0" >> $configdir/system_file_contexts
+    echo "system/system/etc/init/$new_rc 0 0 0644" >> $configdir/system_fs_config  
   done 
   
   # 添加启动A-only必备文件 
@@ -381,6 +403,9 @@ function make_Aonly() {
   # 修补apex-setup.rc
   cat $systemdir/etc/init/apex-setup.rc >> $systemdir/etc/init/add_apex-setup.rc
   mv -f $systemdir/etc/init/add_apex-setup.rc $systemdir/etc/init/apex-setup.rc
+
+  # permissive启动延后
+  sed -i "s/on early\-init/on init/" $systemdir/etc/init/permissiver.rc
 
   # apex_vndk调用处理
   cd ./make/apex_vndk_start
@@ -404,12 +429,23 @@ if (echo ${other_args} | grep -qo "fix-bug");then
   bug_fix="true"
 fi
 
+rm -rf ./SGSI
+
 # simg2img
 ./simg2img.sh "$LOCALDIR"
 
 # 分区挂载
-./mount_partition.sh
+#./mount_partition.sh
 cd $LOCALDIR
+
+# image提取
+./image_extract.sh
+
+if [[ -d $systemdir/../system_ext && -L $systemdir/system_ext ]] \
+|| [[ -d $systemdir/../product && -L $systemdir/product ]];then
+  echo "检测到当前为动态分区"
+  ./partition_merge.sh
+fi
 
 if [[ ! -d $systemdir/product ]];then
   echo "$systemdir/product目录不存在！"
@@ -418,26 +454,6 @@ elif [[ ! -d $systemdir/system_ext ]];then
   echo "$systemdir/system_ext目录不存在！"
   exit
 fi
-
-# 生成打包需要的file_contexts
-target_contexts="system_test_contexts"
-file_contexts() {
-  rm -rf $configdir
-  mkdir -p $configdir
-
-  cat $systemdir/etc/selinux/plat_file_contexts >> $configdir/$target_contexts
-
-  partition_name="system_ext product vendor"
-  for partition in $partition_name ;do
-    if [ -d $systemdir/$partition/etc/selinux ];then 
-      file_contexts=$(ls $systemdir/$partition/etc/selinux | grep file_contexts*)
-      #echo $systemdir/$partition/etc/selinux/$file_contexts
-      [ -z $(cat $systemdir/$partition/etc/selinux/$file_contexts) ] && continue
-      cat $systemdir/$partition/etc/selinux/$file_contexts >> $configdir/$target_contexts
-    fi
-  done
-}
-file_contexts
 
 model="$(cat $systemdir/build.prop | grep 'model')"
 echo "当前原包机型为:"
@@ -451,21 +467,33 @@ if [ -L $systemdir/vendor ];then
       echo "A"
       normal
       make_Aonly
+      # fs数据整合
+      ./make/apex_flat/add_apex_fs.sh
+      ./make/add_repack_fs.sh
       echo "SGSI化处理完成"
       if [ $bug_fix = "true" ];then
         fix_bug
       fi
-      ./makeimg.sh "-A"
+      ./makeimg.sh "--a-only${use_config}"
       exit
       ;;
       "--AB"|"--ab")
       echo "AB"
       normal
+      # fs数据整合
+      ./make/apex_flat/add_apex_fs.sh
+      ./make/add_repack_fs.sh
+      # 清理fs空行
+      for i in $(ls $configdir);do
+        if [ -f $configdir/$i ];then
+          sed -i '/^\s*$/d' $configdir/$i
+        fi
+      done
       echo "SGSI化处理完成"
       if [ $bug_fix = "true" ];then
         fix_bug
       fi
-      ./makeimg.sh "--AB"
+      ./makeimg.sh "--ab${use_config}"
       exit
       ;;
     esac 

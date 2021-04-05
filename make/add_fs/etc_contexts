@@ -2,9 +2,6 @@
 /system/system/etc/llndk\.libraries\.30\.txt u:object_r:system_file:s0
 /system/system/etc/vndksp\.libraries\.30\.txt u:object_r:system_file:s0
 /system/system/etc/vndkcore\.libraries\.30\.txt u:object_r:system_file:s0
-/system/system/etc/ld\.config\.30\.txt u:object_r:system_linker_config_file:s0
-/system/system/etc/ld\.config\.vndk_lite\.txt u:object_r:system_linker_config_file:s0
-/system/system/etc/fstab\.postinstall u:object_r:system_file:s0
 /system/system/etc/init/apex-setup\.rc u:object_r:system_file:s0
 /system/system/etc/init/qti_permissions_remove.rc u:object_r:system_file:s0
 /system/system/etc/permissions/qti_permissions.xml u:object_r:system_file:s0

@@ -9,17 +9,21 @@ source ./bin.sh
 Usage() {
 cat <<EOT
 Usage:
-$0 <--AB|--ab> or $0 <-A|-a|--a-only>
+$0 <os_repackage_type>
+  os_repackage_type: System.img repack type: [--AB|--ab or -A|--a-only]
+  
+  [--AB_CONFIG|--ab_config]: Use fs_config to repack ab system.img
+  [--A-ONLY_CONFIG|--a-only_config]: Use fs_config to repack a-only system.img
 EOT
 }
 
 os_repackage_type="$1"
 
 case $os_repackage_type in
-  "-A"|"-a"|"--a-only")
+  "-A"|"-a"|"--a-only"|"--A-ONLY_CONFIG"|"--a-only_config")
     systemdir="$LOCALDIR/out/system/system"
     ;;
-  "--AB"|"--ab")  
+  "--AB"|"--ab"|"--AB_CONFIG"|"--ab_config")  
     systemdir="$LOCALDIR/out/system"
     ;;
   "-h"|"--help")
@@ -37,74 +41,106 @@ if [ "$1" = "" ];then
   exit
 fi
 
-case $system_type in
-  "AA"|"aa")
-    echo "/ u:object_r:system_file:s0" > ./out/config/system_A_contexts
-    echo "/system u:object_r:system_file:s0" >> ./out/config/system_A_contexts
-    echo "/system(/.*)? u:object_r:system_file:s0" >> ./out/config/system_A_contexts
-    echo "/system/lost+found u:object_r:system_file:s0" >> ./out/config/system_A_contexts
-
-    echo "/ 0 0 0755" > ./out/config/system_A_fs
-    echo "system 0 0 0755" >> ./out/config/system_A_fs
-    echo "system/lost+found 0 0 0700" >> ./out/config/system_A_fs
-
-    cat ./out/config/system_file_contexts | grep "system_ext" >> ./out/config/system_ext_contexts
-    cat ./out/config/system_fs_config | grep "system_ext" >> ./out/config/system_ext_fs
-    cat ./out/config/system_file_contexts | grep "/system/system/" >> ./out/config/system_A_contexts
-    cat ./out/config/system_fs_config | grep "system/system/" >> ./out/config/system_A_fs
-
-    sed -i 's#/system/system/system_ext#/system/system_ext#' ./out/config/system_ext_contexts
-    sed -i 's#system/system/system_ext#system/system_ext#' ./out/config/system_ext_fs
-    sed -i 's#/system/system#/system#' ./out/config/system_A_contexts
-    sed -i 's#system/system#system#' ./out/config/system_A_fs
-
-    cat ./out/config/system_ext_contexts >> ./out/config/system_A_contexts
-    cat ./out/config/system_ext_fs >> ./out/config/system_A_fs
-    ;;
-esac 
+outdir="$LOCALDIR/out"
+configdir="$outdir/config"
+target_contexts="system_test_contexts"
 
 case $os_repackage_type in
-  "--AB"|"--ab")
-    if [[ -f "./out/config/system_test_contexts" ]]; then
-      echo "/firmware(/.*)?         u:object_r:firmware_file:s0" >> "./out/config/system_test_contexts"
-      echo "/bt_firmware(/.*)?      u:object_r:bt_firmware_file:s0" >> "./out/config/system_test_contexts"
-      echo "/persist(/.*)?          u:object_r:mnt_vendor_file:s0" >> "./out/config/system_test_contexts"
-      echo "/dsp                    u:object_r:rootfs:s0" >> "./out/config/system_test_contexts"
-      echo "/oem                    u:object_r:rootfs:s0" >> "./out/config/system_test_contexts"
-      echo "/op1                    u:object_r:rootfs:s0" >> "./out/config/system_test_contexts"
-      echo "/op2                    u:object_r:rootfs:s0" >> "./out/config/system_test_contexts"
-      echo "/charger_log            u:object_r:rootfs:s0" >> "./out/config/system_test_contexts"
-      echo "/audit_filter_table     u:object_r:rootfs:s0" >> "./out/config/system_test_contexts"
-      echo "/keydata                u:object_r:rootfs:s0" >> "./out/config/system_test_contexts"
-      echo "/keyrefuge              u:object_r:rootfs:s0" >> "./out/config/system_test_contexts"
-      echo "/omr                    u:object_r:rootfs:s0" >> "./out/config/system_test_contexts"
-      echo "/publiccert.pem         u:object_r:rootfs:s0" >> "./out/config/system_test_contexts"
-      echo "/sepolicy_version       u:object_r:rootfs:s0" >> "./out/config/system_test_contexts"
-      echo "/cust                   u:object_r:rootfs:s0" >> "./out/config/system_test_contexts"
-      echo "/donuts_key             u:object_r:rootfs:s0" >> "./out/config/system_test_contexts"
-      echo "/v_key                  u:object_r:rootfs:s0" >> "./out/config/system_test_contexts"
-      echo "/carrier                u:object_r:rootfs:s0" >> "./out/config/system_test_contexts"
-      echo "/dqmdbg                 u:object_r:rootfs:s0" >> "./out/config/system_test_contexts"
-      echo "/ADF                    u:object_r:rootfs:s0" >> "./out/config/system_test_contexts"
-      echo "/APD                    u:object_r:rootfs:s0" >> "./out/config/system_test_contexts"
-      echo "/asdf                   u:object_r:rootfs:s0" >> "./out/config/system_test_contexts"
-      echo "/batinfo                u:object_r:rootfs:s0" >> "./out/config/system_test_contexts"
-      echo "/voucher                u:object_r:rootfs:s0" >> "./out/config/system_test_contexts"
-      echo "/xrom                   u:object_r:rootfs:s0" >> "./out/config/system_test_contexts"
-      echo "/custom                 u:object_r:rootfs:s0" >> "./out/config/system_test_contexts"
-      echo "/cpefs                  u:object_r:rootfs:s0" >> "./out/config/system_test_contexts"
-      echo "/modem                  u:object_r:rootfs:s0" >> "./out/config/system_test_contexts"
-      echo "/module_hashes          u:object_r:rootfs:s0" >> "./out/config/system_test_contexts"
-      echo "/pds                    u:object_r:rootfs:s0" >> "./out/config/system_test_contexts"
-      echo "/tombstones             u:object_r:rootfs:s0" >> "./out/config/system_test_contexts"
-      echo "/factory                u:object_r:rootfs:s0" >> "./out/config/system_test_contexts"
-      echo "/oneplus(/.*)?          u:object_r:rootfs:s0" >> "./out/config/system_test_contexts"
-      echo "/addon.d                u:object_r:rootfs:s0" >> "./out/config/system_test_contexts"
-      echo "/op_odm                 u:object_r:rootfs:s0" >> "./out/config/system_test_contexts"
-      echo "/avb                    u:object_r:rootfs:s0" >> "./out/config/system_test_contexts"
+  "--AB"|"--ab"|"--AB_CONFIG"|"--ab_config")
+    system="$systemdir/system"
+    ;;
+  "-A"|"--a-only"|"--A-ONLY_CONFIG"|"--a-only_config")
+    system="$systemdir"
+    ;;    
+esac
+
+case $os_repackage_type in
+  "--A-ONLY_CONFIG"|"--a-only_config")
+    echo "/ u:object_r:system_file:s0" > $configdir/system_A_contexts
+    echo "/system u:object_r:system_file:s0" >> $configdir/system_A_contexts
+    echo "/system(/.*)? u:object_r:system_file:s0" >> $configdir/system_A_contexts
+    echo "/system/lost+found u:object_r:system_file:s0" >> $configdir/system_A_contexts
+
+    echo "/ 0 0 0755" > $configdir/system_A_fs
+    echo "system 0 0 0755" >> $configdir/system_A_fs
+    echo "system/lost+found 0 0 0700" >> $configdir/system_A_fs
+
+    cat $configdir/system_file_contexts | grep "system_ext" >> $configdir/system_ext_contexts
+    cat $configdir/system_fs_config | grep "system_ext" >> $configdir/system_ext_fs
+    cat $configdir/system_file_contexts | grep "/system/system/" >> $configdir/system_A_contexts
+    cat $configdir/system_fs_config | grep "system/system/" >> $configdir/system_A_fs
+
+    sed -i 's#/system/system/system_ext#/system/system_ext#' $configdir/system_ext_contexts
+    sed -i 's#system/system/system_ext#system/system_ext#' $configdir/system_ext_fs
+    sed -i 's#/system/system#/system#' $configdir/system_A_contexts
+    sed -i 's#system/system#system#' $configdir/system_A_fs
+
+    cat $configdir/system_ext_contexts >> $configdir/system_A_contexts
+    cat $configdir/system_ext_fs >> $configdir/system_A_fs
+    ;;
+esac
+
+# 生成精简版的file_contexts
+file_contexts() {
+  rm -rf $configdir/$target_contexts
+  mkdir -p $configdir
+
+  cat $system/etc/selinux/plat_file_contexts >> $configdir/$target_contexts
+
+  partition_name="system_ext product vendor"
+  for partition in $partition_name ;do
+    if [ -d $systemdir/$partition/etc/selinux ];then 
+      file_contexts=$(ls $system/$partition/etc/selinux | grep file_contexts*)
+      #echo $system/$partition/etc/selinux/$file_contexts
+      [ -z $(cat $system/$partition/etc/selinux/$file_contexts) ] && continue
+      cat $system/$partition/etc/selinux/$file_contexts >> $configdir/$target_contexts
+    fi
+  done
+}
+file_contexts
+
+case $os_repackage_type in
+  "-A"|"--a-only"|"--AB_CONFIG"|"--ab_config")
+    if [[ -f $configdir/$target_contexts ]]; then
+      echo "/firmware(/.*)?         u:object_r:firmware_file:s0" >> $configdir/$target_contexts
+      echo "/bt_firmware(/.*)?      u:object_r:bt_firmware_file:s0" >> $configdir/$target_contexts
+      echo "/persist(/.*)?          u:object_r:mnt_vendor_file:s0" >> $configdir/$target_contexts
+      echo "/dsp                    u:object_r:rootfs:s0" >> $configdir/$target_contexts
+      echo "/oem                    u:object_r:rootfs:s0" >> $configdir/$target_contexts
+      echo "/op1                    u:object_r:rootfs:s0" >> $configdir/$target_contexts
+      echo "/op2                    u:object_r:rootfs:s0" >> $configdir/$target_contexts
+      echo "/charger_log            u:object_r:rootfs:s0" >> $configdir/$target_contexts
+      echo "/audit_filter_table     u:object_r:rootfs:s0" >> $configdir/$target_contexts
+      echo "/keydata                u:object_r:rootfs:s0" >> $configdir/$target_contexts
+      echo "/keyrefuge              u:object_r:rootfs:s0" >> $configdir/$target_contexts
+      echo "/omr                    u:object_r:rootfs:s0" >> $configdir/$target_contexts
+      echo "/publiccert.pem         u:object_r:rootfs:s0" >> $configdir/$target_contexts
+      echo "/sepolicy_version       u:object_r:rootfs:s0" >> $configdir/$target_contexts
+      echo "/cust                   u:object_r:rootfs:s0" >> $configdir/$target_contexts
+      echo "/donuts_key             u:object_r:rootfs:s0" >> $configdir/$target_contexts
+      echo "/v_key                  u:object_r:rootfs:s0" >> $configdir/$target_contexts
+      echo "/carrier                u:object_r:rootfs:s0" >> $configdir/$target_contexts
+      echo "/dqmdbg                 u:object_r:rootfs:s0" >> $configdir/$target_contexts
+      echo "/ADF                    u:object_r:rootfs:s0" >> $configdir/$target_contexts
+      echo "/APD                    u:object_r:rootfs:s0" >> $configdir/$target_contexts
+      echo "/asdf                   u:object_r:rootfs:s0" >> $configdir/$target_contexts
+      echo "/batinfo                u:object_r:rootfs:s0" >> $configdir/$target_contexts
+      echo "/voucher                u:object_r:rootfs:s0" >> $configdir/$target_contexts
+      echo "/xrom                   u:object_r:rootfs:s0" >> $configdir/$target_contexts
+      echo "/custom                 u:object_r:rootfs:s0" >> $configdir/$target_contexts
+      echo "/cpefs                  u:object_r:rootfs:s0" >> $configdir/$target_contexts
+      echo "/modem                  u:object_r:rootfs:s0" >> $configdir/$target_contexts
+      echo "/module_hashes          u:object_r:rootfs:s0" >> $configdir/$target_contexts
+      echo "/pds                    u:object_r:rootfs:s0" >> $configdir/$target_contexts
+      echo "/tombstones             u:object_r:rootfs:s0" >> $configdir/$target_contexts
+      echo "/factory                u:object_r:rootfs:s0" >> $configdir/$target_contexts
+      echo "/oneplus(/.*)?          u:object_r:rootfs:s0" >> $configdir/$target_contexts
+      echo "/addon.d                u:object_r:rootfs:s0" >> $configdir/$target_contexts
+      echo "/op_odm                 u:object_r:rootfs:s0" >> $configdir/$target_contexts
+      echo "/avb                    u:object_r:rootfs:s0" >> $configdir/$target_contexts
     fi
     ;;
-esac  
+esac
 
 if [ ! -d $systemdir ];then
   echo "system目录不存在！"
@@ -115,11 +151,11 @@ echo "
 当前img大小为: 
 _________________
 
-`du -sh $systemdir | awk '{print $1}'`
+`du -sh $systemdir | awk '{print $1}' | bc -q | sed 's/$/&G/'`
 
-`du -sm $systemdir | awk '{print $1}' | sed 's/$/&M/'`
+`du -sm $systemdir | awk '{print $1}' | bc -q | sed 's/$/&M/'`
 
-`du -sk $systemdir | awk '{print $1}' | sed 's/$/&B/'`
+`du -sk $systemdir | awk '{print $1}' | bc -q | sed 's/$/&B/'`
 _________________
 "
 size=`du -sk $systemdir | awk '{$1*=1024;$1=int($1*1.05);printf $1}'`
@@ -127,32 +163,37 @@ echo "当前打包大小：${size} B"
 echo ""
 
 #mke2fs+e2fsdroid打包
-#$bin/mke2fs -L / -t ext4 -b 4096 ./out/system.img $size
-#$bin/e2fsdroid -e -T 0 -S ./out/config/system_file_contexts -C ./out/config/system_fs_config  -a /system -f ./out/system ./out/system.img
+#$bin/mke2fs -L / -t ext4 -b 4096 $outdir/system.img $size
+#$bin/e2fsdroid -e -T 0 -S $configdir/system_file_contexts -C $configdir/system_fs_config  -a /system -f ./out/system $outdir/system.img
 
 case $os_repackage_type in
   "-A"|"-a"|"--a-only")
-    $bin/mkuserimg_mke2fs.sh "$systemdir" "./out/system.img" "ext4" "/system" $size -j "0" -T "1230768000" -L "system" -I "256" -M "/system" -m "0" "./out/config/system_test_contexts"
-    #$bin/mkuserimg_mke2fs.sh "$systemdir" "./out/system.img" "ext4" "/system" $size -j "0" -T "1230768000" -C "./out/config/system_A_fs" -L "system" -I "256" -M "/system" -m "0" "./out/config/system_A_contexts"
+    $bin/mkuserimg_mke2fs.sh "$systemdir" "$outdir/system.img" "ext4" "/system" $size -j "0" -T "1230768000" -L "system" -I "256" -M "/system" -m "0" $configdir/$target_contexts
     ;;
   "--AB"|"--ab")
-    $bin/mkuserimg_mke2fs.sh "$systemdir" "./out/system.img" "ext4" "/" $size -j "0" -T "1230768000" -L "/" -I "256" -M "/" -m "0" "./out/config/system_test_contexts"
-    #$bin/mkuserimg_mke2fs.sh "$systemdir" "./out/system.img" "ext4" "/system" $size -j "0" -T "1230768000" -C "./out/config/system_fs_config" -L "system" -I "256" -M "/system" -m "0" "./out/config/system_file_contexts"
+    $bin/mkuserimg_mke2fs.sh "$systemdir" "$outdir/system.img" "ext4" "/" $size -j "0" -T "1230768000" -L "/" -I "256" -M "/" -m "0" $configdir/$target_contexts
+    ;;
+  "--A-ONLY_CONFIG"|"--a-only_config")
+    $bin/mkuserimg_mke2fs.sh "$systemdir" "$outdir/system.img" "ext4" "/system" $size -j "0" -T "1230768000" -C "$configdir/system_A_fs" -L "system" -I "256" -M "/system" -m "0" "$configdir/system_A_contexts"   
+    ;;
+  "--AB_CONFIG"|"--ab_config")
+    $bin/mkuserimg_mke2fs.sh "$systemdir" "$outdir/system.img" "ext4" "/system" $size -j "0" -T "1230768000" -C "$configdir/system_fs_config" -L "system" -I "256" -M "/system" -m "0" "$configdir/system_file_contexts"
     ;;
 esac
 
-if [ -s ./out/system.img ];then
+if [ -s $outdir/system.img ];then
   echo "打包完成"
   echo "输出至SGSI文件夹"
 else
   echo "打包失败，错误日志如上"
+  exit
 fi
 
-if [ -s ./out/system.img ];then
+if [ -s $outdir/system.img ];then
   rm -rf ./SGSI
   mkdir ./SGSI
-  mv ./out/system.img ./SGSI/
-  cp -frp ./out/system/system/build.prop ./out/
+  mv $outdir/system.img ./SGSI/
+  cp -frp $system/build.prop ./out/
   ./get_build_info.sh "./out" "$LOCALDIR/SGSI/system.img" > ./SGSI/build_info.txt
   rm -rf ./out/build.prop
   ./copy.sh

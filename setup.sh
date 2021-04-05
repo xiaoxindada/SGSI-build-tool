@@ -48,12 +48,28 @@ pip_module_install(){
     echo -e "\033[33m [INFO] Python2 and Python3 module install... \033[0m"
     if [[ "$USE_MIRROR_FOR_PIP" == "true" ]] ; then
         echo -e "\033[33m [INFO] Installing python packages from mirror... \033[0m"
-        sudo pip install protobuf backports.lzma protobuf pycryptodome pycrypto -i $PIP_MIRROR
-        sudo pip3 install protobuf backports.lzma protobuf pycryptodome pycrypto -i $PIP_MIRROR
+        sudo pip install pycryptodome pycrypto -i $PIP_MIRROR
+        sudo pip3 install pycryptodome pycrypto -i $PIP_MIRROR
     elif [[ "$USE_MIRROR_FOR_PIP" == "false" ]] ; then
         echo -e "\033[33m [INFO] Installing python packages from python-pip offical... \033[0m"
-        sudo pip install protobuf backports.lzma protobuf pycryptodome pycrypto
-        sudo pip3 install protobuf backports.lzma protobuf pycryptodome pycrypto 
+        sudo pip install pycryptodome pycrypto
+        sudo pip3 install pycryptodome pycrypto     
+    fi
+    
+    if [[ "$USE_MIRROR_FOR_PIP" == "true" ]] ; then
+        for requirements_list in $(find $LOCALDIR -type f | grep "requirements.txt");do
+            echo -e "\033[33m [INFO] From requirements.txt installing python packages \033[0m"
+            sudo pip install -r $requirements_list -i $PIP_MIRROR
+            echo -e "\033[33m [INFO] From requirements.txt installing python3 packages \033[0m"
+            sudo pip3 install -r $requirements_list -i $PIP_MIRROR
+        done
+    elif [[ "$USE_MIRROR_FOR_PIP" == "false" ]] ; then
+        for requirements_list in $(find $LOCALDIR -type f | grep "requirements.txt");do
+            echo -e "\033[33m [INFO] from requirements.txt Installing python packages \033[0m"
+            sudo pip install -r $requirements_list
+            echo -e "\033[33m [INFO] from requirements.txt Installing python3 packages \033[0m"
+            sudo pip3 install -r $requirements_list
+        done
     fi
 }
 
