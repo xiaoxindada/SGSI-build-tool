@@ -5,7 +5,7 @@
 LOCALDIR=`cd "$( dirname $0 )" && pwd`
 cd $LOCALDIR
 
-echo "add_aex_fs.sh"
+echo "add_apex_fs"
 
 # add_fs
 rm -rf ../apex_fs
@@ -20,9 +20,7 @@ files=$(find ../../out/system/system/apex/ -name '*')
 for file in $files ;do
   if [ -d "$file" ];then
     echo "$file" | sed 's#../../out/#/#g' | sed 's/$/& 0 0 0755/g' | sed 's/.//' >>$fs
-    if [ $(echo "$file" | grep "lib") ];then
-      echo "$file" | sed 's#../../out/#/#g' | sed 's/$/& u:object_r:system_lib_file:s0/g' >>$contexts
-    elif [ $(echo "$file" | grep "lib64") ];then
+    if [ $(echo "$file" | grep -E "\/lib|\/lib64") ];then
       echo "$file" | sed 's#../../out/#/#g' | sed 's/$/& u:object_r:system_lib_file:s0/g' >>$contexts
     else
       echo "$file" | sed 's#../../out/#/#g' | sed 's/$/& u:object_r:system_file:s0/g' >>$contexts
@@ -48,13 +46,12 @@ for file in $files ;do
   fi 
 done
 
+if [[ -d ../../out/system/system/system_ext/apex/ ]];then
 files=$(find ../../out/system/system/system_ext/apex/ -name '*')
 for file in $files ;do
   if [ -d "$file" ];then
     echo "$file" | sed 's#../../out/#/#g' | sed 's/$/& 0 0 0755/g' | sed 's/.//' >>$fs
-    if [ $(echo "$file" | grep "lib") ];then
-      echo "$file" | sed 's#../../out/#/#g' | sed 's/$/& u:object_r:system_lib_file:s0/g' >>$contexts
-    elif [ $(echo "$file" | grep "lib64") ];then
+    if [ $(echo "$file" | grep -E "\/lib|\/lib64") ];then
       echo "$file" | sed 's#../../out/#/#g' | sed 's/$/& u:object_r:system_lib_file:s0/g' >>$contexts
     else
       echo "$file" | sed 's#../../out/#/#g' | sed 's/$/& u:object_r:system_file:s0/g' >>$contexts
@@ -79,6 +76,7 @@ for file in $files ;do
     fi
   fi 
 done
+fi
 
 sed -i '/\/system\/system\/apex/d' ../../out/config/system_file_contexts
 sed -i '/system\/system\/apex/d' ../../out/config/system_fs_config
@@ -87,28 +85,6 @@ sed -i '/system\/system\/apex/d' ../../out/config/system_fs_config
 sed -i '1d' $contexts
 echo "/system/system/apex u:object_r:system_file:s0" >> $contexts
 echo "/system/system/sysem_ext/apex u:object_r:system_file:s0" >> $contexts
-
-sed -i '/com.android.adbd\/bin\/adbd /d' $contexts
-sed -i '/com.android.art.release\/bin\/dex2oat32 /d' $contexts
-sed -i '/com.android.art.release\/bin\/dex2oat64 /d' $contexts
-sed -i '/com.android.art.release\/bin\/dexoptanalyzer /d' $contexts
-sed -i '/com.android.art.release\/bin\/profman /d' $contexts
-sed -i '/com.android.conscrypt\/bin\/boringssl_self_test32 /d' $contexts
-sed -i '/com.android.conscrypt\/bin\/boringssl_self_test64 /d' $contexts
-sed -i '/com.android.media.swcodec\/bin\/mediaswcodec /d' $contexts
-sed -i '/com.android.os.statsd\/bin\/statsd /d' $contexts
-sed -i '/com.android.runtime\/bin\/linker /d' $contexts
-sed -i '/com.android.runtime\/bin\/linker64 /d' $contexts
-sed -i '/com.android.sdkext\/bin\/derive_sdk /d' $contexts
-sed -i '/com.android.tzdata\/etc /d' $contexts
-sed -i '/com.android.tzdata\/etc\/icu /d' $contexts
-sed -i '/com.android.tzdata\/etc\/icu\/icu_tzdata.dat /d' $contexts
-sed -i '/com.android.tzdata\/etc\/tz /d' $contexts
-sed -i '/com.android.tzdata\/etc\/tz\/tzdata /d' $contexts
-sed -i '/com.android.tzdata\/etc\/tz\/telephonylookup.xml /d' $contexts
-sed -i '/com.android.tzdata\/etc\/tz\/tz_version /d' $contexts
-sed -i '/com.android.tzdata\/etc\/tz\/tzdata /d' $contexts
-sed -i '/com.android.tzdata\/etc\/tz\/tzlookup.xml /d' $contexts
 
 # fs
 sed -i '1d' $fs
@@ -125,6 +101,6 @@ sed -i 's/\.so 0 2000 0755/\.so 0 0 0644/g' $lib_fs
 
 cat $bin_fs >> $fs
 cat $lib_fs >> $fs
-cat ../add_fs/apex_contexts >> $contexts
+#cat ../add_fs/apex_contexts >> $contexts
 cat $fs >> ../../out/config/system_fs_config
 cat $contexts >> ../../out/config/system_file_contexts

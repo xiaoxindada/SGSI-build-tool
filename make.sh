@@ -10,12 +10,12 @@ Usage() {
 cat <<EOT
 Usage:
 $0 <Build Type> <OS Type> <Firmware Path> [Other args]
-   Build Type: [--AB|--ab] or [-A|-a|--a-only]
-   OS Type: Rom OS type to build
-   Firmware Path: Rom Firmware Path
+  Build Type: [--AB|--ab] or [-A|-a|--a-only]
+  OS Type: Rom OS type to build
+  Firmware Path: Rom Firmware Path
 
-   Other args:
-     [--fix-bug]: Fix bugs in Rom
+  Other args:
+    [--fix-bug]: Fix bugs in Rom
 EOT
 }
 

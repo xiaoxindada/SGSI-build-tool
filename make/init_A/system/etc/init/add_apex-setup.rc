@@ -1,6 +1,6 @@
 import /system/etc/init/hw/init.${ro.zygote}.rc
 
-on early-init
+on init
     mkdir /mnt/runtime/full 0755 root root
     mkdir /mnt/runtime/full/self 0755 root root
     mkdir /apex 0777 root root

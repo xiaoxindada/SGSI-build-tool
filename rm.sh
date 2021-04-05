@@ -15,6 +15,7 @@ rm -rf ./images
 rm -rf ./dtbo
 rm -rf ./dtbs
 rm -rf ./payload/out/*
+rm -rf ./make/dynamic_fs
 rm -rf ./make/add_dynamic_fs
 rm -rf ./make/lib_fs
 rm -rf ./make/new_fs
@@ -31,17 +32,13 @@ find ./ -type f -name '*.ozip' -delete
 find ./ -type f -name '*.bin' -delete
 find ./ -type f -name '*.img' -delete
 find ./ -maxdepth 1 -type f -name '*.txt' -delete
-$bin/oat2dex/rm.sh
-./fixbug/light_fix/rm.sh
-./fixbug/wifi_fix/rm.sh
-./fixbug/rm.sh
-
+$bin/rm.sh
+./make/rm.sh
 partition_list="system system_ext product vendor"
 for partition in $partition_list ;do
   umount $partition 2>/dev/null
   rm -rf $partition
 done
-
 
 true > ./make/add_etc_vintf_patch/manifest_custom
 echo "" >> ./make/add_etc_vintf_patch/manifest_custom

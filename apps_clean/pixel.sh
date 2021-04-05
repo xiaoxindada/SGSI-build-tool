@@ -11,7 +11,7 @@ rm -rf $1/product/app/PrebuiltBugle
 rm -rf $1/product/app/Maps
 rm -rf $1/product/app/Drive
 rm -rf $1/product/app/DiagnosticsToolPrebuilt
-rm -rf $1/product/app/Chrome
+#rm -rf $1/product/app/Chrome
 rm -rf $1/product/app/CalendarGooglePrebuilt
 rm -rf $1/product/app/NgaResources
 rm -rf $1/product/priv-app/BetaFeedback
@@ -26,7 +26,6 @@ rm -rf $1/product/priv-app/ScribePrebuilt
 rm -rf $1/app/datastatusnotification
 rm -rf $1/app/QAS_DVC_MSP_VZW
 rm -rf $1/app/VZWAPNLib
-rm -rf $1/app/ims
 rm -rf $1/app/vzw_msdc_api
 rm -rf $1/priv-app/CNEService
 rm -rf $1/priv-app/DMService
