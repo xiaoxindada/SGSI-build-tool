@@ -138,6 +138,7 @@ def BuildSuperImageFromDict(info_dict, output):
 
   cmd += ["--output", output]
 
+  print(cmd)
   common.RunAndCheckOutput(cmd)
 
   if retrofit and has_image:
