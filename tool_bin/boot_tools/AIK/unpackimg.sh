@@ -44,8 +44,8 @@ case $plat in
     xz() { DYLD_LIBRARY_PATH="$bin/$arch" "$bin/$arch/xz" "$@"; }
   ;;
   linux)
-    cpio=cpio;
-    test "$(cpio --version | head -n1 | rev | cut -d\  -f1 | rev)" == "2.13" && cpiowarning=1;
+    cpio=$bin/$arch/cpio;
+    test "$($cpio --version | head -n1 | rev | cut -d\  -f1 | rev)" == "2.13" && cpiowarning=1;
     statarg="-c %U";
   ;;
 esac;
@@ -84,7 +84,7 @@ echo "Supplied image: $file";
 echo " ";
 
 if [ -d split_img -o -d ramdisk ]; then
-  if [ -d ramdisk ] && [ "$(stat $statarg ramdisk | head -n 1)" = "root" -o ! "$(find ramdisk 2>&1 | cpio -o >/dev/null 2>&1; echo $?)" -eq "0" ]; then
+  if [ -d ramdisk ] && [ "$(stat $statarg ramdisk | head -n 1)" = "root" -o ! "$(find ramdisk 2>&1 | $cpio -o >/dev/null 2>&1; echo $?)" -eq "0" ]; then
     rmsumsg=" (as root)";
   fi;
   echo "Removing old work folders and files$rmsumsg...";
