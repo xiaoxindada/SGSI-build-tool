@@ -1,0 +1,5 @@
+system_image=./system.img
+system_ext_image=./system_ext.img
+product_image=./product.img
+vendor_image=./vendor.img
+odm_image=./odm.img
