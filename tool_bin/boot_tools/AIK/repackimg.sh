@@ -151,8 +151,12 @@ case $imgtype in
     fi;
     base=`cat *-base`;                    echo "base = $base";
     pagesize=`cat *-pagesize`;            echo "pagesize = $pagesize";
-    kerneloff=`cat *-kerneloff`;          echo "kernel_offset = $kerneloff";
-    ramdiskoff=`cat *-ramdiskoff`;        echo "ramdisk_offset = $ramdiskoff";
+    if [ -f *-kerneloff ]; then
+      kerneloff=`cat *-kerneloff`;          echo "kernel_offset = $kerneloff";
+    fi;
+    if [ -f *-ramdiskoff ]; then
+      ramdiskoff=`cat *-ramdiskoff`;        echo "ramdisk_offset = $ramdiskoff";
+    fi;
     if [ -f *-secondoff ]; then
       secondoff=`cat *-secondoff`;        echo "second_offset = $secondoff";
     fi;
