@@ -81,7 +81,9 @@ function firmware_extract() {
   for i in $(ls ./tmp);do
     [ ! -d ./tmp/$i ] && continue
     cd ./tmp/$i
-    mv -f ./* ../
+    if [ $(ls | wc -l) != "0" ];then
+      mv -f ./* ../
+    fi
     cd $LOCALDIR
   done
 
