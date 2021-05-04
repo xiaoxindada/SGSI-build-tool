@@ -64,7 +64,7 @@ if [ ! -e $firmware ];then
 fi
 
 function firmware_extract() {
-  partition_list="system vendor system_ext odm product reserve"
+  partition_list="system vendor system_ext odm product reserve boot vendor_boot"
   
   if [[ -e $firmware || -e ./tmp/$firmware ]];then
     if [ -e $firmware ];then
