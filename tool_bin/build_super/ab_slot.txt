@@ -8,4 +8,3 @@ system_b_image=./system_b.img
 product_b_image=./product_b.img
 vendor_b_image=./vendor_b.img
 odm_b_image=./odm_b.img
-

@@ -4,33 +4,46 @@ LOCALDIR=`cd "$( dirname $0 )" && pwd`
 cd $LOCALDIR
 source ./bin.sh
 
+lpunpack="$bin/build_super/lpunpack"
+
 rm -rf ./super
 mkdir ./super
 
-super_size=$(du -sh `find -type f -name 'super.img'` | awk '{print $1}' | bc -q | sed 's/$/&G/')
+[ ! -e ./super.img ] && echo "super.img不存在！" && exit
 
-file $(find -type f -name 'super.img') > ./file.txt
-echo "识别到$(find ./ -type f -name 'super.img')"
+file ./super.img > ./file.txt
 
 if [ $(grep -o 'sparse' ./file.txt) ];then
   echo "当前super.img转换为rimg中..."
-  $bin/simg2img $(find ./ -type f -name 'super.img') ./superr.img
+  $bin/simg2img ./super.img ./superr.img
   echo "转换完成"
-  echo "当前super分区大小为: $super_size"
+  super_size=$(du -sb "./superr.img" | awk '{print $1}' | bc -q)
+  echo "当前super分区大小为: $super_size bytes"
   echo "解压super.img中..."
-  $bin/lpunpack ./superr.img ./super
+  $lpunpack ./superr.img ./super
+  if [ $? != "0" ];then
+    rm -rf ./superr.img
+    echo "解压失败"
+    exit
+  else
+    echo "解压完成"    
+  fi
   rm -rf ./superr.img
   chmod 777 -R ./super
-  echo "解压完成"
 fi
 
 if [ $(grep -o 'data' ./file.txt) ];then
-  echo "当前super分区大小为: $super_size"
+  super_size=$(du -sb "./super.img" | awk '{print $1}' | bc -q)
+  echo "当前super分区大小为: $super_size bytes"
   echo "解压super.img中..."
-  $bin/lpunpack $(find ./ -type f -name 'super.img') ./super
-  #rm -rf ./super.img
+  $lpunpack ./super.img ./super
+  if [ $? != "0" ];then
+    echo "解压失败"
+    exit
+  else
+    echo "解压完成"   
+  fi
   chmod 777 -R ./super
-  echo "解压完成" 
 fi
 
 rm -rf ./file.txt
