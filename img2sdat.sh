@@ -6,43 +6,96 @@ LOCALDIR=`cd "$( dirname $0 )" && pwd`
 cd $LOCALDIR
 source ./bin.sh
 
-echo "请确保img在工具根目录"
+function Usage() {
+cat <<EOT
+Usage:
+$0 <Image Path> [Other args]
+  Image Path: Image Path
+  
+  Other args:
+    [--make_br]: Make new.dat.br
+EOT
+}
 
-read -p "请输入你要制造的img名(不要带.img): " img
+case $1 in
+  "-h"|"--help")
+    Usage
+    exit
+    ;;   
+esac
 
-if [ $(file ./$img'.img' | grep -o 'data') ];then
-  echo "正在转换simg......"
-  $bin/img2simg $img'.img' $img's.img'
-  echo "转换完成"
-else
-  mv ./$img'.img' ./$img's.img'
-fi
-mv ./$img's.img' ./bin/img2sdat/
-cd ./bin/img2sdat
-rm -rf ./output
-mkdir ./output
-echo "正在生成new.dat......"
-python3 ./img2sdat.py $img's.img' -o output -v 4 -p $img
-echo "已生成......"
-echo "正在移动至输出目录....."
-cd ../../
-rm -rf ./new_dat
-mkdir ./new_dat
-mv $bin/img2sdat/output/* ./new_dat/
-echo "dat已输出至new_dat文件夹"
-if [ $(file $bin/img2sdat/$img's.img' | grep -o 'sparse') ];then
-  mv $bin/img2sdat/$img's.img' $bin/img2sdat/$img'.img'
-  mv $bin/img2sdat/$img'.img' ./
-else
-  rm -rf $bin/img2sdat/$img's.img'
+if [ "$1" = "" ];then
+  Usage
+  exit
 fi
 
-read -p "是否制造$img.dat.br(y/n): " br
+image="$1"
+image_name=$(echo ${image##*/} | sed 's/\.img//')
+make_br="false"
 
-if [ $br = "y" ];then
-  echo "正在生成$img.new.br....."
-  $bin/brotli -q 0 ./new_dat/$img.new.dat -o ./new_dat/$img.new.dat.br
-  echo "已生成"
-else
-  echo "不生成$img.new.br"
+[ ! -e $image ] && echo "$image 不存在！" && exit
+
+function img2simg() {
+  rimg_file="$image"
+  simg_file=$(echo "${image%%.*}" | sed 's/$/&s\.img/')
+  echo "正在转换simg..."
+  $bin/img2simg "$rimg_file" "$simg_file"
+  if [ $? != "0" ];then
+    echo "转换失败"
+  else
+    echo "转换成功"
+    mv -f $simg_file $bin/img2sdat/${image_name}.img
+  fi
+}
+
+function simg2sdat() {
+  if [ ! -f $bin/img2sdat/${image_name}.img ];then
+    cp -frp $image $bin/img2sdat/${image_name}.img
+  fi
+  cd $bin/img2sdat
+  rm -rf ./output
+  mkdir ./output
+  file ${image_name}.img
+  echo "正在生成 ${image_name}.new.dat..."
+  python3 ./img2sdat.py "${image_name}.img" -o "output" -v "4" -p "$image_name"
+  if [ $? != "0" ];then
+    echo "转换失败！"
+    rm -rf ${image_name}.img
+    exit
+  else
+    echo "${image_name}.new.dat 已生成..."
+    rm -rf ${image_name}.img
+    echo "正在移动至输出目录..."
+    cd $LOCALDIR
+    rm -rf ./new_dat
+    mkdir ./new_dat
+    mv $bin/img2sdat/output/* ./new_dat/
+    echo "输出至 $LOCALDIR/new_dat 文件夹"
+  fi
+}
+
+function sdat2sdat_br() {
+  echo "正在生成 ${image_name}.new.dat.br..."
+  $bin/brotli -q 0 $LOCALDIR/new_dat/${image_name}.new.dat -o $LOCALDIR/new_dat/${image_name}.new.dat.br
+  if [ $? != "0" ] ;then 
+    echo "${image_name}.new.dat.br 生成失败！"
+    exit
+   else
+    echo "${image_name}.new.dat.br 已生成"
+    echo "输出至$LOCALDIR/new_dat/${image_name}.new.dat.br"
+  fi
+}
+
+if ! (file $image | grep -qo "sparse") ;then
+  img2simg
+fi
+
+simg2sdat
+
+if [ "$2" = "--make_br" ];then
+  make_br="true"
+fi
+
+if [ $make_br = "true" ];then
+  sdat2sdat_br
 fi
