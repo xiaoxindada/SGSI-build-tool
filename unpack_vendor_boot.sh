@@ -14,7 +14,7 @@ unpacknootimg=$testdir/unpack_bootimg.py
 mkbootimg=$testdir/mkbootimg.py
 dumpimage=$testdir/dumpimage
 cpio=$testdir/cpio
-lz4=$testdir/lz4gun
+lz4=$testdir/lz4
 vendor_bootdir=$LOCALDIR/vendor_boot
 vendor_ramdiskdir=$vendor_bootdir/ramdisk
 
