@@ -14,7 +14,7 @@ unpacknootimg=$testdir/unpack_bootimg.py
 mkbootimg=$testdir/mkbootimg.py
 dumpimage=$testdir/dumpimage
 cpio=$testdir/cpio
-lz4=$testdir/lz4
+lz4=$testdir/lz4gun
 vendor_bootdir=$LOCALDIR/vendor_boot
 vendor_ramdiskdir=$vendor_bootdir/ramdisk
 
@@ -24,11 +24,22 @@ mkdir -p $vendor_bootdir
 mkdir -p $vendor_ramdiskdir
 
 $unpacknootimg --boot_img "$LOCALDIR/vendor_boot.img" --out "$vendor_bootdir"
-$lz4 -d $vendor_bootdir/vendor_ramdisk* $vendor_bootdir/vendor_ramdisk.cpio
-cd $vendor_ramdiskdir
-$cpio -i --no-absolute-filenames < ../vendor_ramdisk.cpio
-rm -rf $vendor_bootdir/vendor_ramdisk.cpio
-cd $LOCALDIR
-chmod 777 -R $vendor_bootdir
 
+if (file $vendor_bootdir/vendor_ramdisk* | grep -qo "lz4") ;then
+  $lz4 -d $vendor_bootdir/vendor_ramdisk* $vendor_bootdir/vendor_ramdisk.cpio
+  cd $vendor_ramdiskdir
+  $cpio -i --no-absolute-filenames < ../vendor_ramdisk.cpio
+  rm -rf $vendor_bootdir/vendor_ramdisk.cpio
+  cd $LOCALDIR
+fi
+
+if (file $vendor_bootdir/vendor_ramdisk* | grep -qo "gz") ;then
+  mv $vendor_bootdir/vendor_ramdisk* $vendor_bootdir/vendor_ramdisk.gz
+  $bb gunzip -c -k -f $vendor_bootdir/vendor_ramdisk.gz > $vendor_bootdir/vendor_ramdisk.cpio
+  cd $vendor_ramdiskdir
+  $cpio -i --no-absolute-filenames < ../vendor_ramdisk.cpio
+  rm -rf $vendor_bootdir/vendor_ramdisk.cpio
+  cd $LOCALDIR
+fi
+chmod 777 -R $vendor_bootdir
 
