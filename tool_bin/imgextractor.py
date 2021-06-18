@@ -100,7 +100,7 @@ class Extractor(object):
         import ext4, string, struct
         fs_config_file = self.FileName + '_fs_config'
         fuking_symbols='\\^$.|?*+(){}[]'
-        contexts = self.BASE_MYDIR + 'config' + os.sep + self.FileName + "_file_contexts" #08.05.18
+        contexts = self.CONFING_DIR + os.sep + self.FileName + "_file_contexts" #08.05.18
         def scan_dir(root_inode, root_path=""):
             for entry_name, entry_inode_idx, entry_type in root_inode.open_dir():
                 if entry_name in ['.', '..'] or entry_name.endswith(' (2)'):
@@ -454,9 +454,9 @@ class Extractor(object):
                         except:
                             pass
                             
-        dir_my = self.BASE_MYDIR + 'config' + os.sep
+        dir_my = self.CONFING_DIR + os.sep
         if not os.path.isdir(dir_my):
-            os.mkdir(dir_my)
+            os.makedirs(dir_my)
        # f = open(dir_my + self.FileName + '_pack.sh', 'tw', encoding='utf-8')
        # self.__appendf('make_ext4fs -T -1 -S ./file_contexts -C ./fs_config -l ' +str(os.path.getsize(self.OUTPUT_IMAGE_FILE))+ ' -a /'+self.FileName+' "$outdir"/'+self.FileName+'.new.img '+self.FileName+'', dir_my + self.FileName + '_pack.sh')
        # f.close()
@@ -490,7 +490,7 @@ class Extractor(object):
                     self.fsconfig.insert(1, dirr + ' 0 0 0755')
                 break 
 
-            self.__appendf('\n'.join(self.fsconfig),self.BASE_MYDIR + 'config' + os.sep + fs_config_file)
+            self.__appendf('\n'.join(self.fsconfig), self.CONFING_DIR + os.sep + fs_config_file)
             if self.context: #11.05.18
                 self.context.sort() #11.05.18
                 for c in self.context:
@@ -583,9 +583,8 @@ class Extractor(object):
             with open(output_file, 'wb') as o, open(input_file, 'rb') as f:
                 data = f.seek(offset)
                 data = f.read(15360)
-                while data:
+                if data:
                     devnull = o.write(data)
-                    data = f.read(15360)
         try:
                 os.remove(input_file)
                 os.rename(output_file, input_file)
@@ -616,13 +615,17 @@ class Extractor(object):
 
     def main(self, target, output_dir):
         self.BASE_DIR = (os.path.realpath(os.path.dirname(target)) + os.sep)
-        self.BASE_MYDIR = (sys.argv[2]) + os.sep
+        self.BASE_MYDIR = output_dir + os.sep
         self.EXTRACT_DIR = os.path.realpath(os.path.dirname(output_dir)) + os.sep + self.__file_name(os.path.basename(output_dir)) #output_dir
         self.OUTPUT_IMAGE_FILE = self.BASE_DIR + os.path.basename(target)
         self.OUTPUT_MYIMAGE_FILE = os.path.basename(target)
         self.MYFileName = os.path.basename(self.OUTPUT_IMAGE_FILE).replace(".img", "")
         self.FileName = self.__file_name(os.path.basename(target))
         target_type = self.__getTypeTarget(target)
+        if sys.argv[2]:
+            self.CONFING_DIR = sys.argv[2] + os.sep + 'config'
+        else:
+            self.CONFING_DIR = 'out' + os.sep + 'config'        
         if target_type == 'simg':
             print(".....Convert %s to %s" % (os.path.basename(target), os.path.basename(target).replace(".img", ".raw.img")))
             self.__converSimgToImg(target)
@@ -651,7 +654,4 @@ if __name__ == '__main__':
         Extractor().main(sys.argv[1], (sys.argv[2] + os.sep + os.path.basename(sys.argv[1]).split('.')[0]))
     else:
         if sys.argv.__len__() == 2:
-            Extractor().main(sys.argv[1], os.path.realpath(os.path.dirname(sys.argv[1])) + os.sep + os.path.basename(sys.argv[1]).split('.')[0])
-        else:
-            print("Must be at least 1 argument...")
-            sys.exit(1)
+            Extractor().main(sys.argv[1], "out" + os.sep + os.path.basename(sys.argv[1]).split('.')[0])
