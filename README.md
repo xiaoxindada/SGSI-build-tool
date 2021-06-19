@@ -31,7 +31,7 @@ cd SGSI-build-tool-12
 
 ```
 GitHub:  
-git clone https://github.com/xiaoxindada/SGSI-build-tool.git -b 12
+git clone --recurse-submodules https://github.com/xiaoxindada/SGSI-build-tool.git -b 12
 cd SGSI-build-tool-12
 su
 ```
