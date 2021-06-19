@@ -7,13 +7,13 @@ source ./bin.sh
 Usage() {
 cat <<EOT
 Usage:
-$0 <Ops File Path> <Out Dir>
+$0 <Ops File Path>
 EOT
 }
 
-if [ $# -le 1 ];then
+if [ $# -lt 1 ];then
   Usage
-	exit
+  exit
 fi
 
 oppo_extract_tooldir="$bin/oppo_decrypt"
@@ -24,5 +24,5 @@ outdir="$2"
 
 if [[ -e $ops_file ]]; then
 	printf "Decrypting ops & extracing...\n"
-	python3 "${ops_extract_tool}" decrypt "${ops_file}" "${outdir}"
+	python3 "${ops_extract_tool}" decrypt "${ops_file}"
 fi
