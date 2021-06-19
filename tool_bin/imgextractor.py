@@ -622,7 +622,7 @@ class Extractor(object):
         self.MYFileName = os.path.basename(self.OUTPUT_IMAGE_FILE).replace(".img", "")
         self.FileName = self.__file_name(os.path.basename(target))
         target_type = self.__getTypeTarget(target)
-        if sys.argv[2]:
+        if sys.argv.__len__() == 3:
             self.CONFING_DIR = sys.argv[2] + os.sep + 'config'
         else:
             self.CONFING_DIR = 'out' + os.sep + 'config'        
@@ -654,4 +654,6 @@ if __name__ == '__main__':
         Extractor().main(sys.argv[1], (sys.argv[2] + os.sep + os.path.basename(sys.argv[1]).split('.')[0]))
     else:
         if sys.argv.__len__() == 2:
+            if not os.path.isdir("out"):
+                os.makedirs("out")
             Extractor().main(sys.argv[1], "out" + os.sep + os.path.basename(sys.argv[1]).split('.')[0])
