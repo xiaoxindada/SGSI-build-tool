@@ -1,169 +1,60 @@
- # -*- coding: UTF-8 -*-
+#!/usr/bin/env python
 
-import struct
-import hashlib
-import bz2
-import sys
 import argparse
-import bsdiff4
-import io
+import errno
 import os
-import shutil
-try:
-    import lzma
-except ImportError:
-    from backports import lzma
 
-import update_metadata_pb2 as um
+import update_payload
+from update_payload import applier
 
 
-flatten = lambda l: [item for sublist in l for item in sublist]
+def list_content(payload_file_name):
+    with open(payload_file_name, 'rb') as payload_file:
+        payload = update_payload.Payload(payload_file)
+        payload.Init()
 
-def u32(x):
-    return struct.unpack('>I', x)[0]
+        for part in payload.manifest.partitions:
+            print("{} ({} bytes)".format(part.partition_name,
+                                         part.new_partition_info.size))
 
-def u64(x):
-    return struct.unpack('>Q', x)[0]
 
-def verify_contiguous(exts):
-    blocks = 0
+def extract(payload_file_name, output, partition_names=None):
+    if not os.path.isdir(output):
+        os.makedirs(output)
 
-    for ext in exts:
-        if ext.start_block != blocks:
-            return False
+    with open(payload_file_name, 'rb') as payload_file:
+        payload = update_payload.Payload(payload_file)
+        payload.Init()
 
-        blocks += ext.num_blocks
+        if payload.IsDelta():
+            print("Delta payloads are not supported")
+            exit(1)
 
-    return True
+        helper = applier.PayloadApplier(payload)
+        for part in payload.manifest.partitions:
+            if partition_names and part.partition_name not in partition_names:
+                continue
+            print("Extracting {}".format(part.partition_name + '.img...'))
+            output_file = os.path.join(output, part.partition_name + '.img')
+            helper._ApplyToPartition(
+                part.operations, part.partition_name,
+                'install_operations', output_file,
+                part.new_partition_info)
 
-def data_for_op(op,out_file,old_file):
-    args.payloadfile.seek(data_offset + op.data_offset)
-    data = args.payloadfile.read(op.data_length)
 
-    # assert hashlib.sha256(data).digest() == op.data_sha256_hash, 'operation data hash mismatch'
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument("payload", metavar="payload.bin",
+                        help="Path to the payload.bin")
+    parser.add_argument("output", default="out",
+                        help="Output directory")
+    parser.add_argument("--partitions", type=str, nargs='+',
+                        help="Name of the partitions to extract")
+    parser.add_argument("--list_partitions", action="store_true",
+                        help="List the partitions included in the payload.bin")
 
-    if op.type == op.REPLACE_XZ:
-        dec = lzma.LZMADecompressor()
-        data = dec.decompress(data)
-        out_file.seek(op.dst_extents[0].start_block*block_size)
-        out_file.write(data)
-    elif op.type == op.REPLACE_BZ:
-        dec = bz2.BZ2Decompressor()
-        data = dec.decompress(data)
-        out_file.seek(op.dst_extents[0].start_block*block_size)
-        out_file.write(data)
-    elif op.type == op.REPLACE:
-        out_file.seek(op.dst_extents[0].start_block*block_size)
-        out_file.write(data)
-    elif op.type == op.SOURCE_COPY:
-        if not args.diff:
-            print ("SOURCE_COPY supported only for differential OTA")
-            sys.exit(-2)
-        out_file.seek(op.dst_extents[0].start_block*block_size)
-        for ext in op.src_extents:
-            old_file.seek(ext.start_block*block_size)
-            data = old_file.read(ext.num_blocks*block_size)
-            out_file.write(data)
-    elif op.type == op.SOURCE_BSDIFF:
-        if not args.diff:
-            print ("SOURCE_BSDIFF supported only for differential OTA")
-            sys.exit(-3)
-        out_file.seek(op.dst_extents[0].start_block*block_size)
-        tmp_buff = io.BytesIO()
-        for ext in op.src_extents:
-            old_file.seek(ext.start_block*block_size)
-            old_data = old_file.read(ext.num_blocks*block_size)
-            tmp_buff.write(old_data)
-        tmp_buff.seek(0)
-        old_data = tmp_buff.read()
-        tmp_buff.seek(0)
-        tmp_buff.write(bsdiff4.patch(old_data, data))
-        n = 0;
-        tmp_buff.seek(0)
-        for ext in op.dst_extents:
-            tmp_buff.seek(n*block_size)
-            n += ext.num_blocks
-            data = tmp_buff.read(ext.num_blocks*block_size)
-            out_file.seek(ext.start_block*block_size)
-            out_file.write(data)
-    elif op.type == op.ZERO:
-        for ext in op.dst_extents:
-            out_file.seek(ext.start_block*block_size)
-            out_file.write(b'\x00' * ext.num_blocks*block_size)
+    args = parser.parse_args()
+    if args.list_partitions:
+        list_content(args.payload)
     else:
-        print ("Unsupported type = %d" % op.type)
-        sys.exit(-1)
-
-    return data
-
-def dump_part(part):
-    print("Extracting " + part.partition_name + ".img..." )
-    
-
-    out_file = open('%s/%s.img' % (args.out, part.partition_name), 'wb')
-    h = hashlib.sha256()
-
-    if args.diff:
-        if not os.path.exists(args.old):
-            os.makedirs(args.old)
-        if not os.listdir(args.old):
-            raise(IOError(args.old + ' dir not found image file'))
-        old_file = open('%s/%s.img' % (args.old, part.partition_name), 'rb')
-    else:
-        old_file = None
-
-    for op in part.operations:
-        data = data_for_op(op,out_file,old_file) 
-
-
-parser = argparse.ArgumentParser(description='OTA payload dumper')
-parser.add_argument('payloadfile', type=argparse.FileType('rb'),
-                    help='payload file name')
-parser.add_argument('out', default='out',
-                    help='output directory (default: out)')
-parser.add_argument('--diff',action='store_true',
-                    help='extract differential OTA, you need put original images to old dir')
-parser.add_argument('--old', default='old',
-                    help='directory with original images for differential OTA (defaul: old)')
-args = parser.parse_args()
-
-#Check for --out directory exists
-if not os.path.exists(args.out):
-    os.makedirs(args.out)
-
-magic = args.payloadfile.read(4)
-assert magic == b'CrAU'
-
-file_format_version = u64(args.payloadfile.read(8))
-assert file_format_version == 2
-
-manifest_size = u64(args.payloadfile.read(8))
-
-metadata_signature_size = 0
-
-if file_format_version > 1:
-    metadata_signature_size = u32(args.payloadfile.read(4))
-
-manifest = args.payloadfile.read(manifest_size)
-metadata_signature = args.payloadfile.read(metadata_signature_size)
-
-data_offset = args.payloadfile.tell()
-
-dam = um.DeltaArchiveManifest()
-dam.ParseFromString(manifest)
-block_size = dam.block_size
-
-for part in dam.partitions:
-    # for op in part.operations:
-    #     assert op.type in (op.REPLACE, op.REPLACE_BZ, op.REPLACE_XZ), \
-    #             'unsupported op'
-
-    # extents = flatten([op.dst_extents for op in part.operations])
-    # assert verify_contiguous(extents), 'operations do not span full image'
-
-    try:
-        dump_part(part)
-    except IOError:
-        cwd = os.getcwd()
-        print(cwd + args.old + os.sep + part.partition_name + ".img not found" )
-        os.remove(cwd + os.sep + args.out + os.sep + part.partition_name + ".img")
+        extract(args.payload, args.output, args.partitions)
