@@ -26,8 +26,8 @@ sed -i '/vendor.perf/d' ./oem.txt
 sed -i '/vendor.media/d' ./oem.txt
 sed -i '/debug.media/d' ./oem.txt
 sed -i '/ro.telephony.iwlan_operation_mode/d' ./oem.txt
-
+sed -i '/external_storage/d' ./oem.txt
 sed -i '/^\s*$/d' ./oem.txt
+
 cat ./oem.txt >> ./add_build/add_oem_build
 rm -rf ./oem.txt
-
