@@ -1,0 +1,8 @@
+/system/system/app/Camera u:object_r:system_file:s0
+/system/system/app/Camera/Camera\.apk u:object_r:system_file:s0
+/system/system/app/Camera/lib u:object_r:system_file:s0
+/system/system/app/Camera/lib/arm64 u:object_r:system_file:s0
+/system/system/app/Camera/lib/arm64/libjni_jpegutil\.so u:object_r:system_file:s0
+/system/system/app/Camera/lib/arm64/libjni_tinyplanet\.so u:object_r:system_file:s0
+/system/system/app/Camera/oat u:object_r:system_file:s0
+/system/system/app/Camera/oat/arm64 u:object_r:system_file:s0

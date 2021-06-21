@@ -1,0 +1,22 @@
+service orms-hal-1-0 /odm/bin/hw/vendor.oplus.hardware.orms.ormsHalService@1.0-service
+    class hal
+    user system
+    group system readproc root
+
+on boot
+    chmod 0664 /dev/stune/foreground/schedtune.prefer_idle
+    chmod 0664 /sys/devices/system/cpu/cpu_boost/input_boost_freq
+    chmod 0664 /sys/class/devfreq/soc:qcom,cpu0-cpu-llcc-lat/max_freq
+    chmod 0664 /sys/class/devfreq/soc:qcom,cpu6-cpu-llcc-lat/max_freq
+    chmod 0664 /sys/class/devfreq/soc:qcom,cpu0-llcc-ddr-lat/max_freq
+    chmod 0664 /sys/class/devfreq/soc:qcom,cpu6-llcc-ddr-lat/max_freq
+    chmod 0664 /sys/class/devfreq/18321000.qcom,devfreq-l3:qcom,cpu0-cpu-l3-lat/max_freq
+    chmod 0664 /sys/class/devfreq/18321000.qcom,devfreq-l3:qcom,cpu6-cpu-l3-lat/max_freq
+    chmod 0664 /sys/class/devfreq/18321000.qcom,devfreq-l3:qcom,cpu7-cpu-l3-lat/max_freq
+    chmod 0664 /sys/class/devfreq/soc:qcom,cpu0-cpu-ddr-latfloor/min_freq
+    chmod 0664 /sys/class/devfreq/soc:qcom,cpu6-cpu-ddr-latfloor/min_freq
+    chmod 0664 /sys/class/devfreq/soc:qcom,cpu7-cpu-ddr-latfloor/min_freq
+    chmod 0664 /sys/class/devfreq/soc:qcom,cpu0-cpu-ddr-latfloor/max_freq
+    chmod 0664 /sys/class/devfreq/soc:qcom,cpu6-cpu-ddr-latfloor/max_freq
+    chmod 0664 /sys/class/devfreq/soc:qcom,cpu7-cpu-ddr-latfloor/max_freq
+    chmod 0664 /dev/stune/top-app/schedtune.colocate

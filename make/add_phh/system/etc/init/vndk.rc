@@ -1,0 +1,33 @@
+on post-fs
+	exec - root -- /system/bin/vndk-detect
+	exec - root -- /system/bin/rw-system.sh
+	mount none /system/etc/usb_audio_policy_configuration.xml /vendor/etc/usb_audio_policy_configuration.xml bind
+        setprop ro.vndk.version ${persist.sys.vndk}
+	export LD_PRELOAD :
+
+on property:vold.decrypt=trigger_restart_framework
+
+
+service phh_on_boot /system/bin/phh-on-boot.sh
+    oneshot
+    disabled
+
+on property:sys.boot_completed=1
+    start phh_on_boot
+    chown wifi system /data/misc/wifi
+    chown system wifi /data/misc/wifi/hostapd.conf
+
+on property:persist.sys.phh.mainkeys=*
+    setprop qemu.hw.mainkeys ${persist.sys.phh.mainkeys}
+
+on property:persist.sys.phh.oppo.dt2w=*
+    exec - root -- /system/bin/phh-prop-handler.sh "persist.sys.phh.oppo.dt2w"
+
+on property:persist.sys.phh.oppo.gaming_mode=*
+    exec - root -- /system/bin/phh-prop-handler.sh "persist.sys.phh.oppo.gaming_mode"
+
+on property:persist.sys.phh.oppo.usbotg=*
+    exec - root -- /system/bin/phh-prop-handler.sh "persist.sys.phh.oppo.usbotg"
+
+on property:persist.sys.phh.xiaomi.dt2w=*
+    exec - root -- /system/bin/phh-prop-handler.sh "persist.sys.phh.xiaomi.dt2w"

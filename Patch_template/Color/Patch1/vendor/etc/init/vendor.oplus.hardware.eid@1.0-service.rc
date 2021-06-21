@@ -1,0 +1,4 @@
+service eid-1-0 /odm/bin/hw/vendor.oplus.hardware.eid@1.0-service
+    class hal
+    user  system
+    group system

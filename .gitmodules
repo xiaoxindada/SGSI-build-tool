@@ -1,0 +1,4 @@
+[submodule "make/apex_vndk_start"]
+	path = make/apex_vndk_start
+	url = https://gitlab.com/xiaoxindada/vendor_vndk.git
+	branch = 11

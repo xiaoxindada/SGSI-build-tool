@@ -1,0 +1,16 @@
+import /system/etc/init/hw/init.oppo.seccommon.rc
+
+on early-init
+    mkdir /mnt/vendor/persist/rpmb_status/
+    chmod 0777 /mnt/vendor/persist/rpmb_status/
+    chown system system /mnt/vendor/persist/rpmb_status/
+    chown system system /proc/oplus_secure_common/secureType
+
+on post-fs-data
+    mkdir /data/vendor_de/rpmb_status/
+    chmod 0777 /data/vendor_de/rpmb_status/
+    chown system system /data/vendor_de/rpmb_status/
+    mkdir /data/vendor_de/rpmb_status/.lii
+    chmod 0777 /data/vendor_de/rpmb_status/.lii
+    chown system system /data/vendor_de/rpmb_status/.lii
+

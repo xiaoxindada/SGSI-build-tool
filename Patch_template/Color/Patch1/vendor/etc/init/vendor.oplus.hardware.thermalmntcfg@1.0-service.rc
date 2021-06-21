@@ -1,0 +1,5 @@
+service thermal_mnt_hal_service /odm/bin/hw/vendor.oplus.hardware.thermalmntcfg@1.0-service
+	interface vendor.oplus.hardware.thermalmntcfg@1.0::IThermalMntCfg default
+	class hal
+	user system
+	group system

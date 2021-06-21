@@ -1,0 +1,15 @@
+
+########################################
+#              小新SGSI
+########################################
+
+# 通用属性
+ro.build.system_root_image=true
+ro.sys.sdcardfs=0
+persist.sys.disable_rescue=true
+ro.control_privapp_permissions=disable
+ro.nnapi.extensions.deny_on_product=true
+ro.lmk.kill_heaviest_task=true
+ro.lmk.kill_timeout_ms=100
+ro.lmk.use_minfree_levels=true
+ro.vndk.lite=false

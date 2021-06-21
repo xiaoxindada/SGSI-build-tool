@@ -1,0 +1,31 @@
+# Copyright (C) 2020 Xiaoxindada <2245062854@qq.com>
+
+# When the device is in pstore-fs-data enable apex flattening bind mount
+on post-fs-data
+    mount none /system/apex/com.android.mediaprovider /apex/com.android.mediaprovider bind
+    mount none /system/apex/com.android.apex.cts.shim.v1_with_prebuilts /apex/com.android.apex.cts.shim.v1_with_prebuilts bind
+    mount none /system/apex/com.android.sdkext /apex/com.android.sdkext bind
+    mount none /system/apex/com.android.i18n /apex/com.android.i18n bind
+    mount none /system/apex/com.android.art.debug /apex/com.android.art.debug bind
+    mount none /system/apex/com.android.art.release /apex/com.android.art.release bind
+    mount none /system/apex/com.android.media.swcodec /apex/com.android.media.swcodec bind
+    mount none /system/apex/com.android.media /apex/com.android.media bind
+    mount none /system/apex/com.android.os.statsd /apex/com.android.os.statsd bind
+    mount none /system/apex/com.android.extservices /apex/com.android.extservices bind
+    mount none /system/apex/com.android.runtime /apex/com.android.runtime bind
+    mount none /system/apex/com.android.neuralnetworks /apex/com.android.neuralnetworks bind
+    mount none /system/apex/com.android.cellbroadcast /apex/com.android.cellbroadcast bind
+    mount none /system/apex/com.android.adbd /apex/com.android.adbd bind
+    mount none /system/apex/com.android.tzdata /apex/com.android.tzdata bind
+    mount none /system/apex/com.android.permission /apex/com.android.permission bind
+    mount none /system/apex/com.android.tethering /apex/com.android.tethering bind
+    mount none /system/apex/com.android.resolv /apex/com.android.resolv bind
+    mount none /system/apex/com.android.ipsec /apex/com.android.ipsec bind
+    mount none /system/apex/com.android.conscrypt /apex/com.android.conscrypt bind
+    mount none /system/apex/com.android.wifi /apex/com.android.wifi bind
+    mount none /system/apex/com.android.art.debug /apex/com.android.art bind
+    mount none /system/apex/com.android.art.release /apex/com.android.art bind
+    
+    mount none /system/apex/com.android.vndk.current /apex/com.android.vndk.v30 bind
+    mount none /system/system_ext/apex/com.android.vndk.v29 /apex/com.android.vndk.v29 bind
+    mount none /system/system_ext/apex/com.android.vndk.v28 /apex/com.android.vndk.v28 bind

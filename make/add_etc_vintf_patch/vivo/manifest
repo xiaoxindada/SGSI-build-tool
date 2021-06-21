@@ -1,0 +1,30 @@
+    <hal format="hidl">
+        <name>vendor.vivo.hardware.omnipotentservice</name>
+        <transport>hwbinder</transport>
+        <version>1.0</version>
+        <interface>
+            <name>IOmnipotentService</name>
+            <instance>default</instance>
+        </interface>
+        <fqname>@1.0::IOmnipotentService/default</fqname>
+    </hal>
+    <hal format="hidl">    
+        <name>vendor.vivo.hardware.vcustom</name>
+        <transport>hwbinder</transport>
+        <version>1.0</version>
+        <interface>
+            <name>ICustom</name>
+            <instance>default</instance>
+        </interface>
+        <fqname>@1.0::ICustom/default</fqname>
+    </hal>
+    <hal format="hidl">
+        <name>vendor.vivo.hardware.vdtf</name>
+        <transport>hwbinder</transport>
+        <version>1.0</version>
+        <interface>
+            <name>IVdtf</name>
+            <instance>default</instance>
+        </interface>
+        <fqname>@1.0::IVdtf/default</fqname>
+    </hal>        

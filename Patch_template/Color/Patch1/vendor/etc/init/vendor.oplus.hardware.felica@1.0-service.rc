@@ -1,0 +1,4 @@
+service oplusfelicservice /odm/bin/hw/vendor.oplus.hardware.felica@1.0-service
+    class hal
+    user  system
+    group nfc system

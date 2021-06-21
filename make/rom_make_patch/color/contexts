@@ -1,0 +1,5 @@
+/system/system/etc/init/hw/init.oplus.face.rc u:object_r:system_file:s0
+/system/system/etc/init/hw/init.oppo.display.rc u:object_r:system_file:s0
+/system/system/etc/init/hw/init.oppo.seccommon.rc u:object_r:system_file:s0
+/system/system/system_ext/etc/permissions/orms_core_config.xml u:object_r:system_file:s0
+/system/system/system_ext/etc/permissions/orms_permission_config.xml u:object_r:system_file:s0

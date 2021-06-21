@@ -1,0 +1,23 @@
+import /system/etc/init/hw/init.oplus.face.rc
+
+on post-fs-data
+    chown system system /dev/mx6300_tac
+    chmod 0770 /dev/mx6300_tac
+
+    chown system system /proc/ldmp_sn
+    chown system system /proc/oppo_face_common/face_ir_sensor_tempature
+    chown system system /proc/oppo_face_common/face_ldmp_power
+    chown system system /proc/oppo_face_common/face_ldmp_tempature
+    chown system system /proc/oppo_face_common/face_ntc_svc
+    chown system system /proc/oppo_face_common/face_temp_ir
+    chown system system /proc/oppo_face_common/face_temp_ldmp
+    chown system system /proc/lm3644_enable
+    chown system system /proc/lm3643_enable
+    chown system system /proc/ldmp_enable
+    chown system system /proc/flood_led_enable
+    chown system system /proc/lm3644_power
+    chown system system /proc/lm3644_lightpower
+    chown system system /proc/ldmp_wdt_test
+    chown system system /proc/ldmp_doe_security
+    chown system system /proc/ldmp_sn
+

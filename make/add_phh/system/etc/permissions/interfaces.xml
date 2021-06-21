@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<permissions>
+
+	<library name="vendor.qti.hardware.radio.am.V1_0"
+		file="/system/framework/vendor.qti.hardware.radio.am-V1.0-java.jar" />
+
+    <library name="android.hardware.wifi.hostapd.V1_0"
+        file="/system/framework/android.hardware.wifi.hostapd-V1.0-java.jar" />
+</permissions>
