@@ -2,6 +2,7 @@
 
 LOCALDIR=`cd "$( dirname $0 )" && pwd`
 cd $LOCALDIR
+source ./bin.sh
 
 chmod -R 777 ./
 rm -rf ./new_dat
@@ -30,7 +31,7 @@ find ./ -type f -name '*.ozip' -delete
 find ./ -type f -name '*.bin' -delete
 find ./ -type f -name '*.img' -delete
 find ./ -maxdepth 1 -type f -name '*.txt' -delete
-./bin/oat2dex/rm.sh
+$bin/oat2dex/rm.sh
 ./fixbug/light_fix/rm.sh
 ./fixbug/wifi_fix/rm.sh
 ./fixbug/rm.sh
