@@ -24,6 +24,7 @@ case $1 in
 esac
 
 echo "环境初始化中 请稍候..."
+mkdir -p ./tmp
 chmod -R 777 ./
 chown -R root:root ./
 rm -rf ./*.img
