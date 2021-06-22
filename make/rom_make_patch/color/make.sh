@@ -3,7 +3,7 @@
 LOCALDIR=`cd "$( dirname $0 )" && pwd`
 cd $LOCALDIR
 
-bin="$LOCALDIR/../../../bin"
+bin="$LOCALDIR/../../../tool_bin"
 toolsdir="$bin/.."
 tmpdir="$LOCALDIR/tmp"
 systemdir="$LOCALDIR/../../../out/system/system"
