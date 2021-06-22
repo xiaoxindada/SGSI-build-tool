@@ -16,14 +16,14 @@ if [ ! -d ".git" ];then
       "Update")
         echo "正在强制使用git更新中,请准备好梯子"
         git init
-        git checkout -B 12
+        git checkout -B 11
         git remote add origin https://github.com/xiaoxindada/SGSI-build-tool.git
-        git fetch https://github.com/xiaoxindada/SGSI-build-tool.git 12
+        git fetch https://github.com/xiaoxindada/SGSI-build-tool.git 11
         git remote -v
         git reset --hard FETCH_HEAD
         git clean -df
-        git pull origin 12
-        git branch --set-upstream-to=origin/12
+        git pull origin 11
+        git branch --set-upstream-to=origin/11
         git submodule update --init --recursive
         git pull --recurse-submodules
         break;;

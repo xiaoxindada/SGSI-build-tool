@@ -27,6 +27,13 @@ git clone --recurse-submodules https://github.com/xiaoxindada/SGSI-build-tool.gi
 cd SGSI-build-tool-11
 su
 ```
+# 使用Actions构建SGSI:
+https://github.com/xiaoxindada/SGSI-build-action
+
+# 同步更新工具:
+```  
+./update.sh
+```
 
 # 安装工具依赖环境(建议挂t)
 ```
