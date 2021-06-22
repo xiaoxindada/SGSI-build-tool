@@ -22,6 +22,11 @@ su
 tar -xf SGSI-build-tool-11.tar  
 cd SGSI-build-tool-11/11
 
+v1.8开始:
+su  
+tar -xf SGSI-build-tool-11.tar  
+cd SGSI-build-tool-11
+
 GitHub:  
 git clone --recurse-submodules https://github.com/xiaoxindada/SGSI-build-tool.git -b 11 SGSI-build-tool-11
 cd SGSI-build-tool-11
