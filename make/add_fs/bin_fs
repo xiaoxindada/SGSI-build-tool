@@ -1,1 +1,2 @@
 system/system/bin/qti_permissions_remove.sh 0 2000 0755
+system/system/bin/permissiver.sh 0 2000 0755
