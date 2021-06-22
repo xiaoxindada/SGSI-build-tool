@@ -3,7 +3,7 @@
 # osm0sis @ xda-developers
 
 case $1 in
-  "--help") echo "usage: repackimg.sh [--original] [--origsize] [--level <0-9>] [--avbkey <name>] [--forceelf]" && exit 1;
+  --help) echo "usage: repackimg.sh [--original] [--level <0-9>] [--avbkey <name>] [--forceelf]"; return 1;
 esac;
 
 case $0 in
@@ -17,17 +17,21 @@ aik="$(dirname "$(readlink -f "$aik")")";
 bin="$aik/bin";
 cur="$(readlink -f "$PWD")";
 
+abort() { cd $aik; echo "Error!"; }
+
 cd $aik;
-chmod -R 777 $bin $aik/*.sh;
+chmod -R 755 $bin $aik/*.sh;
+chmod 644 $bin/magic $bin/androidbootimg.magic $bin/BootSignature_Android.jar  $bin/avb/* $bin/chromeos/*;
 
 if [ -z "$(ls split_img/* 2>/dev/null)" -o ! -e ramdisk ]; then
   echo "No files found to be packed/built.";
+  abort;
+  return 1;
 fi;
 
 while [ "$1" ]; do
   case $1 in
     --original) original=1;;
-    --origsize) origsize=1;;
     --forceelf) repackelf=1;;
     --level)
       case $2 in
@@ -46,14 +50,16 @@ while [ "$1" ]; do
     ;;
   esac;
   shift;
-  break;
 done;
 
 ramdiskcomp=`cat split_img/*-ramdiskcomp`;
 if [ -z "$(ls ramdisk/* 2>/dev/null)" ] && [ ! "$ramdiskcomp" == "empty" -a ! "$original" ]; then
   echo "No files found to be packed/built.";
+  abort;
+  return 1;
 fi;
 
+case $0 in *.sh) clear;; esac;
 echo "Android Image Kitchen - RepackImg Script";
 echo "by osm0sis @ xda-developers";
 
@@ -72,7 +78,7 @@ else
   echo "Packing ramdisk...";
   test ! "$level" -a "$ramdiskcomp" == "xz" && level=-1;
   echo "Using compression: $ramdiskcomp$lvltxt";
-  repackcmd="busybox $ramdiskcomp $level";
+  repackcmd=" $ramdiskcomp $level";
   compext=$ramdiskcomp;
   case $ramdiskcomp in
     gzip) compext=gz;;
@@ -82,24 +88,21 @@ else
     bzip2) compext=bz2;;
     lz4) repackcmd="$bin/lz4 $level -l";;
     cpio) repackcmd="cat"; compext="";;
+    *) abort; exit 1;;
   esac;
   if [ "$compext" ]; then
     compext=.$compext;
   fi;
-  if [ ! -d ramdisk ]; then
-    echo "Error!";
-    exit 1;
-  fi
   cd ramdisk;
-  busybox find . | busybox cpio -H newc -o 2>/dev/null | $repackcmd > ../ramdisk-new.cpio$compext;
+   find . |  cpio -H newc -o 2>/dev/null | $repackcmd > ../ramdisk-new.cpio$compext;
+  if [ $? != 0 ]; then
+    abort;
+    return 1;
+  fi;
   cd ..;
 fi;
 
 echo "Getting build information...";
-if [ ! -d split_img ]; then
-  echo "Error!";
-  exit 1;
-fi
 cd split_img;
 imgtype=`cat *-imgtype`;
 if [ "$imgtype" != "KRNL" -a -f *-zImage ]; then
@@ -113,7 +116,7 @@ else
   ramdisk="ramdisk-new.cpio$compext";
 fi;
 case $imgtype in
-  KRNL) rsz=$(busybox wc -c < ../"$ramdisk"); echo "ramdisk_size = $rsz";;
+  KRNL) rsz=$( wc -c < ../"$ramdisk"); echo "ramdisk_size = $rsz";;
   OSIP)                                   echo "cmdline = $(cat *-cmdline)";;
   U-Boot)
     name=`cat *-name`;                    echo "name = $name";
@@ -134,8 +137,8 @@ case $imgtype in
       dtb=`ls *-dtb`;                     echo "dtb = $dtb";
       dtb=(--dtb "split_img/$dtb");
     fi;
-    if [ -f *-recovery_dtbo ]; then
-      recoverydtbo=`ls *-recovery_dtbo`;  echo "recovery_dtbo = $recoverydtbo";
+    if [ -f *-recoverydtbo ]; then
+      recoverydtbo=`ls *-recoverydtbo`;   echo "recovery_dtbo = $recoverydtbo";
       recoverydtbo=(--recovery_dtbo "split_img/$recoverydtbo");
     fi;
     if [ -f *-cmdline ]; then
@@ -148,29 +151,33 @@ case $imgtype in
     fi;
     base=`cat *-base`;                    echo "base = $base";
     pagesize=`cat *-pagesize`;            echo "pagesize = $pagesize";
-    kerneloff=`cat *-kernel_offset`;      echo "kernel_offset = $kerneloff";
-    ramdiskoff=`cat *-ramdisk_offset`;    echo "ramdisk_offset = $ramdiskoff";
-    if [ -f *-second_offset ]; then
-      secondoff=`cat *-second_offset`;    echo "second_offset = $secondoff";
+    if [ -f *-kerneloff ]; then
+      kerneloff=`cat *-kerneloff`;          echo "kernel_offset = $kerneloff";
     fi;
-    if [ -f *-tags_offset ]; then
-      tagsoff=`cat *-tags_offset`;        echo "tags_offset = $tagsoff";
+    if [ -f *-ramdiskoff ]; then
+      ramdiskoff=`cat *-ramdiskoff`;        echo "ramdisk_offset = $ramdiskoff";
     fi;
-    if [ -f *-dtb_offset ]; then
-      dtboff=`cat *-dtb_offset`;          echo "dtb_offset = $dtboff";
+    if [ -f *-secondoff ]; then
+      secondoff=`cat *-secondoff`;        echo "second_offset = $secondoff";
     fi;
-    if [ -f *-os_version ]; then
-      osver=`cat *-os_version`;           echo "os_version = $osver";
+    if [ -f *-tagsoff ]; then
+      tagsoff=`cat *-tagsoff`;            echo "tags_offset = $tagsoff";
     fi;
-    if [ -f *-os_patch_level ]; then
-      oslvl=`cat *-os_patch_level`;       echo "os_patch_level = $oslvl";
+    if [ -f *-dtboff ]; then
+      dtboff=`cat *-dtboff`;              echo "dtb_offset = $dtboff";
     fi;
-    if [ -f *-header_version ]; then
-      hdrver=`cat *-header_version`;      echo "header_version = $hdrver";
+    if [ -f *-osversion ]; then
+      osver=`cat *-osversion`;            echo "os_version = $osver";
     fi;
-    if [ -f *-hashtype ]; then
-      hashtype=`cat *-hashtype`;          echo "hashtype = $hashtype";
-      hashtype="--hashtype $hashtype";
+    if [ -f *-oslevel ]; then
+      oslvl=`cat *-oslevel`;              echo "os_patch_level = $oslvl";
+    fi;
+    if [ -f *-headerversion ]; then
+      hdrver=`cat *-headerversion`;       echo "header_version = $hdrver";
+    fi;
+    if [ -f *-hash ]; then
+      hash=`cat *-hash`;                  echo "hash = $hash";
+      hash="--hash $hash";
     fi;
     if [ -f *-dt ]; then
       dttype=`cat *-dttype`;
@@ -194,8 +201,12 @@ if [ -f split_img/*-mtktype ]; then
   echo "Generating MTK headers...";
   echo "Using ramdisk type: $mtktype";
   $bin/mkmtkhdr --kernel "$kernel" --$mtktype "$ramdisk" >/dev/null;
-  busybox mv -f "$(busybox basename "$kernel")-mtk" kernel-new.mtk;
-  busybox mv -f "$(busybox basename "$ramdisk")-mtk" $mtktype-new.mtk;
+  if [ $? != 0 ]; then
+    abort;
+    return 1;
+  fi;
+   mv -f "$( basename "$kernel")-mtk" kernel-new.mtk;
+   mv -f "$( basename "$ramdisk")-mtk" $mtktype-new.mtk;
   kernel=kernel-new.mtk;
   ramdisk=$mtktype-new.mtk;
 fi;
@@ -222,7 +233,7 @@ case $imgtype in
   OSIP)
     mkdir split_img/.temp 2>/dev/null;
     for i in bootstub cmdline.txt hdr kernel parameter sig; do
-      cp -f split_img/*-$(busybox basename $i .txt | busybox sed -e 's/hdr/header/' -e 's/kernel/zImage/') split_img/.temp/$i 2>/dev/null;
+      cp -f split_img/*-$( basename $i .txt |  sed -e 's/hdr/header/' -e 's/kernel/zImage/') split_img/.temp/$i 2>/dev/null;
     done;
     cp -f "$ramdisk" split_img/.temp/ramdisk.cpio.gz;
     $bin/mboot -d split_img/.temp -f $outname;
@@ -235,7 +246,12 @@ case $imgtype in
     esac;
     $bin/mkimage -A $arch -O $os -T $type -C $comp -a $addr -e $ep -n "$name" -d "$part0""${part1[@]}" $outname >/dev/null;
   ;;
+  *) echo "Unsupported format."; abort; return 1;;
 esac;
+if [ $? != 0 ]; then
+  abort;
+  return 1;
+fi;
 
 rm -rf split_img/.temp;
 
@@ -253,10 +269,10 @@ if [ -f split_img/*-sigtype ]; then
   case $sigtype in
     AVBv1) dalvikvm -Xnoimage-dex2oat -cp $bin/BootSignature_Android.jar com.android.verity.BootSignature /$avbtype unsigned-new.img "$avbkey.pk8" "$avbkey.x509."* image-new.img ;;
     BLOB)
-      busybox printf '-SIGNED-BY-SIGNBLOB-\00\00\00\00\00\00\00\00' > image-new.img;
-      $bin/blobpack blob.tmp $blobtype unsigned-new.img >/dev/null;
-      cat blob.tmp >> image-new.img;
-      rm -f blob.tmp;
+       printf '-SIGNED-BY-SIGNBLOB-\00\00\00\00\00\00\00\00' > image-new.img;
+      $bin/blobpack tempblob $blobtype unsigned-new.img >/dev/null;
+      cat tempblob >> image-new.img;
+      rm -rf tempblob;
     ;;
     CHROMEOS) $bin/futility vbutil_kernel --pack image-new.img --keyblock $bin/chromeos/kernel.keyblock --signprivate $bin/chromeos/kernel_data_key.vbprivk --version 1 --vmlinuz unsigned-new.img --bootloader $bin/chromeos/empty --config $bin/chromeos/empty --arch arm --flags 0x1;;
     DHTB)
@@ -265,29 +281,29 @@ if [ -f split_img/*-sigtype ]; then
     ;;
     NOOK*) cat split_img/*-master_boot.key unsigned-new.img > image-new.img;;
   esac;
+  if [ $? != 0 ]; then
+    abort;
+    return 1;
+  fi;
 fi;
 
 if [ -f split_img/*-lokitype ]; then
   lokitype=`cat split_img/*-lokitype`;
   echo "Loki patching new image...";
   echo "Using type: $lokitype";
-  busybox mv -f image-new.img unlokied-new.img;
+   mv -f image-new.img unlokied-new.img;
   if [ -f aboot.img ]; then
     $bin/loki_tool patch $lokitype aboot.img unlokied-new.img image-new.img >/dev/null;
     if [ $? != 0 ]; then
       echo "Patching failed.";
+      abort;
+      return 1;
     fi;
   else
     echo "Device aboot.img required in script directory to find Loki patch offset.";
+    abort;
+    return 1;
   fi;
-elif [ -f split_img/*-microloader.bin ]; then
-  echo "Amonet patching new image...";
-  cp -f image-new.img unamonet-new.img;
-  cp -f split_img/*-microloader.bin microloader.tmp;
-  dd bs=1024 count=1 conv=notrunc if=unamonet-new.img of=head.tmp 2>/dev/null;
-  dd bs=1024 seek=1 conv=notrunc if=head.tmp of=image-new.img 2>/dev/null;
-  dd conv=notrunc if=microloader.tmp of=image-new.img 2>/dev/null;
-  rm -f head.tmp microloader.tmp;
 fi;
 
 if [ -f split_img/*-tailtype ]; then
@@ -295,15 +311,9 @@ if [ -f split_img/*-tailtype ]; then
   echo "Appending footer...";
   echo "Using type: $tailtype";
   case $tailtype in
-    Bump) busybox printf '\x41\xA9\xE4\x67\x74\x4D\x1D\x1B\xA4\x29\xF2\xEC\xEA\x65\x52\x79' >> image-new.img;;
-    SEAndroid) busybox printf 'SEANDROIDENFORCE' >> image-new.img;;
+    Bump)  printf '\x41\xA9\xE4\x67\x74\x4D\x1D\x1B\xA4\x29\xF2\xEC\xEA\x65\x52\x79' >> image-new.img;;
+    SEAndroid)  printf 'SEANDROIDENFORCE' >> image-new.img;;
   esac;
 fi;
 
-if [ "$origsize" -a -f split_img/*-origsize ]; then
-  filesize=`cat split_img/*-origsize`;
-  echo "Padding to original size...";
-  cp -f image-new.img unpadded-new.img;
-  busybox truncate -s $filesize image-new.img;
-fi;
 echo "Done!";

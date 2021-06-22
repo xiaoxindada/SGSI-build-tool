@@ -3,6 +3,7 @@
 # osm0sis @ xda-developers
 
 cleanup() { "$aik/cleanup.sh" $local --quiet; }
+abort() { echo "Error!"; }
 
 case $1 in
   --help) echo "usage: unpackimg.sh [--local] [--nosudo] <file>"; exit 1;;
@@ -43,8 +44,8 @@ case $plat in
     xz() { DYLD_LIBRARY_PATH="$bin/$arch" "$bin/$arch/xz" "$@"; }
   ;;
   linux)
-    cpio=cpio;
-    test "$(cpio --version | head -n1 | rev | cut -d\  -f1 | rev)" == "2.13" && cpiowarning=1;
+    cpio=$bin/$arch/cpio;
+    test "$($cpio --version | head -n1 | rev | cut -d\  -f1 | rev)" == "2.13" && cpiowarning=1;
     statarg="-c %U";
   ;;
 esac;
@@ -68,6 +69,7 @@ fi;
 img="$(readlink -f "$img")";
 if [ ! -f "$img" ]; then
   echo "No image file supplied.";
+  abort;
   exit 1;
 fi;
 
@@ -82,7 +84,7 @@ echo "Supplied image: $file";
 echo " ";
 
 if [ -d split_img -o -d ramdisk ]; then
-  if [ -d ramdisk ] && [ "$(stat $statarg ramdisk | head -n 1)" = "root" -o ! "$(find ramdisk 2>&1 | cpio -o >/dev/null 2>&1; echo $?)" -eq "0" ]; then
+  if [ -d ramdisk ] && [ "$(stat $statarg ramdisk | head -n 1)" = "root" -o ! "$(find ramdisk 2>&1 | $cpio -o >/dev/null 2>&1; echo $?)" -eq "0" ]; then
     rmsumsg=" (as root)";
   fi;
   echo "Removing old work folders and files$rmsumsg...";
@@ -137,6 +139,7 @@ else
   cd ..;
   cleanup;
   echo "Unrecognized format.";
+  abort;
   exit 1;
 fi;
 echo "Image type: $imgtype";
@@ -148,6 +151,7 @@ case $imgtype in
     cd ..;
     cleanup;
     echo "Unsupported format.";
+    abort;
     exit 1;
   ;;
 esac;
@@ -252,6 +256,7 @@ esac;
 if [ ! $? -eq "0" -o "$error" ]; then
   cd ..;
   cleanup;
+  abort;
   exit 1;
 fi;
 
@@ -322,6 +327,7 @@ mv -f "$(ls *-ramdisk*.gz)" "$file-ramdisk.cpio$compext" 2>/dev/null;
 cd ..;
 if [ "$ramdiskcomp" = "data" ]; then
   echo "Unrecognized format.";
+  abort;
   exit 1;
 fi;
 
@@ -338,6 +344,7 @@ else
   echo "Compression used: $ramdiskcomp";
   if [ ! "$compext" -a ! "$ramdiskcomp" = "cpio" ]; then
     echo "Unsupported format.";
+    abort;
     exit 1;
   fi;
   $sudo chown 0:0 ramdisk 2>/dev/null;
@@ -346,6 +353,7 @@ else
   if [ ! $? -eq "0" ]; then
     test "$nosudo" && echo "Unpacking failed, try without --nosudo.";
     cd ..;
+    abort;
     exit 1;
   fi;
   cd ..;
