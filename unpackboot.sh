@@ -4,27 +4,29 @@ LOCALDIR=`cd "$( dirname $0 )" && pwd`
 cd $LOCALDIR
 source ./bin.sh
 
-AIK="$bin/boot_tools/AIK"
-rm -rf ./boot
-mkdir ./boot
+bb=busybox
+aik=$bin/boot_tools/AIK
+boot_img=$LOCALDIR/boot.img
+bootdir=$LOCALDIR/boot
 
-if [ -e ./boot.img ];then
-  cp -frp ./boot.img $AIK/
-  cd $AIK
-  ./unpackimg.sh ./boot.img
-  if [ $? = "0" ];then
-    rm -rf ./boot.img
-    mv ./ramdisk $LOCALDIR/boot/
-    mv ./split_img $LOCALDIR/boot/
-  else
-    echo -e "\033[33m 方案一解压失败，开始尝试第二种解压方案 \033[0m"
-    rm -rf ./boot.img ./ramdisk ./split_img
-    cd $LOCALDIR
-    ./unpackboot_test.sh
-    [ $? != "0" ] && echo "解压失败" && exit
-  fi
-  cd $LOCALDIR
-  chmod 777 -R ./boot
+rm -rf $bootdir
+mkdir -p $bootdir
+
+[ ! -e $boot_img ] && echo "boot.img 不存在！" && exit 1
+cp -frp $boot_img $aik/
+cd $aik
+./unpackimg.sh $(basename $boot_img)
+if [ $? = "0" ];then
+  rm -rf $(basename $boot_img)
+  mv ./ramdisk $bootdir
+  mv ./split_img $bootdir
 else
-  echo "没有boot.img，请重试"
+  echo -e "\033[33m 方案一解压失败，开始尝试第二种解压方案 \033[0m"
+  rm -rf $(basename $boot_img)
+  ./cleanup.sh
+  cd $LOCALDIR
+  ./unpackboot_test.sh
+  [ $? != "0" ] && echo "解压失败" && exit
 fi
+cd $LOCALDIR
+chmod 777 -R $bootdir

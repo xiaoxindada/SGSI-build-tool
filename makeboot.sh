@@ -4,23 +4,21 @@ LOCALDIR=`cd "$( dirname $0 )" && pwd`
 cd $LOCALDIR
 source ./bin.sh
 
-AIK="$bin/boot_tools/AIK"
+aik=$bin/boot_tools/AIK
+bootdir=$LOCALDIR/boot
 
-echo "正在生成new-boot.img..."
-mv ./boot/* $AIK
-cd $AIK
+[ ! -d $bootdir/split_img ] && echo "此解包方法暂不支持重新打包" && exit 1
+mv $bootdir/* $aik
+cd $aik
 ./repackimg.sh --forceelf #--origsize
-if [ -e ./unpadded-new.img ];then
+if [ -f ./unpadded-new.img ];then
   mv ./unpadded-new.img $LOCALDIR/boot/
 fi
 mv ./image-new.img ./boot-new.img
 mv ./boot-new.img $LOCALDIR/boot/
-rm -rf ./split_img
-rm -rf ./ramdisk
-rm -rf ./boot.img
-if [ -e $(pwd)/ramdisk-new.cpio.gz ]; then
-  rm -rf $(pwd)/ramdisk-new.cpio.gz
-fi
+./cleanup.sh
 cd $LOCALDIR
-chmod 777 -R ./boot
-echo "生成完毕，输出至boot目录"
+if [ -f $bootdir/boot-new.img ];then
+echo "文件以输出至 $bootdir 目录"
+fi
+chmod 777 -R $bootdir
