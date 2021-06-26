@@ -24,7 +24,7 @@ dependency_install(){
         echo -e "\033[33m [DEBUG] Linux Detected \033[0m"
         echo -e "\033[33m [INFO] Installing Packages via apt... \033[0m"
         sudo apt update && sudo apt upgrade -y
-        sudo apt install git p7zip openjdk-8-jdk curl cpio wget unace unrar zip unzip p7zip-full p7zip-rar sharutils uudeview mpack arj cabextract file-roller aptitude device-tree-compiler liblzma-dev liblz4-tool gawk aria2 selinux-utils busybox -y
+        sudo apt install git p7zip curl wget unace unrar zip unzip p7zip-full p7zip-rar sharutils uudeview mpack arj cabextract file-roller aptitude device-tree-compiler liblzma-dev liblz4-tool gawk aria2 selinux-utils busybox -y
         sudo apt update --fix-missing
         
     elif [[ "$OSTYPE" == "darwin"* ]]; then
@@ -86,10 +86,28 @@ debug_packages_version(){
     rm -rf $2.ver
 }
 
+java_install(){
+    if apt list | grep -q openjdk-11-jdk ;then
+        JAVA_PACKAGE="openjdk-11-jdk"
+    else
+        JAVA_PACKAGE="openjdk-8-jdk"
+    fi
+    UNINSTALL_PACKAGE="openjdk-8-jdk"
+    if [[ "$JAVA_PACKAGE" != "$UNINSTALL_PACKAGE" ]];then
+        sudo apt -y purge $UNINSTALL_PACKAGE
+    fi
+    echo -e "\033[33m [INFO] Installing java package from $JAVA_PACKAGE... \033[0m"
+    sudo apt install -y $JAVA_PACKAGE
+}
+
 dump_welcome
-dependency_install
-python_install
-pip_module_install
+{
+    trap 'echo -e "\033[31m [ERROR] Install package failed! \033[0m"; exit 1' ERR
+    java_install
+    dependency_install
+    python_install
+    pip_module_install
+}
 debug_packages_version Python python
 debug_packages_version Pip pip
 debug_packages_version Python3 python3
@@ -97,4 +115,4 @@ debug_packages_version Pip3 pip3
 debug_packages_version Java java
 debug_packages_version Busybox busybox
 
-echo -e "\033[33m [INFO] Successfully Finished Build Environment Setup Utils, Exiting... \033[0m"
+echo -e "\033[32m [INFO] Successfully Finished Build Environment Setup Utils, Exiting... \033[0m"
