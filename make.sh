@@ -51,7 +51,7 @@ if [ -e './payload.bin' ];then
   mv ./payload.bin ../payload
   echo "解压payload.bin中..."
   cd ../payload
-  python ./payload.py ./payload.bin ./out
+  python2 ./payload.py ./payload.bin ./out
   mv ./payload.bin ../tmp
   echo "移动img至输出目录..."
   if [ -e "./out/product.img" ];then
