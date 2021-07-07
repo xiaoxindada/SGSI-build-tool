@@ -2,8 +2,11 @@
  
 LOCALDIR=`cd "$( dirname $0 )" && pwd`
 cd $LOCALDIR
+WORKSPACE=$LOCALDIR/../workspace
+IMAGESDIR=$WORKSPACE/images
+TARGETDIR=$WORKSPACE/out
 
-configdir="$LOCALDIR/../out/config"
+configdir="$TARGETDIR/config"
 target_fs="$configdir/system_fs_config"
 target_contexts="$configdir/system_file_contexts"
 

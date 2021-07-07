@@ -21,10 +21,10 @@ os_repackage_type="$1"
 
 case $os_repackage_type in
   "-A"|"-a"|"--a-only"|"--A-ONLY_CONFIG"|"--a-only_config")
-    systemdir="$LOCALDIR/out/system/system"
+    systemdir="$TARGETDIR/system/system"
     ;;
   "--AB"|"--ab"|"--AB_CONFIG"|"--ab_config")  
-    systemdir="$LOCALDIR/out/system"
+    systemdir="$TARGETDIR/system"
     ;;
   "-h"|"--help")
     Usage
@@ -41,8 +41,7 @@ if [ "$1" = "" ];then
   exit
 fi
 
-outdir="$LOCALDIR/out"
-configdir="$outdir/config"
+configdir="$TARGETDIR/config"
 target_contexts="system_test_contexts"
 
 case $os_repackage_type in
@@ -163,25 +162,25 @@ echo "当前打包大小：${size} B"
 echo ""
 
 #mke2fs+e2fsdroid打包
-#$bin/mke2fs -L / -t ext4 -b 4096 $outdir/system.img $size
-#$bin/e2fsdroid -e -T 0 -S $configdir/system_file_contexts -C $configdir/system_fs_config  -a /system -f ./out/system $outdir/system.img
+#$bin/mke2fs -L / -t ext4 -b 4096 $TARGETDIR/system.img $size
+#$bin/e2fsdroid -e -T 0 -S $configdir/system_file_contexts -C $configdir/system_fs_config  -a /system -f ./out/system $TARGETDIR/system.img
 
 case $os_repackage_type in
   "-A"|"-a"|"--a-only")
-    $bin/mkuserimg_mke2fs.sh "$systemdir" "$outdir/system.img" "ext4" "/system" $size -j "0" -T "1230768000" -L "system" -I "256" -M "/system" -m "0" $configdir/$target_contexts
+    $bin/mkuserimg_mke2fs.sh "$systemdir" "$TARGETDIR/system.img" "ext4" "/system" $size -j "0" -T "1230768000" -L "system" -I "256" -M "/system" -m "0" $configdir/$target_contexts
     ;;
   "--AB"|"--ab")
-    $bin/mkuserimg_mke2fs.sh "$systemdir" "$outdir/system.img" "ext4" "/" $size -j "0" -T "1230768000" -L "/" -I "256" -M "/" -m "0" $configdir/$target_contexts
+    $bin/mkuserimg_mke2fs.sh "$systemdir" "$TARGETDIR/system.img" "ext4" "/" $size -j "0" -T "1230768000" -L "/" -I "256" -M "/" -m "0" $configdir/$target_contexts
     ;;
   "--A-ONLY_CONFIG"|"--a-only_config")
-    $bin/mkuserimg_mke2fs.sh "$systemdir" "$outdir/system.img" "ext4" "/system" $size -j "0" -T "1230768000" -C "$configdir/system_A_fs" -L "system" -I "256" -M "/system" -m "0" "$configdir/system_A_contexts"   
+    $bin/mkuserimg_mke2fs.sh "$systemdir" "$TARGETDIR/system.img" "ext4" "/system" $size -j "0" -T "1230768000" -C "$configdir/system_A_fs" -L "system" -I "256" -M "/system" -m "0" "$configdir/system_A_contexts"   
     ;;
   "--AB_CONFIG"|"--ab_config")
-    $bin/mkuserimg_mke2fs.sh "$systemdir" "$outdir/system.img" "ext4" "/system" $size -j "0" -T "1230768000" -C "$configdir/system_fs_config" -L "system" -I "256" -M "/system" -m "0" "$configdir/system_file_contexts"
+    $bin/mkuserimg_mke2fs.sh "$systemdir" "$TARGETDIR/system.img" "ext4" "/system" $size -j "0" -T "1230768000" -C "$configdir/system_fs_config" -L "system" -I "256" -M "/system" -m "0" "$configdir/system_file_contexts"
     ;;
 esac
 
-if [ -s $outdir/system.img ];then
+if [ -s $TARGETDIR/system.img ];then
   echo "打包完成"
   echo "输出至$LOCALDIR/SGSI"
 else
@@ -189,13 +188,13 @@ else
   exit
 fi
 
-if [ -s $outdir/system.img ];then
-  rm -rf ./SGSI
-  mkdir ./SGSI
-  mv $outdir/system.img ./SGSI/
-  cp -frp $system/build.prop ./out/
-  ./get_build_info.sh "./out" "$LOCALDIR/SGSI/system.img" > ./SGSI/build_info.txt
-  rm -rf ./out/build.prop
+if [ -s $TARGETDIR/system.img ];then
+  rm -rf $LOCALDIR/SGSI
+  mkdir -p $LOCALDIR/SGSI
+  mv -f $TARGETDIR/system.img ./SGSI/
+  cp -frp $system/build.prop $TARGETDIR/
+  ./get_build_info.sh "$TARGETDIR" "$LOCALDIR/SGSI/system.img" > $LOCALDIR/SGSI/build_info.txt
+  rm -rf $TARGETDIR/build.prop
   ./copy.sh
-  chmod -R 777 ./SGSI
+  chmod -R 777 $LOCALDIR/SGSI
 fi

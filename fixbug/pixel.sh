@@ -2,8 +2,11 @@
 
 LOCALDIR=`cd "$( dirname $0 )" && pwd`
 cd $LOCALDIR
+WORKSPACE=$LOCALDIR/../workspace
+IMAGESDIR=$WORKSPACE/images
+TARGETDIR=$WORKSPACE/out
 
-systemdir="$LOCALDIR/../out/system/system"
+systemdir="$TARGETDIR/system/system"
 scirpt_name=$(echo ${0##*/})
 src_dir=$LOCALDIR/$(echo ${scirpt_name%%.*}) 
 

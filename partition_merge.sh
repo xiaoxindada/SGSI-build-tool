@@ -6,24 +6,24 @@ LOCALDIR=`cd "$( dirname $0 )" && pwd`
 cd $LOCALDIR
 source ./bin.sh
 
-systemdir="$LOCALDIR/out/system/system"
-configdir="$LOCALDIR/out/config"
-dynamic_fs_dir="$LOCALDIR/make/dynamic_fs"
+systemdir="$TARGETDIR/system/system"
+configdir="$TARGETDIR/config"
+dynamic_fs_dir="$TARGETDIR/dynamic_fs"
 target_fs="$configdir/system_fs_config"
 target_contexts="$configdir/system_file_contexts"
 partition_name="product system_ext"
 
-rm -rf ./make/dynamic_fs
-mkdir -p ./make/dynamic_fs
+rm -rf $TARGETDIR/dynamic_fs
+mkdir -p $TARGETDIR/dynamic_fs
 
 for partition in $partition_name ;do
   [ -d $systemdir/$partition ] && continue
   echo "正在合并${partition}分区"
 
-  if [ -d $LOCALDIR/out/$partition ];then
+  if [ -d $TARGETDIR/$partition ];then
     rm -rf $systemdir/$partition
-    rm -rf $LOCALDIR/out/$partition/lost+found
-    mv $LOCALDIR/out/$partition $systemdir
+    rm -rf $TARGETDIR/$partition/lost+found
+    mv $TARGETDIR/$partition $systemdir/
     rm -rf "$systemdir/../$partition"
     ln -s "/system/$partition" "$systemdir/../$partition"
   fi

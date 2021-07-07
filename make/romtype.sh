@@ -2,9 +2,12 @@
  
 LOCALDIR=`cd "$( dirname $0 )" && pwd`
 cd $LOCALDIR
+WORKSPACE=$LOCALDIR/../workspace
+IMAGESDIR=$WORKSPACE/images
+TARGETDIR=$WORKSPACE/out
 
 os_type="$1"
-systemdir="$LOCALDIR/../out/system/system"
+systemdir="$TARGETDIR/system/system"
 
 # pixel
 if [ $os_type = "Pixel" ];then
