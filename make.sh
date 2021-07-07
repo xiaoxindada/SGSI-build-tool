@@ -66,16 +66,11 @@ fi
 function firmware_extract() {
   partition_list="system vendor system_ext odm product reserve boot vendor_boot"
   
-  if [[ -e $firmware || -e ./tmp/$firmware ]];then
-    if [ -e $firmware ];then
-      7z x -y "$firmware" -o"./tmp/"
-    fi  
-    if [ -e ./tmp/$firmware ];then
-      7z x -y "./tmp/$firmware" -o"./tmp/"
-    fi
-  else
-    echo "当前固件不存在！"
-    exit 
+  if [ -e $firmware ];then
+    7z x -y "$firmware" -o"./tmp/"
+  fi
+  if [ -e $LOCALDIR/tmp/$firmware ];then
+    7z x -y "$LOCALDIR/tmp/$firmware" -o"$LOCALDIR/tmp/"
   fi
 
   for i in $(ls ./tmp);do
