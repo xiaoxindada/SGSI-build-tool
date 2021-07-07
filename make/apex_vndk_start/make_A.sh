@@ -16,13 +16,13 @@ cd $LOCALDIR
 sed -i '/ro.apex.updatable/d' $systemdir/build.prop
 sed -i '/ro.apex.updatable/d' $systemdir/product/etc/build.prop
 sed -i '/ro.apex.updatable/d' $systemdir/system_ext/etc/build.prop
-echo "ro.apex.updatable=false" >> $systemdir/product/etc/build.prop 
+#echo "ro.apex.updatable=false" >> $systemdir/product/etc/build.prop 
 
 # 清理apex
-apex_file=$(ls $systemdir/apex | grep ".apex$")
+apex_files=$(ls $systemdir/apex | grep ".apex$")
 rm -rf $systemdir/apex/*v29*
 rm -rf $systemdir/apex/*v30*
-for apex in $apex_file ;do
+for apex in $apex_files ;do
   if [ -f $systemdir/apex/$apex ];then
     rm -rf $systemdir/apex/$apex
   fi
