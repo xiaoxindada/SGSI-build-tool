@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Copyright (C) 2021 Xiaoxindada <2245062854@qq.com>
+set -e
 
 LOCALDIR=`cd "$( dirname $0 )" && pwd`
 cd $LOCALDIR
@@ -47,8 +48,8 @@ build_type="$build_type"
 bug_fix="false"
 use_config="_config"
 other_args=""
-systemdir="$LOCALDIR/out/system/system"
-configdir="$LOCALDIR/out/config"
+systemdir="$TARGETDIR/system/system"
+configdir="$TARGETDIR/config"
 shift 2
 
 if ! (cat ./make/rom_support_list.txt | grep -qo "$os_type");then
@@ -152,11 +153,11 @@ function normal() {
     }
     if qssi ;then
       echo "检测到原包为qssi 启用机型参数修复" 
-      brand=$(cat ./out/vendor/build.prop | grep 'ro.product.vendor.brand')
-      device=$(cat ./out/vendor/build.prop | grep 'ro.product.vendor.device')
-      manufacturer=$(cat ./out/vendor/build.prop | grep 'ro.product.vendor.manufacturer')
-      model=$(cat ./out/vendor/build.prop | grep 'ro.product.vendor.model')
-      mame=$(cat ./out/vendor/build.prop | grep 'ro.product.vendor.name')
+      brand=$(cat $TARGETDIR/vendor/build.prop | grep 'ro.product.vendor.brand')
+      device=$(cat $TARGETDIR/vendor/build.prop | grep 'ro.product.vendor.device')
+      manufacturer=$(cat $TARGETDIR/vendor/build.prop | grep 'ro.product.vendor.manufacturer')
+      model=$(cat $TARGETDIR/vendor/build.prop | grep 'ro.product.vendor.model')
+      mame=$(cat $TARGETDIR/vendor/build.prop | grep 'ro.product.vendor.name')
   
       echo "当前原包机型参数为:"
       echo "$brand"
@@ -239,7 +240,7 @@ function normal() {
   sed -i "/reboot_on_failure/d" $systemdir/etc/init/hw/init.rc
 
   # 为所有rom还原fstab.postinstall
-  find  ./out/system/ -type f -name "fstab.postinstall" | xargs rm -rf
+  find $systemdir/../ -type f -name "fstab.postinstall" | xargs rm -rf
   rm -rf $systemdir/etc/init/cppreopts.rc    
   cp -frp ./make/fstab/system/* $systemdir
   sed -i '/fstab\\.postinstall/d' $configdir/system_file_contexts
@@ -280,8 +281,8 @@ function normal() {
   find $systemdir -type d -name "com.qualcomm.location" | xargs rm -rf
 
   # 为所有rom删除多余文件
-  rm -rf ./out/system/verity_key
-  rm -rf ./out/system/init.recovery*
+  rm -rf $systemdir/../verity_key
+  rm -rf $systemdir/../init.recovery*
   rm -rf $systemdir/recovery-from-boot.*
 
   # 为所有rom patch system
@@ -437,7 +438,7 @@ fi
 rm -rf ./SGSI
 
 # simg2img
-./simg2img.sh "$LOCALDIR"
+./simg2img.sh "$IMAGESDIR"
 
 # 分区挂载
 #./mount_partition.sh

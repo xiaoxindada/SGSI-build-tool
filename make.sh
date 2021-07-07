@@ -42,24 +42,23 @@ if [ $# -lt 3 ];then
   Usage
   exit
 fi
-
 os_type="$2"
 firmware="$3"
 build_type="$build_type"
 other_args=""
 shift 3
 
-if ! (cat ./make/rom_support_list.txt | grep -qo "$os_type");then
+if ! (cat $LOCALDIR/make/rom_support_list.txt | grep -qo "$os_type");then
   echo "此rom未支持!"
   echo "支持的rom有:"
-  cat ./make/rom_support_list.txt
-  exit
+  cat $LOCALDIR/make/rom_support_list.txt
+  exit 1
 fi
 
 if [ ! -e $firmware ];then
-  if [ ! -e ./tmp/$firmware ];then
+  if [ ! -e $LOCALDIR/tmp/$firmware ];then
     echo "当前固件不存在"
-    exit
+    exit 1
   fi  
 fi
 
@@ -73,9 +72,9 @@ function firmware_extract() {
     7z x -y "$LOCALDIR/tmp/$firmware" -o"$LOCALDIR/tmp/"
   fi
 
-  for i in $(ls ./tmp);do
-    [ ! -d ./tmp/$i ] && continue
-    cd ./tmp/$i
+  for i in $(ls $LOCALDIR/tmp);do
+    [ ! -d $LOCALDIR/tmp/$i ] && continue
+    cd $LOCALDIR/tmp/$i
     if [ $(ls | wc -l) != "0" ];then
       mv -f ./* ../
     fi
@@ -93,7 +92,7 @@ function firmware_extract() {
       for i in $partition_list ;do
         if [ -e ./out/$i.img ];then
           echo "移动$i.img至工具目录..."
-          mv ./out/$i.img ../
+          mv ./out/$i.img $IMAGESDIR/
         fi
       done
       rm -rf ./payload.bin
@@ -106,7 +105,7 @@ function firmware_extract() {
       echo "正在解压${partition}.new.dat.br"
       $bin/brotli -d ${partition}.new.dat.br
       python $bin/sdat2img.py ${partition}.transfer.list ${partition}.new.dat ./${partition}.img
-      mv ./${partition}.img ../
+      mv ./${partition}.img $IMAGESDIR/
       rm -rf ./${partition}.new.dat
     fi
   
@@ -116,7 +115,7 @@ function firmware_extract() {
       cat ./${partition}.new.dat.{1..999} 2>/dev/null >> ./${partition}.new.dat
       rm -rf ./${partition}.new.dat.{1..999}
       python $bin/sdat2img.py ${partition}.transfer.list ${partition}.new.dat ./${partition}.img
-      mv ./${partition}.img ../
+      mv ./${partition}.img $IMAGESDIR/
       rm -rf ./${partition}.new.dat
     fi
 
@@ -124,21 +123,23 @@ function firmware_extract() {
     if [ -e ./${partition}.new.dat ];then
       echo "正在解压${partition}.new.dat"
       python $bin/sdat2img.py ${partition}.transfer.list ${partition}.new.dat ./${partition}.img
-      mv ./${partition}.img ../
+      mv ./${partition}.img $IMAGESDIR/
     fi
 
     #img检测
     if [ -e ./${partition}.img ];then
-      mv ./${partition}.img ../
+      mv ./${partition}.img $IMAGESDIR/
     fi
   done
-  cd $LOCALDIR
+  cd $IMAGESDIR
 }
 
 echo "环境初始化中 请稍候..."
 chmod -R 777 ./
-rm -rf ./*.img
 ./workspace_cleanup.sh > /dev/null 2>&1
+rm -rf $WORKSPACE
+mkdir -p $IMAGESDIR
+mkdir -p $TARGETDIR
 echo "初始化环境完成"
 
 if [[ "$1" = "--fix-bug" ]];then
@@ -147,12 +148,13 @@ if [[ "$1" = "--fix-bug" ]];then
 fi
 
 firmware_extract
-if [ -e ./system.img ];then
+cd $LOCALDIR
+if [ -e $IMAGESDIR/system.img ];then
   echo "./SGSI.sh $build_type $os_type $other_args"
   ./SGSI.sh $build_type $os_type $other_args
   ./workspace_cleanup.sh
-  exit
+  exit 0
 else
   echo "未检测到system.img, 无法制作SGSI！"
-  exit
+  exit 1
 fi

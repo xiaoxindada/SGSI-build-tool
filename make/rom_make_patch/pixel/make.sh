@@ -2,9 +2,12 @@
 
 LOCALDIR=`cd "$( dirname $0 )" && pwd`
 cd $LOCALDIR
+WORKSPACE=$LOCALDIR/../../../workspace
+IMAGESDIR=$WORKSPACE/images
+TARGETDIR=$WORKSPACE/out
 
-systemdir="$LOCALDIR/../../../out/system/system"
-configdir="$LOCALDIR/../../../out/config"
+systemdir="$TARGETDIR/system/system"
+configdir="$TARGETDIR/config"
 
 # 为pixel启用强制向导跳过
 echo "" >> $systemdir/build.prop

@@ -4,20 +4,19 @@ LOCALDIR=`cd "$( dirname $0 )" && pwd`
 cd $LOCALDIR
 source ./bin.sh
 
-systemdir="./out/system/system"
 partition_name="
 system
 vendor
 product
 system_ext
 "
-rm -rf ./out
-mkdir ./out
+rm -rf $TARGETDIR
+mkdir -p $TARGETDIR
 
 for partition in $partition_name ;do
-  if [[ -e $LOCALDIR/$partition.img ]];then
+  if [[ -e $IMAGESDIR/$partition.img ]];then
     echo "正在提取$partition.img..."
-    python3 $bin/imgextractor.py $partition.img ./out
+    python3 $bin/imgextractor.py $IMAGESDIR/$partition.img $TARGETDIR
     if [ $? != "0" ];then
       echo "$partition.img提取失败"
       exit

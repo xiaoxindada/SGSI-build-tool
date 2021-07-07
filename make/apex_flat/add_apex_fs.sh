@@ -4,82 +4,86 @@
 
 LOCALDIR=`cd "$( dirname $0 )" && pwd`
 cd $LOCALDIR
+WORKSPACE=$LOCALDIR/../../workspace
+IMAGESDIR=$WORKSPACE/images
+TARGETDIR=$WORKSPACE/out
 
+configdir="$TARGETDIR/config"
 echo "add_apex_fs"
 
 # add_fs
-rm -rf ../apex_fs
-mkdir ../apex_fs
+rm -rf $TARGETDIR/apex_fs
+mkdir $TARGETDIR/apex_fs
 
-contexts="../apex_fs/apex_contexts"
-bin_fs="../apex_fs/apex_bin_fs"
-lib_fs="../apex_fs/apex_lib_fs"
-fs="../apex_fs/apex_fs"
+contexts="$TARGETDIR/apex_fs/apex_contexts"
+bin_fs="$TARGETDIR/apex_fs/apex_bin_fs"
+lib_fs="$TARGETDIR/apex_fs/apex_lib_fs"
+fs="$TARGETDIR/apex_fs/apex_fs"
 
-files=$(find ../../out/system/system/apex/ -name '*')
+files=$(find $TARGETDIR/system/system/apex/ -name '*')
 for file in $files ;do
   if [ -d "$file" ];then
-    echo "$file" | sed 's#../../out/#/#g' | sed 's/$/& 0 0 0755/g' | sed 's/.//' >>$fs
+    echo "$file" | sed "s;^$TARGETDIR/system/system/;system/system/;g" | sed 's/$/& 0 0 0755/g' >>$fs
     if [ $(echo "$file" | grep -E "\/lib|\/lib64") ];then
-      echo "$file" | sed 's#../../out/#/#g' | sed 's/$/& u:object_r:system_lib_file:s0/g' >>$contexts
+      echo "$file" | sed "s;^$TARGETDIR/system/system/;/system/system/;g" | sed 's/$/& u:object_r:system_lib_file:s0/g' >>$contexts
     else
-      echo "$file" | sed 's#../../out/#/#g' | sed 's/$/& u:object_r:system_file:s0/g' >>$contexts
+      echo "$file" | sed "s;^$TARGETDIR/system/system/;/system/system/;g" | sed 's/$/& u:object_r:system_file:s0/g' >>$contexts
     fi 
   fi
 
   if [ -L "$file" ];then
-    echo "$file" | sed 's#../../out/#/#g' | sed 's/$/& 0 0 0644/g' | sed 's/.//' >>$fs
+    echo "$file" | sed "s;^$TARGETDIR/system/system/;system/system/;g" | sed 's/$/& 0 0 0644/g' >>$fs
     if [ $(echo "$file" | grep ".so$") ];then
-      echo "$file" | sed 's#../../out/#/#g' | sed 's/$/& u:object_r:system_lib_file:s0/g' >>$contexts
+      echo "$file" | sed "s;^$TARGETDIR/system/system/;/system/system/;g" | sed 's/$/& u:object_r:system_lib_file:s0/g' >>$contexts
     else
-      echo "$file" | sed 's#../../out/#/#g' | sed 's/$/& u:object_r:system_file:s0/g' >>$contexts
+      echo "$file" | sed "s;^$TARGETDIR/system/system/;/system/system/;g" | sed 's/$/& u:object_r:system_file:s0/g' >>$contexts
     fi
   fi
 
   if [ -f "$file" ];then
-    echo "$file" | sed 's#../../out/#/#g' | sed 's/$/& 0 0 0644/g' | sed 's/.//' >>$fs
+    echo "$file" | sed "s;^$TARGETDIR/system/system/;system/system/;g" | sed 's/$/& 0 0 0644/g' >>$fs
     if [ $(echo "$file" | grep ".so$") ];then
-      echo "$file" | grep ".so$" | sed 's#../../out/#/#g' | sed 's/$/& u:object_r:system_lib_file:s0/g' >>$contexts
+      echo "$file" | grep ".so$" | sed "s;^$TARGETDIR/;/system/system/;g" | sed 's/$/& u:object_r:system_lib_file:s0/g' >>$contexts
     else
-      echo "$file" | sed 's#../../out/#/#g' | sed 's/$/& u:object_r:system_file:s0/g' >>$contexts
+      echo "$file" | sed "s;^$TARGETDIR/system/system/;/system/system/;g" | sed 's/$/& u:object_r:system_file:s0/g' >>$contexts
     fi
   fi 
 done
 
-if [[ -d ../../out/system/system/system_ext/apex/ ]];then
-files=$(find ../../out/system/system/system_ext/apex/ -name '*')
+if [[ -d $TARGETDIR/system/system/system_ext/apex/ ]];then
+files=$(find $TARGETDIR/system/system/system_ext/apex/ -name '*')
 for file in $files ;do
   if [ -d "$file" ];then
-    echo "$file" | sed 's#../../out/#/#g' | sed 's/$/& 0 0 0755/g' | sed 's/.//' >>$fs
+    echo "$file" | sed "s;^$TARGETDIR/system/system/system_ext/;system/system/system_ext/;g" | sed 's/$/& 0 0 0755/g' >>$fs
     if [ $(echo "$file" | grep -E "\/lib|\/lib64") ];then
-      echo "$file" | sed 's#../../out/#/#g' | sed 's/$/& u:object_r:system_lib_file:s0/g' >>$contexts
+      echo "$file" | sed "s;^$TARGETDIR/system/system/system_ext/;/system/system/system_ext/;g" | sed 's/$/& u:object_r:system_lib_file:s0/g' >>$contexts
     else
-      echo "$file" | sed 's#../../out/#/#g' | sed 's/$/& u:object_r:system_file:s0/g' >>$contexts
+      echo "$file" | sed "s;^$TARGETDIR/system/system/system_ext/;/system/system/system_ext/;g" | sed 's/$/& u:object_r:system_file:s0/g' >>$contexts
     fi 
   fi
 
   if [ -L "$file" ];then
-    echo "$file" | sed 's#../../out/#/#g' | sed 's/$/& 0 0 0644/g' | sed 's/.//' >>$fs
+    echo "$file" | sed "s;^$TARGETDIR/system/system/system_ext/;system/system/system_ext/;g" | sed 's/$/& 0 0 0644/g' >>$fs
     if [ $(echo "$file" | grep ".so$") ];then
-      echo "$file" | sed 's#../../out/#/#g' | sed 's/$/& u:object_r:system_lib_file:s0/g' >>$contexts
+      echo "$file" | sed "s;^$TARGETDIR/system/system/system_ext/;/system/system/system_ext/;g" | sed 's/$/& u:object_r:system_lib_file:s0/g' >>$contexts
     else
-      echo "$file" | sed 's#../../out/#/#g' | sed 's/$/& u:object_r:system_file:s0/g' >>$contexts
+      echo "$file" | sed "s;^$TARGETDIR/system/system/system_ext/;/system/system/system_ext/;g" | sed 's/$/& u:object_r:system_file:s0/g' >>$contexts
     fi
   fi
 
   if [ -f "$file" ];then
-    echo "$file" | sed 's#../../out/#/#g' | sed 's/$/& 0 0 0644/g' | sed 's/.//' >>$fs
+    echo "$file" | sed "s;^$TARGETDIR/system/system/system_ext/;system/system/system_ext/;g" | sed 's/$/& 0 0 0644/g' >>$fs
   if [ $(echo "$file" | grep ".so$") ];then
-    echo "$file" | grep ".so$" | sed 's#../../out/#/#g' | sed 's/$/& u:object_r:system_lib_file:s0/g' >>$contexts
+    echo "$file" | grep ".so$" | sed "s;^$TARGETDIR/system/system/system_ext/;/system/system/system_ext/;g" | sed 's/$/& u:object_r:system_lib_file:s0/g' >>$contexts
   else
-    echo "$file" | sed 's#../../out/#/#g' | sed 's/$/& u:object_r:system_file:s0/g' >>$contexts
+    echo "$file" | sed "s;^$TARGETDIR/system/system/system_ext/;/system/system/system_ext/;g" | sed 's/$/& u:object_r:system_file:s0/g' >>$contexts
     fi
   fi 
 done
 fi
 
-sed -i '/\/system\/system\/apex/d' ../../out/config/system_file_contexts
-sed -i '/system\/system\/apex/d' ../../out/config/system_fs_config
+sed -i '/\/system\/system\/apex/d' $configdir/system_file_contexts
+sed -i '/system\/system\/apex/d' $configdir/system_fs_config
 
 # contexts
 sed -i '1d' $contexts
@@ -101,6 +105,5 @@ sed -i 's/\.so 0 2000 0755/\.so 0 0 0644/g' $lib_fs
 
 cat $bin_fs >> $fs
 cat $lib_fs >> $fs
-#cat ../add_fs/apex_contexts >> $contexts
-cat $fs >> ../../out/config/system_fs_config
-cat $contexts >> ../../out/config/system_file_contexts
+cat $fs >> $configdir/system_fs_config
+cat $contexts >> $configdir/system_file_contexts

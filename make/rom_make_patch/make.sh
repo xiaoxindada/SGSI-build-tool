@@ -3,7 +3,11 @@
 LOCALDIR=`cd "$( dirname $0 )" && pwd`
 cd $LOCALDIR
 
-systemdir="../../out/system/system"
-configdir="../../out/config"
+WORKSPACE=$LOCALDIR/../../workspace
+IMAGESDIR=$WORKSPACE/images
+TARGETDIR=$WORKSPACE/out
+
+configdir="$TARGETDIR/config"
+systemdir="$TARGETDIR/system/system"
 
 echo "rom修补处理中"
