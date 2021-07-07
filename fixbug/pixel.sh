@@ -16,3 +16,14 @@ echo "${scirpt_name%%.*} fixing..."
 if [ -d $systemdir/apex/com.google.android.mediaprovider ];then
   cp -frp $src_dir/system/apex/com.google.android.mediaprovider/* $systemdir/apex/com.google.android.mediaprovider/
 fi
+
+# 禁用media.c2
+disable_media_c2() {
+  local files=$(grep "android.hardware.media.c2" $systemdir -ril)
+  for file in $files ;do
+    if [ $(echo "$file" | grep ".xml$" ) ];then
+      sed -i -e "s|<name>android.hardware.media.c2</name>|<name>android.hardware.media.c2.disable</name>|" $file
+    fi
+  done
+}
+disable_media_c2
