@@ -1,9 +1,5 @@
 
-########################################
-#              小新SGSI
-########################################
-
-# 通用属性
+# product commom prop 
 ro.sys.sdcardfs=0
 persist.sys.disable_rescue=true
 ro.control_privapp_permissions=disable

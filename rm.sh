@@ -43,10 +43,10 @@ done
 
 true > ./make/add_etc_vintf_patch/manifest_custom
 echo "" >> ./make/add_etc_vintf_patch/manifest_custom
-echo "<!-- oem自定义接口 -->" >> ./make/add_etc_vintf_patch/manifest_custom
+echo "<!-- oem hal -->" >> ./make/add_etc_vintf_patch/manifest_custom
 
-true > ./make/add_build/add_oem_build
-echo "" >> ./make/add_build/add_oem_build
-echo "# oem厂商自定义属性" >> ./make/add_build/add_oem_build
+true > ./make/add_build/oem_prop
+echo "" >> ./make/add_build/oem_prop
+echo "# oem common prop" >> ./make/add_build/oem_prop
 
 echo "工具环境清理完成"

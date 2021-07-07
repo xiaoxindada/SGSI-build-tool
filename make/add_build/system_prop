@@ -1,0 +1,3 @@
+
+# system common prop
+ro.build.system_root_image=true

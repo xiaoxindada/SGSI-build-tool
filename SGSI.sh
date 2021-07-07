@@ -108,11 +108,11 @@ function normal() {
   # 重置manifest_custom
   true > ./make/add_etc_vintf_patch/manifest_custom
   echo "" >> ./make/add_etc_vintf_patch/manifest_custom
-  echo "<!-- oem自定义接口 -->" >> ./make/add_etc_vintf_patch/manifest_custom
+  echo "<!-- oem hal -->" >> ./make/add_etc_vintf_patch/manifest_custom
 
-  true > ./make/add_build/add_oem_build
-  echo "" >> ./make/add_build/add_oem_build
-  echo "# oem厂商自定义属性" >> ./make/add_build/add_oem_build
+  true > ./make/add_build/oem_prop
+  echo "" >> ./make/add_build/oem_prop
+  echo "# oem common prop" >> ./make/add_build/oem_prop
  
   # 为所有rom添加抓logcat的文件
   cp -frp ./make/add_logcat/system/* $systemdir/
@@ -200,12 +200,14 @@ function normal() {
     sed -i '/ro.control_privapp_permissions/d' $systemdir/build.prop
     sed -i '/ro.control_privapp_permissions/d' $systemdir/product/etc/build.prop
     sed -i '/ro.control_privapp_permissions/d' $systemdir/system_ext/etc/build.prop  
-    cat ./make/add_build/add_build >> $systemdir/build.prop
-    cat ./make/add_build/add_product_build >> $systemdir/product/etc/build.prop
-    cat ./make/add_build/add_system_ext_build >> $systemdir/system_ext/etc/build.prop
+    cat ./make/add_build/system_prop >> $systemdir/build.prop
+    cat ./make/add_build/product_prop >> $systemdir/product/etc/build.prop
+    cat ./make/add_build/system_ext_prop >> $systemdir/system_ext/etc/build.prop
 
     # Disable bpfloader
     rm -rf $systemdir/etc/init/bpfloader.rc
+    echo ""  >> $systemdir/product/etc/build.prop
+    echo "# Disable bpfloader" >> $systemdir/product/etc/build.prop
     echo "bpf.progs_loaded=1" >> $systemdir/product/etc/build.prop
 
     # 为所有rom启用虚拟建
@@ -252,16 +254,16 @@ function normal() {
   sed -i 's/persist.sys.usb.config=none/persist.sys.usb.config=adb/g' $systemdir/build.prop
   sed -i 's/ro.debuggable=0/ro.debuggable=1/g' $systemdir/build.prop
   sed -i 's/ro.adb.secure=1/ro.adb.secure=0/g' $systemdir/build.prop
-  echo "ro.force.debuggable=1" >> $systemdir/build.prop
   
   sed -i 's/persist.sys.usb.config=none/persist.sys.usb.config=adb/g' $systemdir/system_ext/etc/build.prop
   sed -i 's/ro.debuggable=0/ro.debuggable=1/g' $systemdir/system_ext/etc/build.prop
   sed -i 's/ro.adb.secure=1/ro.adb.secure=0/g' $systemdir/system_ext/etc/build.prop
-  echo "ro.force.debuggable=1" >> $systemdir/system_ext/etc/build.prop
 
   sed -i 's/persist.sys.usb.config=none/persist.sys.usb.config=adb/g' $systemdir/product/etc/build.prop
   sed -i 's/ro.debuggable=0/ro.debuggable=1/g' $systemdir/product/etc/build.prop
   sed -i 's/ro.adb.secure=1/ro.adb.secure=0/g' $systemdir/product/etc/build.prop
+  echo "" >> $systemdir/product/etc/build.prop
+  echo "# force debug" >> $systemdir/product/etc/build.prop
   echo "ro.force.debuggable=1" >> $systemdir/product/etc/build.prop
 
 
@@ -310,7 +312,7 @@ function normal() {
   cd $LOCALDIR
 
   # oem_build合并
-  cat ./make/add_build/add_oem_build >> $systemdir/build.prop
+  cat ./make/add_build/oem_prop >> $systemdir/build.prop
 
   # 为rom添加oem服务所依赖的hal接口
   rm -rf ./vintf
@@ -323,7 +325,7 @@ function normal() {
   echo "" >> $manifest
   echo "</manifest>" >> $manifest
   cp -frp $manifest $systemdir/etc/vintf/
-  rm -rf ./vintf
+  rm -rf ./vintf  
 }
 
 function make_Aonly() {
