@@ -1,10 +1,4 @@
-<!-- 
-************************************
-             小新SGSI
-************************************
--->
-
-<!-- phh通用接口 -->
+<!-- phh common hal -->
     <hal format="hidl">
         <name>android.hardware.wifi.hostapd</name>
         <transport>hwbinder</transport>

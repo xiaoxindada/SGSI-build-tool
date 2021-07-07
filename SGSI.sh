@@ -315,17 +315,20 @@ function normal() {
   cat ./make/add_build/oem_prop >> $systemdir/build.prop
 
   # 为rom添加oem服务所依赖的hal接口
-  rm -rf ./vintf
-  mkdir ./vintf
-  cp -frp $systemdir/etc/vintf/manifest.xml ./vintf/
-  manifest="./vintf/manifest.xml"
-  sed -i '/<\/manifest>/d' $manifest
-  cat ./make/add_etc_vintf_patch/manifest_common >> $manifest
-  cat ./make/add_etc_vintf_patch/manifest_custom >> $manifest
-  echo "" >> $manifest
-  echo "</manifest>" >> $manifest
-  cp -frp $manifest $systemdir/etc/vintf/
-  rm -rf ./vintf  
+  manifest_tmp="$TARGETDIR/vintf/manifest.xml"
+  rm -rf $(dirname $manifest_tmp)
+  mkdir -p $(dirname $manifest_tmp)
+  cp -frp $systemdir/etc/vintf/manifest.xml $(dirname $manifest_tmp)
+  sed -i '/<\/manifest>/d' $manifest_tmp
+  cat ./make/add_etc_vintf_patch/manifest_common >> $manifest_tmp
+  cat ./make/add_etc_vintf_patch/manifest_custom >> $manifest_tmp
+  echo "" >> $manifest_tmp
+  echo "</manifest>" >> $manifest_tmp
+  cp -frp $manifest_tmp $systemdir/etc/vintf/
+  rm -rf $(dirname $manifest_tmp)
+  cp -frp ./make/add_etc_vintf_patch/manifest_custom $TARGETDIR/manifest_custom
+  true > ./make/add_etc_vintf_patch/manifest_custom
+  echo "<!-- oem hal -->" >> ./make/add_etc_vintf_patch/manifest_custom
 }
 
 function make_Aonly() {
