@@ -183,7 +183,7 @@ esac
 
 if [ -s $outdir/system.img ];then
   echo "打包完成"
-  echo "输出至SGSI文件夹"
+  echo "输出至$LOCALDIR/SGSI"
 else
   echo "打包失败，错误日志如上"
   exit
