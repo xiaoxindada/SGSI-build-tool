@@ -329,6 +329,7 @@ function normal() {
   rm -rf $(dirname $manifest_tmp)
   cp -frp ./make/add_etc_vintf_patch/manifest_custom $TARGETDIR/manifest_custom
   true > ./make/add_etc_vintf_patch/manifest_custom
+  echo "" >> ./make/add_etc_vintf_patch/manifest_custom
   echo "<!-- oem hal -->" >> ./make/add_etc_vintf_patch/manifest_custom
 }
 
