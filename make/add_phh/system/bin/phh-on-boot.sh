@@ -1,5 +1,8 @@
 #!/system/bin/sh
 
+vndk="$(getprop persist.sys.vndk)"
+[ -z "$vndk" ] && vndk="$(getprop ro.vndk.version |grep -oE '^[0-9]+')"
+
 [ "$(getprop vold.decrypt)" = "trigger_restart_min_framework" ] && exit 0
 
 for i in wpa p2p;do
@@ -27,3 +30,13 @@ getprop | \
     while read -r svc ;do
         setprop ctl.stop "$svc"
     done
+    
+minijailSrc=/apex/com.android.vndk.v28/lib/libminijail.so
+minijailSrc64=/apex/com.android.vndk.v28/lib64/libminijail.so
+
+if [ "$vndk" = 28 ];then
+    mount -o bind $minijailSrc64 /vendor/lib64/libminijail_vendor.so
+    mount -o bind $minijailSrc /vendor/lib/libminijail_vendor.so
+    mount -o bind $minijailSrc64 /vendor/lib64/libminijail.so
+    mount -o bind $minijailSrc /vendor/lib/libminijail.so
+fi 
