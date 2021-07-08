@@ -366,8 +366,8 @@ if getprop ro.bionic.cpu_variant |grep -q kryo300;then
     setprop dalvik.vm.isa.arm64.variant cortex-a75
     setprop dalvik.vm.isa.arm64.features runtime
 fi
-
-resetprop ro.control_privapp_permissions log
+setprop ro.control_privapp_permissions disable
+resetprop ro.control_privapp_permissions disable
 
 if grep -q /mnt/vendor/persist /vendor/etc/fstab.qcom;then
     mount /mnt/vendor/persist /persist
