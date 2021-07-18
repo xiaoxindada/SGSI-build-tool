@@ -145,7 +145,7 @@ function normal() {
     sed -i '/persist/d' $systemdir/system_ext/etc/selinux/system_ext_property_contexts
     sed -i '/oem/d' $systemdir/system_ext/etc/selinux/system_ext_property_contexts
   fi
- 
+
   build_modify() {
   # 为所有qssi原包修复机型数据
     qssi() {
@@ -189,6 +189,7 @@ function normal() {
     sed -i '/vendor.perf/d' $systemdir/build.prop
     sed -i '/debug.sf/d' $systemdir/build.prop
     sed -i '/debug.sf/d' $systemdir/product/etc/build.prop
+    sed -i '/ro.sys.sdcardfs/d' $systemdir/product/etc/build.prop
     sed -i '/persist.sar.mode/d' $systemdir/build.prop
     sed -i '/opengles.version/d' $systemdir/build.prop
     sed -i '/actionable_compatible_property.enabled/d' $systemdir/build.prop
@@ -391,7 +392,7 @@ function make_Aonly() {
     modify_init_environ
   else
     echo "此rom不支持制造A-only"
-    exit  
+    exit 1 
   fi
 
   # 为老设备迁移 /system/etc/hw/*.rc 至 /system/etc/init/
@@ -456,10 +457,10 @@ fi
 
 if [[ ! -d $systemdir/product ]];then
   echo "$systemdir/product目录不存在！"
-  exit
+  exit 1
 elif [[ ! -d $systemdir/system_ext ]];then
   echo "$systemdir/system_ext目录不存在！"
-  exit
+  exit 1
 fi
 
 model="$(cat $systemdir/build.prop | grep 'model')"
@@ -482,7 +483,7 @@ if [ -L $systemdir/vendor ];then
         fix_bug
       fi
       ./makeimg.sh "--a-only${use_config}"
-      exit
+      exit 0
       ;;
       "--AB"|"--ab")
       echo "AB"
@@ -500,8 +501,10 @@ if [ -L $systemdir/vendor ];then
       if [ $bug_fix = "true" ];then
         fix_bug
       fi
+      echo "使用aosp密钥全局签名中"
+      python $bin/tools/signapk/resign.py "$systemdir" $bin/tools/signapk/AOSP_security "$bin/$HOST/$platform/lib64"> $TARGETDIR/resign.log
       ./makeimg.sh "--ab${use_config}"
-      exit
+      exit 0
       ;;
     esac 
 fi

@@ -29,19 +29,31 @@ cd $LOCALDIR/../apex_flat
 ./apex_extractor.sh "$systemdir/apex"
 cd $LOCALDIR
 
-# 强行扁平化apex
+# 清理apex默认状态
 sed -i '/ro.apex.updatable/d' $systemdir/build.prop
 sed -i '/ro.apex.updatable/d' $systemdir/product/etc/build.prop
 sed -i '/ro.apex.updatable/d' $systemdir/system_ext/etc/build.prop
-echo "ro.apex.updatable=false" >> $systemdir/product/etc/build.prop
 
-# 清理apex
-apex_files=$(ls $systemdir/apex | grep ".apex$")
-for apex in $apex_files ;do
-  if [ -f $systemdir/apex/$apex ];then
-    rm -rf $systemdir/apex/$apex
-  fi
-done
+apex_flatten() {
+  # 强行扁平化apex
+  echo "ro.apex.updatable=false" >> $systemdir/product/etc/build.prop
+
+  # 清理apex
+  apex_files=$(ls $systemdir/apex | grep ".apex$")
+  for apex in $apex_files ;do
+    if [ -f $systemdir/apex/$apex ];then
+      echo "skip remove apex"
+     # rm -rf $systemdir/apex/$apex
+    fi
+  done
+
+  # 当启用apex扁平化时 我们不需要cts的apex存在
+  for cts_files in $(find $systemdir/apex -type d -name "*" | grep -E "apex.cts.*");do
+    [ -z $cts_files ] && continue
+    rm -rf $cts_files
+  done
+}
+apex_flatten
 
 # 创建vndk链接
 rm -rf $systemdir/lib/vndk-29 $systemdir/lib/vndk-sp-29
