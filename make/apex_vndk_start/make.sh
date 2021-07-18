@@ -29,18 +29,21 @@ cd $LOCALDIR/../apex_flat
 ./apex_extractor.sh "$systemdir/apex"
 cd $LOCALDIR
 
+# 清理apex默认状态
+sed -i '/ro.apex.updatable/d' $systemdir/build.prop
+sed -i '/ro.apex.updatable/d' $systemdir/product/etc/build.prop
+sed -i '/ro.apex.updatable/d' $systemdir/system_ext/etc/build.prop
+
 apex_flatten() {
   # 强行扁平化apex
-  sed -i '/ro.apex.updatable/d' $systemdir/build.prop
-  sed -i '/ro.apex.updatable/d' $systemdir/product/etc/build.prop
-  sed -i '/ro.apex.updatable/d' $systemdir/system_ext/etc/build.prop
   echo "ro.apex.updatable=false" >> $systemdir/product/etc/build.prop
 
   # 清理apex
   apex_files=$(ls $systemdir/apex | grep ".apex$")
   for apex in $apex_files ;do
     if [ -f $systemdir/apex/$apex ];then
-      rm -rf $systemdir/apex/$apex
+      echo "skip remove apex"
+     # rm -rf $systemdir/apex/$apex
     fi
   done
 

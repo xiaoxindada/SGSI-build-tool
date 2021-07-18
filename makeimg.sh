@@ -99,7 +99,7 @@ file_contexts() {
 file_contexts
 
 case $os_repackage_type in
-  "-A"|"--a-only"|"--AB_CONFIG"|"--ab_config")
+  "-A"|"--a-only"|"--AB"|"--ab"|"--AB_CONFIG"|"--ab_config")
     if [[ -f $configdir/$target_contexts ]]; then
       echo "/firmware(/.*)?         u:object_r:firmware_file:s0" >> $configdir/$target_contexts
       echo "/bt_firmware(/.*)?      u:object_r:bt_firmware_file:s0" >> $configdir/$target_contexts

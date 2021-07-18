@@ -73,4 +73,4 @@ backup_file /vendor/build.prop
 patch_prop /vendor/build.prop "ro.control_privapp_permissions" "disable";
 
 # Force apex not updatable
-patch_prop /vendor/build.prop "ro.apex.updatable" "false";
+#patch_prop /vendor/build.prop "ro.apex.updatable" "false";
