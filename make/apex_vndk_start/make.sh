@@ -76,3 +76,12 @@ ln -s  /apex/com.android.vndk.v30/lib64 $systemdir/lib64/vndk-30
 ln -s  /apex/com.android.vndk.v29/lib64 $systemdir/lib64/vndk-sp-29
 ln -s  /apex/com.android.vndk.v28/lib64 $systemdir/lib64/vndk-sp-28
 ln -s  /apex/com.android.vndk.v30/lib64 $systemdir/lib64/vndk-sp-30
+
+# 修补不同vndk版本所需要的vintf片段
+manifest_file="$systemdir/system_ext/etc/vintf/manifest.xml"
+if [ -f $manifest_file ];then
+   sed -i "/<\/manifest>/d" $manifest_file
+   cat $LOCALDIR/manifest.patch >> $manifest_file
+   echo "" >> $manifest_file
+   echo "</manifest>" >> $manifest_file
+fi
