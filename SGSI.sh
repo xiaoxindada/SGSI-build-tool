@@ -502,7 +502,6 @@ if [ -L $systemdir/vendor ];then
         fix_bug
       fi
       echo "使用aosp密钥全局签名中"
-      python $bin/tools/signapk/resign.py "$systemdir" $bin/tools/signapk/AOSP_security "$bin/$HOST/$platform/lib64"> $TARGETDIR/resign.log
       ./makeimg.sh "--ab${use_config}"
       exit 0
       ;;
