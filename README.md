@@ -1,69 +1,100 @@
 # SGSI-build-tool
-**Copyright (C) 2020 Xiaoxindada (2245062854@qq.com)  
-Not for commercial use without my permission**
+**Copyright (C) 2021 Xiaoxindada (2245062854@qq.com)  
+未经过本人许可 不可进行商用**
  
-# This tool will continue to be updated  
-## This tool partly relies on:  
-* Erfan GSIs Open source project: https://github.com/erfanoabdi/ErfanGSIs  
-* MToolkot: https://github.com/Nightmare-MY
-* This Tool README.md Translated By @Priiiyo   
-* Thanks for the above list  
+## 本工具部分依赖来自:  
+* Erfan GSIs: https://github.com/erfanoabdi/ErfanGSIs  
+* MToolkit: https://github.com/Nightmare-MY
+* AndroidDump: https://github.com/AndroidDump/dumper
+* 对上述列表表示感谢  
 
-## Thanks Nine Rain Dream Boat https://github.com/rsyhan for help
+## 感谢九雨梦舟 https://github.com/pomelohan 的帮助  
+## 感谢 Col_or https://github.com/color597 的帮助  
 
-***For some reasons, the open source format does not use folder upload, tar decompression is the source code, no package***
+# 本工具为PC版
 
-# Make sure to use the tool for the first time
+# 确保首次使用工具
 ```
-installation apk  
-Put SGSI-build-tool.tar place ubuntu Installation folder home In the catalog  
-use Linux Deploy installation Ubuntu arm64  
-```
-
-# Use ssh enter ubuntu Execute commands later
-```
+tar使用:  
+下载本工具  
+进入工具所在目录内，执行以下命令：  
 su  
-tar -xf SGSI-build-tool.tar  
-cd SGSI-build-tool/10  
+tar -xf SGSI-build-tool-12.tar  
+cd SGSI-build-tool-12/12
+
+从v12-1.2开始以及以后:
+su  
+tar -xf SGSI-build-tool-12.tar  
+cd SGSI-build-tool-12
 ```
 
-# The installation tool depends on the environment(Suggest hanging t)
 ```
+GitHub:  
+git clone --recurse-submodules https://github.com/xiaoxindada/SGSI-build-tool.git -b 12
+cd SGSI-build-tool-12
+su
+```
+
+# 使用Actions构建SGSI:
+https://github.com/xiaoxindada/SGSI-build-action
+
+
+# 安装工具依赖环境(建议挂t)
+```
+测试环境： Ubuntu 20.04
+（Debian系列Linux支持， Arch系列未支持 需要的自行更改脚本安装依赖）
 ./setup.sh  
 ```
 
-# manufacture SGSI:
+# 制造SGSI:
 ```
-Put the flash package to tmp In folder
- 
-* manufacture A-only:./make.sh A  
-* manufacture AB:./make.sh AB
-* Can also be used alone ./SGSI.sh A or ./SGSI.sh AB 
-If the original package is super.img Put super.img Place the tool root directory   
-Then use ./unpacksuper.sh Unpack and unpack it img Throw it to the tool directory and execute it directly ./SGSI.sh
+把刷机包放至tmp文件夹内 
+制造A-only:./make.sh A  
+制造AB:./make.sh AB
+也可单独使用./SGSI.sh A 或 ./SGSI.sh AB 
+如果原包是super.img 把super.img放置工具根目录   
+然后使用./unpacksuper.sh解包然后把解出来的img丢到工具更目录直接执行./SGSI.sh即可  
+本工具制造的SGSI也支持动态分区机型刷入 不过要打包成super.img
+使用./makesuper.sh打包
+Patch1 Patch2 的内容需要自行把他打包至vendor.img 把system vendor打包生成super.img然后刷入 然后刷入patch3格式化data即可
+本工具仅仅制作system.img部分Patch部分需要手动  
+本工具是半自动工具 因为有些处理自动化并不理想 多变 所以手动更好 如果你不清楚这些东西的处理 也可以不处理 直接制造也行  
+成品输出在SGSI文件夹 然后手动制造Patch1 2 3即可
 
-* Made by this tool SGSI It also supports dynamic partition model flashing super.img
-use ./makesuper.sh Bale
-
-Patch1 Patch2 Needs to be packaged to vendor.img Put system vendor Package generation super.img Then swipe in then swipe in patch3 format data Can
-This tool only makes system.img section Patch Some need to be manually  
-This tool is a semi-automatic tool, because some processing automation is not ideal and changeable, so manual is better. If you don’t know how to deal with these things, you can just not process them and make them directly.  
-Finished product output in SGSI Folder and then manually made Patch1 2 3 Can  
-```
-
-# This tool packs and unpacks scripts
-```
-* img Unpack: makeimg2.sh unpackimg.sh(Can be used alone Support any partition to pack and unpack)  
-* super.img Unpack: makesuper.sh unpacksuper.sh  
-* boot.img Unpack: makeboot.sh unpackboot.sh  
-* dat/br Generate: img2sdat.sh simg2sdat.sh  
-* Unzip img of apex: apex.sh (apex Flat)  
-* Partial deodex: bin/oat2dex/deodex.sh  
-* ozip Decrypt: oppo_ozip  
+v12-1.4开始采用脚本传递参数形式进行构建
+su
+制造A-only: ./make.sh -a Pixel ./tmp/redfin-ota-spp2.210219.008-3d61e529.zip --fix-bug
+制造AB: ./make.sh --ab Pixel ./tmp/redfin-ota-spp2.210219.008-3d61e529.zip --fix-bug
+单独使用SGSI.sh: ./SGSI.sh --ab Pixel --fix-bug
 ```
 
-# This tool recommends the required memory space:30G
+# 同步更新工具:
+```  
+./update.sh
+```
 
-**Cleanup tool to perform more directory rm.sh Can**
+# 本工具打包解包脚本
+```
+img打包解包: makeimg2.sh unpackimg.sh(单独可使用 支持任意分区打包解包)  
+super.img打包解包: makesuper.sh unpacksuper.sh  
+boot.img打包解包: makeboot.sh unpackboot.sh  
+dat/br生成: img2sdat.sh simg2sdat.sh  
+解压img的apex: apex.sh (apex扁平化)  
+局部deodex: bin/oat2dex/deodex.sh  
+ozip解密: oppo_ozip 
+dtboimg打包解包： makedtbo.sh unpackdtbo.sh
+apk签名： bin/tools/signapk/signapk.sh
+LG kdz解包：unpack_kdz.sh
+oppo/oneplus ops解包：unpack_ops.sh
+```
 
-**If you want to donate me please feel free QQ Group:967161723**
+# Patch1制作方法
+```
+1. 添加oem厂商的 Vendor Blobs以及叠加层（overlay）
+2. 清根据log的情况来具体修改
+3. Patch样本以上传文件夹（请自行模仿）
+```
+
+**清理工具 执行更目录的rm.sh即可**
+
+**如果想捐赠我请随意 QQ群:967161723**
