@@ -57,4 +57,5 @@ enable_apex() {
 }
 if [ $(cat $systemdir/build.prop | grep "ro.build.version.sdk" | head -n 1 | cut -d "=" -f 2) = "31" ];then
   enable_apex
+  cp -frp $LOCALDIR/system/* $systemdir/
 fi
