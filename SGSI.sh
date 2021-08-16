@@ -239,6 +239,7 @@ function normal() {
 
   # 为所有rom禁用 reboot_on_failure 检查
   sed -i "/reboot_on_failure/d" $systemdir/etc/init/hw/init.rc
+  sed -i "/reboot_on_failure/d" $systemdir/etc/init/apexd.rc
 
   # 为所有rom还原fstab.postinstall
   find $systemdir/../ -type f -name "fstab.postinstall" | xargs rm -rf
