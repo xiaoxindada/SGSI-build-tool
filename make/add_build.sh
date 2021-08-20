@@ -1,9 +1,10 @@
 #!/bin/bash
 
-LOCALDIR=`cd "$( dirname $0 )" && pwd`
+LOCALDIR=`cd "$( dirname ${BASH_SOURCE[0]} )" && pwd`
 cd $LOCALDIR
+source $LOCALDIR/../language_helper.sh
 
-# oem属性添加
+# Add OEM Properties
 sed -i '/#end/d' ../out/vendor/build.prop
 echo "#end" >> ../out/vendor/build.prop
 start=$((`grep -n '# ADDITIONAL VENDOR BUILD PROPERTIES' ../out/vendor/build.prop | cut -d ":" -f 1`+2))

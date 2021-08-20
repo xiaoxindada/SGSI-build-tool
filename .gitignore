@@ -1,4 +1,5 @@
 *.pyc
+.lang_flag
 SGSI/
 make/*/add_repack_contexts
 make/*/add_repack_fs

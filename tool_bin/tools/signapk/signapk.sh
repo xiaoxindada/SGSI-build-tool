@@ -2,7 +2,7 @@
 
 # Copyright (C) 2021 Xiaoxindada <2245062854@qq.com>
 
-LOCALDIR=`cd "$( dirname $0 )" && pwd`
+LOCALDIR=`cd "$( dirname ${BASH_SOURCE[0]} )" && pwd`
 cd $LOCALDIR
 HOST=$(uname)
 platform=$(uname -m)

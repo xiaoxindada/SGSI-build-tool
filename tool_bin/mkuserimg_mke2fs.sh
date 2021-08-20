@@ -21,7 +21,7 @@ MKE2FS_EXTENDED_OPTS=""
 E2FSDROID_OPTS=""
 E2FSPROGS_FAKE_TIME=""
 
-LOCALDIR=`cd "$( dirname $0 )" && pwd`
+LOCALDIR=`cd "$( dirname ${BASH_SOURCE[0]} )" && pwd`
 
 if [ "$1" = "-s" ]; then
   MKE2FS_EXTENDED_OPTS+="android_sparse"

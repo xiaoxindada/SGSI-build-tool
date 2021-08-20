@@ -1,10 +1,12 @@
 #!/bin/bash
 
-# Copyright (C) 2020 Xiaoxindada <2245062854@qq.com>
+# Copyright (C) 2021 Xiaoxindada <2245062854@qq.com>
+#		2021 Jiuyu <2652609017@qq.com>
 
-LOCALDIR=`cd "$( dirname $0 )" && pwd`
+LOCALDIR=`cd "$( dirname ${BASH_SOURCE[0]} )" && pwd`
 cd $LOCALDIR
 source ./bin.sh
+source ./language_helper.sh
 
 Usage() {
 cat <<EOT
@@ -25,7 +27,7 @@ case $1 in
     ;;
   "-A"|"-a"|"--a-only")
     build_type="-a"
-    echo "暂不支持A-only"
+    echo $NOTSUPPAONLY
     exit
     ;;
   "-h"|"--help")
@@ -49,15 +51,15 @@ other_args=""
 shift 3
 
 if ! (cat $LOCALDIR/make/rom_support_list.txt | grep -qo "$os_type");then
-  echo "此rom未支持!"
-  echo "支持的rom有:"
+  echo $UNSUPPORTED_ROM
+  echo $SUPPORTED_ROM_LIST
   cat $LOCALDIR/make/rom_support_list.txt
   exit 1
 fi
 
 if [ ! -e $firmware ];then
   if [ ! -e $LOCALDIR/tmp/$firmware ];then
-    echo "当前固件不存在"
+    echo $NOTFOUNDFW
     exit 1
   fi  
 fi
@@ -83,15 +85,15 @@ function firmware_extract() {
 
   cd $LOCALDIR/tmp
   for partition in $partition_list ;do
-    # payload.bin检测
+    # Detect payload.bin
     if [ -e ./payload.bin ];then
       mv ./payload.bin ../payload/
       cd ../payload
-      echo "解压payload.bin中..."
+      echo $UNZIPINGPLB
       python ./payload.py ./payload.bin ./out
       for i in $partition_list ;do
         if [ -e ./out/$i.img ];then
-          echo "移动$i.img至工具目录..."
+          echo $MOVINGIMG
           mv ./out/$i.img $IMAGESDIR/
         fi
       done
@@ -100,18 +102,18 @@ function firmware_extract() {
       cd $LOCALDIR/tmp
     fi
 
-    # dat.br检测
+    # Detect dat.br
     if [ -e ./${partition}.new.dat.br ];then
-      echo "正在解压${partition}.new.dat.br"
+      echo "$UNPACKING_STR ${partition}.new.dat.br"
       $bin/brotli -d ${partition}.new.dat.br
       python $bin/sdat2img.py ${partition}.transfer.list ${partition}.new.dat ./${partition}.img
       mv ./${partition}.img $IMAGESDIR/
       rm -rf ./${partition}.new.dat
     fi
   
-    # 分段dat检测
+    # Detect split new.dat
     if [ -e ./${partition}.new.dat.1 ];then
-      echo "检测到分段${partition}.new.dat，正在合并"
+      echo "$SPLIT_DETECTED ${partition}.new.dat, $MERGING_STR"
       cat ./${partition}.new.dat.{1..999} 2>/dev/null >> ./${partition}.new.dat
       rm -rf ./${partition}.new.dat.{1..999}
       python $bin/sdat2img.py ${partition}.transfer.list ${partition}.new.dat ./${partition}.img
@@ -119,28 +121,29 @@ function firmware_extract() {
       rm -rf ./${partition}.new.dat
     fi
 
-    # dat检测
+    # Detect general new.dat
     if [ -e ./${partition}.new.dat ];then
-      echo "正在解压${partition}.new.dat"
+      echo "$UNPACKING_STR ${partition}.new.dat"
       python $bin/sdat2img.py ${partition}.transfer.list ${partition}.new.dat ./${partition}.img
       mv ./${partition}.img $IMAGESDIR/
     fi
 
-    #img检测
+    # Detect image
     if [ -e ./${partition}.img ];then
       mv ./${partition}.img $IMAGESDIR/
     fi
   done
+
   cd $IMAGESDIR
 }
 
-echo "环境初始化中 请稍候..."
+echo $INITINGENV
 chmod -R 777 ./
 ./workspace_cleanup.sh > /dev/null 2>&1
 rm -rf $WORKSPACE
 mkdir -p $IMAGESDIR
 mkdir -p $TARGETDIR
-echo "初始化环境完成"
+echo $ENVINITFINISH
 
 if [[ "$1" = "--fix-bug" ]];then
   other_args+="--fix-bug"
@@ -155,6 +158,6 @@ if [ -e $IMAGESDIR/system.img ];then
   ./workspace_cleanup.sh
   exit 0
 else
-  echo "未检测到system.img, 无法制作SGSI！"
+  echo $NOTFOUNDSYSTEMIMG
   exit 1
 fi

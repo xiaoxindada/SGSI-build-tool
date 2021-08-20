@@ -1,10 +1,11 @@
 #!/bin/bash
 
-LOCALDIR=`cd "$( dirname $0 )" && pwd`
+LOCALDIR=`cd "$( dirname ${BASH_SOURCE[0]} )" && pwd`
 cd $LOCALDIR
+source ./language_helper.sh
 
 mkdir -p ./tmp
-echo "正在清理工作目录"
+echo $CLEANINGWORKSPACE_STR
 if [ -e ./tmp/*.bin ];then
   rm -rf ./tmp/*.bin
 fi

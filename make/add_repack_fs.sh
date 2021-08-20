@@ -1,16 +1,15 @@
 #!/bin/bash
- 
-LOCALDIR=`cd "$( dirname $0 )" && pwd`
+
+LOCALDIR=`cd "$( dirname ${BASH_SOURCE[0]} )" && pwd`
 cd $LOCALDIR
-WORKSPACE=$LOCALDIR/../workspace
-IMAGESDIR=$WORKSPACE/images
-TARGETDIR=$WORKSPACE/out
+source $LOCALDIR/../bin.sh
+source $LOCALDIR/../language_helper.sh
 
 configdir="$TARGETDIR/config"
 target_fs="$configdir/system_fs_config"
 target_contexts="$configdir/system_file_contexts"
 
-echo "正在添加patch文件的fs"
+echo "$ADDING_PATCHFILE_FS"
 
 for get_fs in $(find $LOCALDIR -type f | grep "get_fs.sh$");do
   $get_fs

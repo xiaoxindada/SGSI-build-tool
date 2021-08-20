@@ -1,7 +1,10 @@
 #!/bin/bash
 
-LOCALDIR=`cd "$( dirname $0 )" && pwd`
+LOCALDIR=`cd "$( dirname ${BASH_SOURCE[0]} )" && pwd`
 cd $LOCALDIR
+source $LOCALDIR/../../bin.sh
+source $LOCALDIR/../../language_helper.sh
+
 echo "ext4extract"
 EXT4EXTRACT="$LOCALDIR/ext4extract.py"
 TARGETDIR="$LOCALDIR/../../workspace/out"

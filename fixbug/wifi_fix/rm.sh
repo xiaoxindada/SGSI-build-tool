@@ -1,4 +1,4 @@
-LOCALDIR=`cd "$( dirname $0 )" && pwd`
+LOCALDIR=`cd "$( dirname ${BASH_SOURCE[0]} )" && pwd`
 cd $LOCALDIR
 
 find ./ -type d -name '*' | xargs rm -rf > /dev/null 2>&1

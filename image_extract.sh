@@ -1,8 +1,9 @@
 #!/bin/bash
  
-LOCALDIR=`cd "$( dirname $0 )" && pwd`
+LOCALDIR=`cd "$( dirname ${BASH_SOURCE[0]} )" && pwd`
 cd $LOCALDIR
 source ./bin.sh
+source ./language_helper.sh
 
 partition_name="
 system
@@ -15,10 +16,10 @@ mkdir -p $TARGETDIR
 
 for partition in $partition_name ;do
   if [[ -e $IMAGESDIR/$partition.img ]];then
-    echo "正在提取$partition.img..."
+    echo "$EXTRACTING_STR $partition.img..."
     python3 $bin/imgextractor.py $IMAGESDIR/$partition.img $TARGETDIR
     if [ $? != "0" ];then
-      echo "$partition.img提取失败"
+      echo "$FAILEXTRACT_STR $partition.img"
       exit
     fi
   fi

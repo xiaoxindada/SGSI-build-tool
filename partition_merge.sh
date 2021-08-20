@@ -2,9 +2,10 @@
  
 # Copyright (C) 2021 Xiaoxindada <2245062854@qq.com>
  
-LOCALDIR=`cd "$( dirname $0 )" && pwd`
+LOCALDIR=`cd "$( dirname ${BASH_SOURCE[0]} )" && pwd`
 cd $LOCALDIR
 source ./bin.sh
+source ./language_helper.sh
 
 systemdir="$TARGETDIR/system/system"
 configdir="$TARGETDIR/config"
@@ -18,7 +19,7 @@ mkdir -p $TARGETDIR/dynamic_fs
 
 for partition in $partition_name ;do
   [ -d $systemdir/$partition ] && continue
-  echo "正在合并${partition}分区"
+  echo "$MERGING_STR ${partition} $PARTITION_STR"
 
   if [ -d $TARGETDIR/$partition ];then
     rm -rf $systemdir/$partition
@@ -58,5 +59,5 @@ for partition in $partition_name ;do
       cat $dynamic_fs_dir/${partition}_merge_fs_config >> $target_fs
     fi
   done
-  echo "合并完成"
+  echo "$MERGE_SUCCESS"
 done

@@ -3,9 +3,10 @@
 # Copyright (C) 2021 Xiaoxindada <2245062854@qq.com>
 set -e
 
-LOCALDIR=`cd "$( dirname $0 )" && pwd`
+LOCALDIR=`cd "$( dirname ${BASH_SOURCE[0]} )" && pwd`
 cd $LOCALDIR
 source ./bin.sh
+source ./language_helper.sh
 
 Usage() {
 cat <<EOT
@@ -15,7 +16,7 @@ $0 <Build Type> <OS Type> [Other args]
   OS Type: Rom OS type to build
 
   Other args:
-    [--fix-bug]: Fix bugs in Rom
+    [--fix-bug]: Fix bugs in ROM
 EOT
 }
 
@@ -25,7 +26,7 @@ case $1 in
     ;;
   "-A"|"-a"|"--a-only")
     build_type="--a-only"
-    echo "暂不支持A-only"
+    echo "$NOTSUPPAONLY"
     exit
     ;;
   "-h"|"--help")
@@ -53,15 +54,15 @@ configdir="$TARGETDIR/config"
 shift 2
 
 if ! (cat ./make/rom_support_list.txt | grep -qo "$os_type");then
-  echo "此rom未支持!"
-  echo "支持的rom有:"
+  echo $UNSUPPORTED_ROM
+  echo $SUPPORTED_ROM_LIST
   cat ./make/rom_support_list.txt
-  exit
+  exit 1
 fi
 
 function normal() {
-  # 为所有rom修改ramdisk层面的system
-  echo "正在修改system外层"
+  # Process ramdisk's system for all rom
+  echo "$PROCESSING_RAMDISK_SYSTEM"
   ramdisk_modify() {
     rm -rf "$systemdir/../persist"
     rm -rf "$systemdir/../bt_firmware"
@@ -97,16 +98,16 @@ function normal() {
     fi
   }
   ramdisk_modify
-  echo "修改完成"
+  echo "$PROCESS_SUCCESS"
  
-  # apex_vndk调用处理
+  # Common apex_vndk process
   cd ./make/apex_vndk_start
   ./make.sh
   cd $LOCALDIR 
 
-  echo "正在进行其他处理"
+  echo "$OTHER_PROCESSINGS"
 
-  # 重置manifest_custom
+  # Reset manifest_custom
   true > ./make/add_etc_vintf_patch/manifest_custom
   echo "" >> ./make/add_etc_vintf_patch/manifest_custom
   echo "<!-- oem hal -->" >> ./make/add_etc_vintf_patch/manifest_custom
@@ -115,13 +116,13 @@ function normal() {
   echo "" >> ./make/add_build/oem_prop
   echo "# oem common prop" >> ./make/add_build/oem_prop
  
-  # 为所有rom添加抓logcat的文件
+  # Add logcat support
   cp -frp ./make/add_logcat/system/* $systemdir/
 
-  # 为所有rom做usb通用化
+  # Modify USB State
   cp -frp ./make/aosp_usb/* $systemdir/etc/init/hw/
 
-  # 为所有rom做selinux通用化处理
+  # Patch SELinux to ensure maximum device compatibility
   sed -i "/typetransition location_app/d" $systemdir/etc/selinux/plat_sepolicy.cil
   #sed -i '/u:object_r:vendor_default_prop:s0/d' $systemdir/etc/selinux/plat_property_contexts
   sed -i '/software.version/d'  $systemdir/etc/selinux/plat_property_contexts
@@ -147,44 +148,45 @@ function normal() {
   fi
 
   build_modify() {
-  # 为所有qssi原包修复机型数据
+  # Fix Device Properties for qssi
     qssi() {
       cat $systemdir/build.prop | grep -qo 'qssi'
     }
     if qssi ;then
-      echo "检测到原包为qssi 启用机型参数修复" 
+      echo "$QSSI_DETECTED"
+      echo "$DEVICE_PROP_FIX_STARTED"
       brand=$(cat $TARGETDIR/vendor/build.prop | grep 'ro.product.vendor.brand')
       device=$(cat $TARGETDIR/vendor/build.prop | grep 'ro.product.vendor.device')
       manufacturer=$(cat $TARGETDIR/vendor/build.prop | grep 'ro.product.vendor.manufacturer')
       model=$(cat $TARGETDIR/vendor/build.prop | grep 'ro.product.vendor.model')
       mame=$(cat $TARGETDIR/vendor/build.prop | grep 'ro.product.vendor.name')
   
-      echo "当前原包机型参数为:"
+      echo "$CURR_DEVICE_PROP:"
       echo "$brand"
       echo "$device"
       echo "$manufacturer"
       echo "$model"
       echo "$mame"
 
-      echo "正在修复"
+      echo "$FIXING_STR"
       sed -i '/ro.product.system./d' $systemdir/build.prop
       echo "" >> $systemdir/build.prop
-      echo "# 设备参数" >> $systemdir/build.prop
+      echo "# Device Settings" >> $systemdir/build.prop
       echo "$brand" >> $systemdir/build.prop
       echo "$device" >> $systemdir/build.prop
       echo "$manufacturer" >> $systemdir/build.prop
       echo "$model" >> $systemdir/build.prop
       echo "$mame" >> $systemdir/build.prop
       sed -i 's/ro.product.vendor./ro.product.system./g' $systemdir/build.prop
-      echo "修复完成"
+      echo "$FIX_FINISHED_STR"
     fi
  
-    # 为所有rom改用分辨率自适应
+    # Enable auto-adapting dpi
     sed -i 's/ro.sf.lcd/#&/' $systemdir/build.prop
     sed -i 's/ro.sf.lcd/#&/' $systemdir/product/etc/build.prop
     sed -i 's/ro.sf.lcd/#&/' $systemdir/system_ext/etc/build.prop    
   
-    # 为所有rom清理一些无用属性
+    # Cleanup properties
     sed -i '/vendor.display/d' $systemdir/build.prop
     sed -i '/vendor.perf/d' $systemdir/build.prop
     sed -i '/debug.sf/d' $systemdir/build.prop
@@ -194,10 +196,10 @@ function normal() {
     sed -i '/opengles.version/d' $systemdir/build.prop
     sed -i '/actionable_compatible_property.enabled/d' $systemdir/build.prop
 
-    # 为所有rom禁用caf media.setting
+    # Disable caf media.setting
     sed -i '/media.settings.xml/d' $systemdir/build.prop
 
-    # 为所有rom添加必要的通用属性
+    # Add common properties
     sed -i '/system_root_image/d' $systemdir/build.prop
     sed -i '/ro.control_privapp_permissions/d' $systemdir/build.prop
     sed -i '/ro.control_privapp_permissions/d' $systemdir/product/etc/build.prop
@@ -212,7 +214,7 @@ function normal() {
     echo "# Disable bpfloader" >> $systemdir/product/etc/build.prop
     echo "bpf.progs_loaded=1" >> $systemdir/product/etc/build.prop
 
-    # 为所有rom启用虚拟建
+    # Enable HW Mainkeys
     mainkeys() {
       grep -q 'qemu.hw.mainkeys=' $systemdir/build.prop
     }  
@@ -220,28 +222,28 @@ function normal() {
       sed -i 's/qemu.hw.mainkeys\=1/qemu.hw.mainkeys\=0/g' $systemdir/build.prop
     else
       echo "" >> $systemdir/build.prop
-      echo "# 启用虚拟键" >> $systemdir/build.prop
+      echo "# Enable HW Mainkeys" >> $systemdir/build.prop
       echo "qemu.hw.mainkeys=0" >> $systemdir/build.prop
     fi
 
-    # 为所有qssi原包修改默认设备参数读取
+    # Hack qssi property read order
     source_order() {
       grep -q 'ro.product.property_source_order=' $systemdir/build.prop
     }
     if source_order ;then
       sed -i '/ro.product.property\_source\_order\=/d' $systemdir/build.prop
       echo "" >> $systemdir/build.prop
-      echo "# 机型专有设备参数默认读取顺序" >> $systemdir/build.prop
+      echo "# Property Read Order" >> $systemdir/build.prop
       echo "ro.product.property_source_order=system,product,system_ext,vendor,odm" >> $systemdir/build.prop
     fi
   }
   build_modify
 
-  # 为所有rom禁用 reboot_on_failure 检查
+  # Diable reboot_on_failure Check
   sed -i "/reboot_on_failure/d" $systemdir/etc/init/hw/init.rc
   sed -i "/reboot_on_failure/d" $systemdir/etc/init/apexd.rc
 
-  # 为所有rom还原fstab.postinstall
+  # Revert fstab.postinstall to gsi state
   find $systemdir/../ -type f -name "fstab.postinstall" | xargs rm -rf
   rm -rf $systemdir/etc/init/cppreopts.rc    
   cp -frp ./make/fstab/system/* $systemdir
@@ -250,10 +252,10 @@ function normal() {
   cat ./make/fstab/fstab_contexts >> $configdir/system_file_contexts
   cat ./make/fstab/fstab_fs >> $configdir/system_fs_config
   
-  # 添加缺少的libs
+  # Add missing libs
   cp -frpn ./make/add_libs/system/* $systemdir
  
-  # 为所有rom启用debug调试
+  # Enable debug feature
   sed -i 's/persist.sys.usb.config=none/persist.sys.usb.config=adb/g' $systemdir/build.prop
   sed -i 's/ro.debuggable=0/ro.debuggable=1/g' $systemdir/build.prop
   sed -i 's/ro.adb.secure=1/ro.adb.secure=0/g' $systemdir/build.prop
@@ -270,54 +272,54 @@ function normal() {
   echo "ro.force.debuggable=1" >> $systemdir/product/etc/build.prop
 
 
-  # 为所有rom删除qti_permissions
+  # Remove qti_permissions
   find $systemdir -type f -name "qti_permissions.xml" | xargs rm -rf
 
-  # 为所有rom删除firmware
+  # Remove firmware
   find $systemdir -type d -name "firmware" | xargs rm -rf
 
-  # 为所有rom删除avb
+  # Remove avb
   find $systemdir -type d -name "avb" | xargs rm -rf
   
-  # 为所有rom删除com.qualcomm.location
+  # Remove com.qualcomm.location
   find $systemdir -type d -name "com.qualcomm.location" | xargs rm -rf
 
-  # 为所有rom删除多余文件
+  # Remove some useless files
   rm -rf $systemdir/../verity_key
   rm -rf $systemdir/../init.recovery*
   rm -rf $systemdir/recovery-from-boot.*
 
-  # 为所有rom patch system
+  # Patch System
   cp -frp ./make/system_patch/system/* $systemdir/
 
-  # 为所有rom做phh化处理
+  # Patch system to phh system
   cp -frp ./make/add_phh/system/* $systemdir/
 
-  # 为phh化注册必要selinux上下文
+  # Register selinux contexts related by phh system
   cat ./make/add_phh_plat_file_contexts/plat_file_contexts >> $systemdir/etc/selinux/plat_file_contexts
 
-  # 为添加的文件注册必要的selinux上下文
+  # Register selinux contexts related by added files
   cat ./make/add_plat_file_contexts/plat_file_contexts >> $systemdir/etc/selinux/plat_file_contexts
 
-  # 为所有rom的相机修改为aosp相机
+  # Replace to AOSP Camera
   #cd ./make/camera
   #./camera.sh
   #cd $LOCALDIR
 
-  # 系统种类检测
+  # Detect ROM Type
   cd ./make
   ./romtype.sh "$os_type"
   cd $LOCALDIR
 
-  # rom修补处理
+  # ROM Patch Process
   cd ./make/rom_make_patch
-  ./make.sh 
+  ./make.sh
   cd $LOCALDIR
 
-  # oem_build合并
+  # Add oem_build
   cat ./make/add_build/oem_prop >> $systemdir/build.prop
 
-  # 为rom添加oem服务所依赖的hal接口
+  # Add OEM HAL Manifest Interfaces
   manifest_tmp="$TARGETDIR/vintf/manifest.xml"
   rm -rf $(dirname $manifest_tmp)
   mkdir -p $(dirname $manifest_tmp)
@@ -337,49 +339,49 @@ function normal() {
 
 function make_Aonly() {
 
-  echo "正在制造A-onlay"
+  echo "$MAKING_A_ONLY"
   
-  # 为所有rom去除ab特性
+  # Remove AB Feature
   ## build
   sed -i '/system_root_image/d' $systemdir/build.prop
   sed -i '/ro.build.ab_update/d' $systemdir/build.prop
   sed -i '/sar/d' $systemdir/build.prop
 
-  ## 删除多余文件
+  ## Remove useless files
   rm -rf $systemdir/etc/init/update_engine.rc
   rm -rf $systemdir/etc/init/update_verifier.rc
   rm -rf $systemdir/etc/update_engine
   rm -rf $systemdir/bin/update_engine
   rm -rf $systemdir/bin/update_verifier
 
-  # 修补oem的rc
+  # Add OEM RC
   oemrc_files=$(ls $systemdir/../ | grep ".rc$")
   for oemrc in $oemrc_files ;do
     new_oemrc=$(echo "${oemrc%.*}" | sed 's/$/&-treble.rc/g')
     cp -fr $systemdir/../$oemrc $systemdir/etc/init/$new_oemrc
-    # 清理new_oemrc中的错误导入
+    # Clean up new_oemrc's wrong import
     for i in $systemdir/etc/init/$new_oemrc ;do 
       echo "$(cat $i | grep -v "^import")" > $i 
     done
-    # 为新的rc添加fs数据
+    # Add fs data to rc
     echo "/system/system/etc/init/$new_oemrc u:object_r:system_file:s0" >> $configdir/system_file_contexts
     echo "system/system/etc/init/$new_oemrc 0 0 0644" >> $configdir/system_fs_config
   done
 
-  # 为所有rom禁用/system/etc/ueventd.rc
+  # Disable /system/etc/ueventd.rc
   rm -rf $systemdir/etc/ueventd.rc
 
-  # 为所有rom改用内核自带的init.usb.rc
+  # Use Kernel init.usb.rc
   #rm -rf $systemdir/etc/init/hw/init.usb.rc
   #rm -rf $systemdir/etc/init/hw/init.usb.configfs.rc
   #sed -i '/\/system\/etc\/init\/hw\/init.usb.rc/d' $systemdir/etc/init/hw/init.rc
   #sed -i '/\/system\/etc\/init\/hw\/init.usb.configfs.rc/d' $systemdir/etc/init/hw/init.rc
 
-  # 去除init.environ.rc重复导入
+  # Remove importing init.environ.rc
   sed -i '/\/init.environ.rc/d' $systemdir/etc/init/hw/init.rc
   
   modify_init_environ() {
-    # 修改init.environ.rc
+    # Modify init.environ.rc
     sed -i 's/on early\-init/on init/g' $systemdir/etc/init/init.environ-treble.rc
     sed -i '/ANDROID\_BOOTLOGO/d' $systemdir/etc/init/init.environ-treble.rc
     sed -i '/ANDROID\_ROOT/d' $systemdir/etc/init/init.environ-treble.rc
@@ -392,38 +394,38 @@ function make_Aonly() {
   if [ -f $systemdir/etc/init/init.environ-treble.rc ];then
     modify_init_environ
   else
-    echo "此rom不支持制造A-only"
+    echo "$NOT_SUPPORT_MAKE_AONLY"
     exit 1 
   fi
 
-  # 为老设备迁移 /system/etc/hw/*.rc 至 /system/etc/init/
+  # Move /system/etc/hw/*.rc to /system/etc/init for old devices
   old_rc_flies=$(ls $systemdir/etc/init/hw)
   for old_rc in $old_rc_flies ;do
     new_rc=$(echo "${old_rc%.*}" | sed 's/$/&-treble.rc/g')
     cp -frp $systemdir/etc/init/hw/$old_rc $systemdir/etc/init/$new_rc
-    # 为新的rc添加fs数据
+    # Add fs data to new rc
     echo "/system/system/etc/init/$new_rc u:object_r:system_file:s0" >> $configdir/system_file_contexts
     echo "system/system/etc/init/$new_rc 0 0 0644" >> $configdir/system_fs_config  
   done 
   
-  # 添加启动A-only必备文件 
+  # Add A-only related files
   cp -frp ./make/init_A/system/* $systemdir/
 
-  # 修补apex-setup.rc
+  # Patch apex-setup.rc
   cat $systemdir/etc/init/apex-setup.rc >> $systemdir/etc/init/add_apex-setup.rc
   mv -f $systemdir/etc/init/add_apex-setup.rc $systemdir/etc/init/apex-setup.rc
 
-  # permissive启动延后
+  # Fix permissiver start delay
   sed -i "s/on early\-init/on init/" $systemdir/etc/init/permissiver.rc
 
-  # apex_vndk调用处理
+  # apex_vndk common process
   cd ./make/apex_vndk_start
   ./make_A.sh
   cd $LOCALDIR 
 }
 
 function fix_bug() {
-    echo "启用bug修复"
+    echo "$START_BUG_FIX"
     cd ./fixbug
     ./fixbug.sh "$os_type"
     cd $LOCALDIR
@@ -440,46 +442,46 @@ fi
 
 rm -rf ./SGSI
 
-# simg2img
+# Sparse Image To Raw Image
 ./simg2img.sh "$IMAGESDIR"
 
-# 分区挂载
+# Mount Partitions
 #./mount_partition.sh
 cd $LOCALDIR
 
-# image提取
+# Extract Image
 ./image_extract.sh
 
 if [[ -d $systemdir/../system_ext && -L $systemdir/system_ext ]] \
 || [[ -d $systemdir/../product && -L $systemdir/product ]];then
-  echo "检测到当前为动态分区"
+  echo "$DYNAMIC_PARTITION_DETECTED"
   ./partition_merge.sh
 fi
 
 if [[ ! -d $systemdir/product ]];then
-  echo "$systemdir/product目录不存在！"
+  echo "$systemdir/product $DIR_NOT_FOUND_STR!"
   exit 1
 elif [[ ! -d $systemdir/system_ext ]];then
-  echo "$systemdir/system_ext目录不存在！"
+  echo "$systemdir/system_ext $DIR_NOT_FOUND_STR!"
   exit 1
 fi
 
 model="$(cat $systemdir/build.prop | grep 'model')"
-echo "当前原包机型为:"
+echo "$CURR_DEVICE_PROPS:"
 echo "$model"
 
 if [ -L $systemdir/vendor ];then
-  echo "当前为正常pt 启用正常处理方案"
-  echo "SGSI化处理开始"
+  echo "$IS_NORMAL_PT"
+  echo "$START_NOR_PROCESS_PLAN"
   case $build_type in
     "-A"|"-a"|"--a-only")
       echo "A"
       normal
       make_Aonly
-      # fs数据整合
+      # Merge FS Data
       ./make/apex_flat/add_apex_fs.sh
       ./make/add_repack_fs.sh
-      echo "SGSI化处理完成"
+      echo "$SGSI_IFY_SUCCESS"
       if [ $bug_fix = "true" ];then
         fix_bug
       fi
@@ -489,20 +491,24 @@ if [ -L $systemdir/vendor ];then
       "--AB"|"--ab")
       echo "AB"
       normal
-      # fs数据整合
-      ./make/apex_flat/add_apex_fs.sh
-      ./make/add_repack_fs.sh
-      # 清理fs空行
+      # Merge FS DATA
+      cd ./make/apex_flat
+      ./add_apex_fs.sh
+      cd $LOCALDIR
+      cd ./make
+      ./add_repack_fs.sh
+      cd $LOCALDIR
+      # Clean FS blank line
       for i in $(ls $configdir);do
         if [ -f $configdir/$i ];then
           sed -i '/^\s*$/d' $configdir/$i
         fi
       done
-      echo "SGSI化处理完成"
+      echo "$SGSI_IFY_SUCCESS"
       if [ $bug_fix = "true" ];then
         fix_bug
       fi
-      echo "使用aosp密钥全局签名中"
+      echo "$SIGNING_WITH_AOSPKEY"
       python $bin/tools/signapk/resign.py "$systemdir" $bin/tools/signapk/AOSP_security "$bin/$HOST/$platform/lib64"> $TARGETDIR/resign.log
       ./makeimg.sh "--ab${use_config}"
       exit 0

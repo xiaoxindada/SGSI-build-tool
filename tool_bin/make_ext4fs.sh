@@ -9,7 +9,7 @@ mkuserimg.sh SRC_DIR OUTPUT_FILE EXT_VARIANT MOUNT_POINT SIZE
 EOT
 }
 
-LOCALDIR=`cd "$( dirname $0 )" && pwd`
+LOCALDIR=`cd "$( dirname ${BASH_SOURCE[0]} )" && pwd`
 
 echo "in mkuserimg.sh PATH=$PATH"
 

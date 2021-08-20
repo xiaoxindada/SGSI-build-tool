@@ -1,12 +1,10 @@
 #!/bin/bash
 
-LOCALDIR=`cd "$( dirname $0 )" && pwd`
-cd $LOCALDIR
-
+TOOLDIR=`cd $( dirname ${BASH_SOURCE[0]} ) && pwd`
 HOST=$(uname)
 platform=$(uname -m)
-export bin=$LOCALDIR/tool_bin
+export bin=$TOOLDIR/tool_bin
 export LD_LIBRARY_PATH=$bin/$HOST/$platform/lib64
-export WORKSPACE=$LOCALDIR/workspace
+export WORKSPACE=$TOOLDIR/workspace
 export IMAGESDIR=$WORKSPACE/images
 export TARGETDIR=$WORKSPACE/out
