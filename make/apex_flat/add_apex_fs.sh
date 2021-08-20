@@ -2,11 +2,10 @@
 
 # Copyright (C) 2020 Xiaoxindada <2245062854@qq.com>
 
-LOCALDIR=`cd "$( dirname $0 )" && pwd`
+LOCALDIR=`cd "$( dirname ${BASH_SOURCE[0]} )" && pwd`
 cd $LOCALDIR
-WORKSPACE=$LOCALDIR/../../workspace
-IMAGESDIR=$WORKSPACE/images
-TARGETDIR=$WORKSPACE/out
+source $LOCALDIR/../../bin.sh
+source $LOCALDIR/../../language_helper.sh
 
 configdir="$TARGETDIR/config"
 echo "add_apex_fs"

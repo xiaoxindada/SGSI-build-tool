@@ -11,7 +11,7 @@
 #
 # usage: oat2dex.sh <framework path> <target jar/apk>
 
-LOCALDIR=$(cd "$(dirname $0)" && pwd)
+LOCALDIR=$(cd "$(dirname ${BASH_SOURCE[0]})" && pwd)
 toolsdir=$LOCALDIR/../tools
 TMPDIR=$LOCALDIR/../tmp/oat2dex
 mkdir -p "$TMPDIR"

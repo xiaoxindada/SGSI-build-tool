@@ -1,7 +1,10 @@
 #!/bin/bash
 
-LOCALDIR=`cd "$( dirname $0 )" && pwd`
+LOCALDIR=`cd "$( dirname ${BASH_SOURCE[0]} )" && pwd`
 cd $LOCALDIR
+source $LOCALDIR/../bin.sh
+source $LOCALDIR/../language_helper.sh
+
 ./rm.sh > /dev/null 2>&1
 
 os_type="$1"
@@ -9,19 +12,19 @@ os_type="$1"
 echo "
 --------------------
 
-支持的ROM:
+$SUPPORTED_ROM_STR:
 
 Pixel
 --------------------
 "
 case "$os_type" in
   "Pixel")
-    echo "正在修复"
+    echo "$FIXING_STR"
     ./pixel.sh
     exit
     ;;
   *)
-    echo "$os_type 不支持bug修复"
+    echo "$os_type $NOT_SUPPORT_FIX_BUG"
     exit  
     ;;
 esac

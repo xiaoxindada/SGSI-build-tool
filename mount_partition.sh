@@ -1,8 +1,9 @@
 #!/bin/bash
 
-LOCALDIR=`cd "$( dirname $0 )" && pwd`
+LOCALDIR=`cd "$( dirname ${BASH_SOURCE[0]} )" && pwd`
 cd $LOCALDIR
 source ./bin.sh
+source ./language_helper.sh
 
 rm -rf ./out
 rm -rf ./SGSI
@@ -17,7 +18,7 @@ for partition in system ;do
   mkdir -p $partition
   mkdir -p $LOCALDIR/out/$partition
   mount -o ro $partition.img $partition
-  echo "正在复制 $partition 至 $LOCALDIR/out/$partition"
+  echo "$COPING_STR $partition $TO_STR $LOCALDIR/out/$partition"
   ( cd $LOCALDIR/$partition ; tar cf - . ) | ( cd "$LOCALDIR/out/$partition" ; tar xf - ; cd $LOCALDIR )
   umount $LOCALDIR/$partition 
   rm -rf $LOCALDIR/$partition
@@ -30,18 +31,18 @@ if [ -e $LOCALDIR/vendor.img ];then
     mkdir -p $partition
     mkdir -p $LOCALDIR/out/$partition
     mount -o ro $partition.img $partition
-    echo "正在复制 $partition 至 $LOCALDIR/out/$partition"
+    echo "$COPING_STR $partition $TO_STR $LOCALDIR/out/$partition"
     ( cd $LOCALDIR/$partition; tar cf - . ) | ( cd $LOCALDIR/out/$partition ; tar xf - ; cd $LOCALDIR)
     umount $LOCALDIR/$partition
     rm -rf $LOCALDIR/$partition
   done
 fi
 
-[ ! -d $systemdir ] && echo "${systemdir}不存在！" && exit
+[ ! -d $systemdir ] && echo "${systemdir} $NOTFOUND_STR！" && exit
 
 if [[ -d $systemdir/../system_ext && -L $systemdir/system_ext ]] \
 || [[ -d $systemdir/../product && -L $systemdir/product ]];then
-  echo "检测到当前为动态分区"
+  echo "$DYNAMIC_PARTITION_DETECTED"
 fi
 
 for partition in $partition_list ;do
@@ -53,7 +54,7 @@ for partition in $partition_list ;do
     mkdir -p $partition
     mkdir -p $systemdir/$partition
     mount -o ro $partition.img $partition
-    echo "正在复制 $partition 至 $systemdir/$partition"
+    echo "$COPING_STR $partition $TO_STR $systemdir/$partition"
     ( cd $LOCALDIR/$partition; tar cf - . ) | ( cd $systemdir/$partition ; tar xf - ; cd $LOCALDIR)
     umount $LOCALDIR/$partition
     rm -rf $LOCALDIR/$partition

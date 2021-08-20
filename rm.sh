@@ -1,8 +1,9 @@
 #!/bin/bash
 
-LOCALDIR=`cd "$( dirname $0 )" && pwd`
+LOCALDIR=`cd "$( dirname ${BASH_SOURCE[0]} )" && pwd`
 cd $LOCALDIR
 source ./bin.sh 
+source ./language_helper.sh
 
 chmod -R 777 ./
 rm -rf $WORKSPACE
@@ -50,4 +51,4 @@ true > ./make/add_build/oem_prop
 echo "" >> ./make/add_build/oem_prop
 echo "# oem common prop" >> ./make/add_build/oem_prop
 
-echo "工具环境清理完成"
+echo "$WORKSPACECLEAND_STR"

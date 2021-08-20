@@ -1,13 +1,11 @@
 #!/bin/bash
 
-LOCALDIR=`cd "$( dirname $0 )" && pwd`
+LOCALDIR=`cd "$( dirname ${BASH_SOURCE[0]} )" && pwd`
 cd $LOCALDIR
-
-WORKSPACE=$LOCALDIR/../../workspace
-IMAGESDIR=$WORKSPACE/images
-TARGETDIR=$WORKSPACE/out
+source $LOCALDIR/../../bin.sh
+source $LOCALDIR/../../language_helper.sh
 
 configdir="$TARGETDIR/config"
 systemdir="$TARGETDIR/system/system"
 
-echo "rom修补处理中"
+echo "$FIXING_ROM"

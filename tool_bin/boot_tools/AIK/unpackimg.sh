@@ -26,7 +26,7 @@ case $(uname -s) in
 esac;
 arch=$plat/`uname -m`;
 
-aik=`cd "$( dirname $0 )" && pwd`;
+aik=`cd "$( dirname ${BASH_SOURCE[0]} )" && pwd`;
 bin="$aik/bin";
 cur="$(readlink -f "$PWD")";
 

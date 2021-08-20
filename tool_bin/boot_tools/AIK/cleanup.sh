@@ -14,7 +14,7 @@ case $(uname -s) in
   *) statarg="-c %U";;
 esac;
 
-aik=`cd "$( dirname $0 )" && pwd`;
+aik=`cd "$( dirname ${BASH_SOURCE[0]} )" && pwd`;
 bin="$aik/bin";
 
 case $1 in

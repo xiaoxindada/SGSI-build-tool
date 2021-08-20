@@ -1,0 +1,126 @@
+#!/bin/bash
+
+# Xiaoxin sGSI Build Tools - Multi Language Helper
+# zh_CN, Chinese
+# Copyright (C) 2021 Xiaoxindada <2245062854@qq.com> && Jiuyu <2652609017@qq.com>
+
+# language_helper.sh
+TARGET_LANG="目标语言: 简体中文"
+TRANSLATOR_NAME="小新大大"
+TRANSLATOR_EMAIL="2245062854@qq.com"
+LANG_AUTHOR="语言翻译维护者: $TRANSLATOR_NAME <$TRANSLATOR_EMAIL>"
+
+# Debug
+INFO_STR="INFO"
+ERROR_STR="ERROR"
+DEBUG_STR="DEBUG"
+
+# global
+OUTPUTTO_STR="输出至"
+DIR_STR="文件夹"
+SCRIPT_STR="脚本"
+PACK_STR="打包"
+SUCCESS_STR="成功"
+START_STR="开始"
+NOTFOUND_STR="不存在"
+DIR_NOT_FOUND_STR="目录不存在"
+PARTITION_STR="分区"
+COPING_STR="正在复制"
+TO_STR="至"
+VERSION_STR="版本"
+GENERATRING_STR="正在生成"
+GENERATED_STR="生成成功"
+GENERATEFAILED_STR="生成失败"
+EXITING_STR="正在退出"
+DYNAMIC_PARTITION_DETECTED="检测到当前为动态分区"
+
+# setup.sh
+WELCOME="欢迎使用小新大大 sGSI 构建系统"
+ENVSETUP_TOOLS="构建环境安装"
+SELECT_LANG="如果需要切换语言，请手动执行 language_helper.sh 脚本"
+DETECTING_SYSTEM="正在检测系统"
+DETECTED_LINUX="检测到 Linux"
+DETECTED_MAC="检测到 macOS"
+INSTPKG_WITH_APT="正在使用 apt 安装依赖包"
+INSTPKG_WITH_HB="正在使用 HomeBrew 安装依赖包"
+FAILED_INSTPKG="依赖包安装失败"
+SUCCFINISH_OPER="成功地完成操作"
+PY2ANDPIP_INST="正在安装 Python2 和 pip2"
+INSTALLING_JAVAPKG="正在安装 Java 包"
+INSTALLING_PYTHONMOD="正在安装 Python 模块"
+
+# make.sh
+NOTFOUNDFW="未找到固件"
+UNZIPINGPLB="正在解压 payload.bin"
+MOVINGTOOUT="正在移动至输出目录"
+INITINGENV="正在载入环境，请稍候"
+ENVINITFINISH="环境载入完成！"
+NOTFOUNDSYSTEMIMG="未发现 system.img，无法制作 sGSI"
+MOVINGIMG="正在移动 image 文件到工具目录"
+UNPACKING_STR="正在解压"
+SPLIT_DETECTED="检测到分段"
+MERGING_STR="正在合并"
+
+# image_extract.sh
+EXTRACTING_STR="正在提取"
+FAILEXTRACT_STR="无法提取"
+MERGE_SUCCESS="合并完成"
+
+# simg2img.sh
+CONVERTINGTOSIMG="正在转换为 Sparse Image"
+CONVERT_SUCCESS="转换完成"
+CONVERTING_RAW_IMAGE="正在转换 RAW Image"
+SIMG2IMG_SKIP="非 Sparse Image, 跳过转换 RAW Image"
+CONVERTFAIL="转换失败"
+CONVERTFAIL="转换成功"
+
+# SGSI.sh
+SYSTEMDIR_NF="system 目录不存在!"
+PROCESSING_RAMDISK_SYSTEM="正在处理 system ramdisk"
+PROCESS_SUCCESS="处理完成"
+OTHER_PROCESSINGS="正在进行其他处理"
+QSSI_DETECTED="检测到原包为 qssi"
+DEVICE_PROP_FIX_STARTED="正在修复机型参数"
+CURR_DEVICE_PROPS="当前原包机型参数为"
+NOTSUPPAONLY="暂时不支持构建 A-only 类型的 sGSI"
+MAKING_A_ONLY="正在制作 A-Only sGSI"
+NOT_SUPPORT_MAKE_AONLY="此 ROM 不支持制作 A-Only sGSI"
+START_BUG_FIX="启动 bug 修复"
+FIX_FINISHED_STR="修复完成"
+IS_NORMAL_PT="当前为普通 Project Treble"
+START_NOR_PROCESS_PLAN="启动正常处理方案"
+SGSI_IFY_SUCCESS="sGSI 化处理完成"
+SIGNING_WITH_AOSPKEY="正在使用 AOSP 密钥全局重新签名"
+
+# makeimg.sh
+MKIMG_FAIL="生成image失败"
+CURR_IMG_SIZE="当前img大小"
+CURR_IMG_REPACK_SIZE="当前打包大小"
+
+# rm.sh
+CLEANINGWORKSPACE_STR="正在清理工作目录"
+WORKSPACECLEAND_STR="工具环境清理完成"
+
+# update.sh
+UPDATER_MSG1="检测到当前为使用git同步工具，是否为你强制使用git同步并更新？"
+UPDATER_MSG2="正在强制使用git更新中,请准备好梯子"
+
+# make/romtype.sh
+ADDING_PATCHFILE_FS="正在添加 Patch 文件的 fs 数据"
+PIXEL_DETECTED="检测当前为 Pixel 系统"
+DEBLOATING_STR="正在精简文件"
+FIXING_ROM="正在修复 ROM"
+
+# make/rom_support_list.txt
+UNSUPPORTED_ROM="暂时不支持该 ROM"
+SUPPORTED_ROM_LIST="本工具支持的系统列表:"
+
+# make/apex_vndk_start/make.sh
+DETECTED_APEX="检测到 Apex"
+DETECTED_FLATTEN_APEX="检测到扁平化 Apex"
+EXTRACTING_EXTRA_APEX="正在提取额外 Apex"
+
+# fixbug/fixbug.sh
+SUPPORTED_ROM_STR="支持的 ROM"
+NOT_SUPPORT_FIX_BUG="不支持修复 bug, 正在退出"
+FIXING_STR="正在修复"

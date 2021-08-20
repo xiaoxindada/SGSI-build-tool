@@ -2,9 +2,10 @@
 
 # Copyright (C) 2020 Xiaoxindada <2245062854@qq.com>
 
-LOCALDIR=`cd "$( dirname $0 )" && pwd`
+LOCALDIR=`cd "$( dirname ${BASH_SOURCE[0]} )" && pwd`
 cd $LOCALDIR
 source ./bin.sh
+source ./language_helper.sh
 
 Usage() {
 cat <<EOT
@@ -79,7 +80,7 @@ case $os_repackage_type in
     ;;
 esac
 
-# 生成精简版的file_contexts
+# Generate debloated file_contexts
 file_contexts() {
   rm -rf $configdir/$target_contexts
   mkdir -p $configdir
@@ -142,12 +143,12 @@ case $os_repackage_type in
 esac
 
 if [ ! -d $systemdir ];then
-  echo "system目录不存在！"
+  echo "$SYSTEMDIR_NF"
   exit
 fi
 
 echo "
-当前img大小为: 
+$CURR_IMG_SIZE:
 _________________
 
 `du -sh $systemdir | awk '{print $1}' | bc -q | sed 's/$/&G/'`
@@ -158,10 +159,10 @@ _________________
 _________________
 "
 size=`du -sk $systemdir | awk '{$1*=1024;$1=int($1*1.05);printf $1}'`
-echo "当前打包大小：${size} B"
+echo "$CURR_IMG_REPACK_SIZE: ${size} B"
 echo ""
 
-#mke2fs+e2fsdroid打包
+#mke2fs+e2fsdroid 打包
 #$bin/mke2fs -L / -t ext4 -b 4096 $TARGETDIR/system.img $size
 #$bin/e2fsdroid -e -T 0 -S $configdir/system_file_contexts -C $configdir/system_fs_config  -a /system -f ./out/system $TARGETDIR/system.img
 
@@ -181,10 +182,10 @@ case $os_repackage_type in
 esac
 
 if [ -s $TARGETDIR/system.img ];then
-  echo "打包完成"
-  echo "输出至$LOCALDIR/SGSI"
+  echo "$PACK_STR$SUCCESS_STR"
+  echo "$OUTPUTTO_STR: $LOCALDIR/SGSI"
 else
-  echo "打包失败，错误日志如上"
+  echo ""
   exit
 fi
 

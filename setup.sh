@@ -3,7 +3,7 @@
 # Xiaoxin sGSI Build Tools - Build Environment Setup Utils
 # Copyright (C) 2020 Xiaoxindada <2245062854@qq.com> && Pomelo Jiuyu <2652609017@qq.com>
 
-LOCALDIR=`cd "$( dirname $0 )" && pwd`
+LOCALDIR=`cd "$( dirname ${BASH_SOURCE[0]} )" && pwd`
 cd $LOCALDIR
 
 # Whether uses mirror for pip
@@ -14,28 +14,29 @@ PIP_MIRROR=https://pypi.tuna.tsinghua.edu.cn/simple/
 dump_welcome(){
     echo -e "\033[34m $(cat banner/banner) \033[0m"
     echo
-    echo -e "\033[33m [INFO] Welcome to Xiaoxin sGSI Build Tools - Build Environment Setup Utils \033[0m"
+    source ./language_helper.sh
+    echo -e "\033[33m [$INFO_STR] $WELCOME - $ENVSETUP_TOOLS \033[0m"
     echo
 }
 
 dependency_install(){
-    echo -e "\033[33m [INFO] Detecting System... \033[0m"
+    echo -e "\033[33m [$INFO_STR] $DETECTING_SYSTEM ... \033[0m"
     if [[ "$OSTYPE" == "linux-gnu" ]]; then
-        echo -e "\033[33m [DEBUG] Linux Detected \033[0m"
-        echo -e "\033[33m [INFO] Installing Packages via apt... \033[0m"
+        echo -e "\033[33m [$INFO_STR] $DETECTED_LINUX \033[0m"
+        echo -e "\033[33m [$INFO_STR] $INSTPKG_WITH_APT ... \033[0m"
         sudo apt update && sudo apt upgrade -y
         sudo apt install git p7zip curl wget unace unrar zip unzip p7zip-full p7zip-rar sharutils uudeview mpack arj cabextract file-roller aptitude device-tree-compiler liblzma-dev liblz4-tool gawk aria2 selinux-utils busybox -y
         sudo apt update --fix-missing
         
     elif [[ "$OSTYPE" == "darwin"* ]]; then
-        echo -e "\033[33m [DEBUG] macOS Detected \033[0m"
-        echo -e "\033[33m [INFO] Installing Packages via homebrew... \033[0m"
+        echo -e "\033[33m [$INFO_STR] $DETECTED_MAC \033[0m"
+        echo -e "\033[33m [$INFO_STR] $INSTPKG_WITH_HB ... \033[0m"
         brew install protobuf xz brotli lz4 aria2
     fi
 }
 
 python_install(){
-        echo -e "\033[33m [INFO] Python and Pip install... \033[0m"
+        echo -e "\033[33m [$INFO_STR] $PY2ANDPIP_INST ... \033[0m"
         sudo apt-get --purge remove -y python3-pip
         sudo apt install python aptitude -y
         sudo aptitude install python-dev -y
@@ -45,29 +46,24 @@ python_install(){
 }
 
 pip_module_install(){
-    echo -e "\033[33m [INFO] Python2 and Python3 module install... \033[0m"
+    echo -e "\033[33m [$INFO_STR] $INSTALLING_PYTHONMOD... \033[0m"
     if [[ "$USE_MIRROR_FOR_PIP" == "true" ]] ; then
-        echo -e "\033[33m [INFO] Installing python packages from mirror... \033[0m"
         sudo pip install backports.lzma pycryptodome pycrypto -i $PIP_MIRROR
         sudo pip3 install backports.lzma pycryptodome pycrypto -i $PIP_MIRROR
     elif [[ "$USE_MIRROR_FOR_PIP" == "false" ]] ; then
-        echo -e "\033[33m [INFO] Installing python packages from python-pip offical... \033[0m"
         sudo pip install backports.lzma pycryptodome pycrypto
         sudo pip3 install backports.lzma pycryptodome pycrypto
     fi
     
+    echo -e "\033[33m [$INFO_STR] $INSTALLING_PYTHONMOD requirements\033[0m"
     if [[ "$USE_MIRROR_FOR_PIP" == "true" ]] ; then
         for requirements_list in $(find $LOCALDIR -type f | grep "requirements.txt");do
-            echo -e "\033[33m [INFO] From requirements.txt installing python packages \033[0m"
             sudo pip install -r $requirements_list -i $PIP_MIRROR
-            echo -e "\033[33m [INFO] From requirements.txt installing python3 packages \033[0m"
             sudo pip3 install -r $requirements_list -i $PIP_MIRROR
         done
     elif [[ "$USE_MIRROR_FOR_PIP" == "false" ]] ; then
         for requirements_list in $(find $LOCALDIR -type f | grep "requirements.txt");do
-            echo -e "\033[33m [INFO] from requirements.txt Installing python packages \033[0m"
             sudo pip install -r $requirements_list
-            echo -e "\033[33m [INFO] from requirements.txt Installing python3 packages \033[0m"
             sudo pip3 install -r $requirements_list
         done
     fi
@@ -82,7 +78,7 @@ debug_packages_version(){
         $2 --version &> $2.ver
     fi
     TARGET_SOFTWARE_VERSION=$(cat $2.ver | head -n 1)
-    echo -e "\033[33m [DEBUG] $1 Version: $TARGET_SOFTWARE_VERSION \033[0m"
+    echo -e "\033[33m [$DEBUG_STR] $1 $VERSION_STR: $TARGET_SOFTWARE_VERSION \033[0m"
     rm -rf $2.ver
 }
 
@@ -96,18 +92,19 @@ java_install(){
     if [[ "$JAVA_PACKAGE" != "$UNINSTALL_PACKAGE" ]];then
         sudo apt -y purge $UNINSTALL_PACKAGE
     fi
-    echo -e "\033[33m [INFO] Installing java package from $JAVA_PACKAGE... \033[0m"
+    echo -e "\033[33m [$INFO_STR] $INSTALLING_JAVAPKG: $JAVA_PACKAGE... \033[0m"
     sudo apt install -y $JAVA_PACKAGE
 }
 
 dump_welcome
 {
-    trap 'echo -e "\033[31m [ERROR] Install package failed! \033[0m"; exit 1' ERR
+    trap 'echo -e "\033[31m [$ERROR_STR] $FAILED_INSTPKG ! \033[0m"; exit 1' ERR
     java_install
     dependency_install
     python_install
     pip_module_install
 }
+
 debug_packages_version Python python
 debug_packages_version Pip pip
 debug_packages_version Python3 python3
@@ -115,4 +112,5 @@ debug_packages_version Pip3 pip3
 debug_packages_version Java java
 debug_packages_version Busybox busybox
 
-echo -e "\033[32m [INFO] Successfully Finished Build Environment Setup Utils, Exiting... \033[0m"
+echo -e "\033[32m [$INFO_STR] $SUCCFINISH_OPER: $ENVSETUP_TOOLS \033[0m"
+echo -e "\033[32m [$INFO_STR] $SELECT_LANG, $EXITING_STR... \033[0m"

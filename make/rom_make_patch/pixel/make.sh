@@ -1,29 +1,28 @@
 #!/bin/bash
 
-LOCALDIR=`cd "$( dirname $0 )" && pwd`
+LOCALDIR=`cd "$( dirname ${BASH_SOURCE[0]} )" && pwd`
 cd $LOCALDIR
-WORKSPACE=$LOCALDIR/../../../workspace
-IMAGESDIR=$WORKSPACE/images
-TARGETDIR=$WORKSPACE/out
+source $LOCALDIR/../../../bin.sh
+source $LOCALDIR/../../../language_helper.sh
 
 systemdir="$TARGETDIR/system/system"
 configdir="$TARGETDIR/config"
 
-# 为pixel启用强制向导跳过
+# Skip Setup Wizard for Pixel 
 echo "" >> $systemdir/build.prop
-echo "#原生向导跳过" >> $systemdir/build.prop
+echo "# Skip Setup Wizard" >> $systemdir/build.prop
 echo "ro.setupwizard.mode=DISABLED" >> $systemdir/build.prop
 
 echo "" >> $systemdir/product/etc/build.prop
-echo "#原生向导跳过" >> $systemdir/product/etc/build.prop
+echo "# Skip Setup Wizard" >> $systemdir/product/etc/build.prop
 echo "ro.setupwizard.mode=DISABLED" >> $systemdir/product/etc/build.prop
 
 echo "" >> $systemdir/system_ext/etc/build.prop
-echo "#原生向导跳过" >> $systemdir/system_ext/etc/build.prop
+echo "# Skip Setup Wizard" >> $systemdir/system_ext/etc/build.prop
 echo "ro.setupwizard.mode=DISABLED" >> $systemdir/system_ext/etc/build.prop
 
 init_environ_patch() {
-  # init.environ环境修补
+  # Fix init.environ
   if ! (cat $systemdir/../init.environ.rc | grep -qo "BOOTCLASSPATH") ;then
     cat $LOCALDIR/init.environ_BOOTCLASSPATH.patch >> $systemdir/../init.environ.rc
   fi
@@ -42,7 +41,7 @@ if [ $(cat $systemdir/build.prop | grep "ro.build.version.codename" | head -n 1 
   init_environ_patch
 fi
 
-# 12暂时启用apex更新
+# Disable updatable apex for 12 for a moment
 enable_apex() {
   sed -i '/ro.apex.updatable/d' $systemdir/build.prop
   sed -i '/ro.apex.updatable/d' $systemdir/product/etc/build.prop

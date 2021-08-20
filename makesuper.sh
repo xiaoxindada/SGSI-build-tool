@@ -2,7 +2,7 @@
 
 # Copyright (C) 2020 Xiaoxindada <2245062854@qq.com>
 
-LOCALDIR=`cd "$( dirname $0 )" && pwd`
+LOCALDIR=`cd "$( dirname ${BASH_SOURCE[0]} )" && pwd`
 cd $LOCALDIR
 source ./bin.sh
 
@@ -16,7 +16,7 @@ ab_slot="false"
 echo "支持的super.img类型有: a_only ab virtual_ab"
 
 while true ;do
-  read -p "清输入需要生成的类型: " super_type
+  read -p "请输入需要生成的类型: " super_type
   case $super_type in
     "a_only")
       a_only="true"
@@ -83,7 +83,7 @@ for i in $partition ;do
   }
   if filesystem_info ;then
     rm -rf filesystem_info.txt
-    echo "$i.img不为rmg!"
+    echo "$i.img不为rimg!"
     exit
   else
     rm -rf filesystem_info.txt

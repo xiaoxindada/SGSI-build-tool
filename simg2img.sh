@@ -2,9 +2,10 @@
 
 # Copyright (C) 2021 Xiaoxindada <2245062854@qq.com>
 
-LOCALDIR=`cd "$( dirname $0 )" && pwd`
+LOCALDIR=`cd "$( dirname ${BASH_SOURCE[0]} )" && pwd`
 cd $LOCALDIR
 source ./bin.sh
+source ./language_helper.sh
 
 Usage() {
 cat <<EOT
@@ -30,7 +31,7 @@ main() {
   for image in $(cat $imagedir/image_list.txt) ;do
     if [ -e $imagedir/$image ];then
       if ! (echo `file $imagedir/$image` | grep -qo "sparse") ;then
-        echo "$imagedir/$image 不是simg, 正在跳过转换rimg"
+        echo "$imagedir/$image $SIMG2IMG_SKIP"
         continue
       fi
       image_files=$(ls $imagedir | grep "$image")
@@ -39,13 +40,13 @@ main() {
       simg_file="$image_files"
       rimg_file="${new_name}.img"
 
-      echo "$imagedir/$simg_file 转rimg中"
+      echo "$imagedir/$simg_file $CONVERTING_RAW_IMAGE"
       $bin/simg2img "$imagedir/$simg_file" "$imagedir/$rimg_file"
       if [ $? != "0" ];then
-        echo "$imagedir/$simg_file 转换失败"
+        echo "$imagedir/$simg_file $CONVERTFAIL"
         return 1
       fi
-      mv -f "$imagedir/$rimg_file" "$imagedir/$simg_file" # raw image 重命名回 sparse image文件名
+      mv -f "$imagedir/$rimg_file" "$imagedir/$simg_file" # Rename raw image to sparse image name
     fi
   done
 }

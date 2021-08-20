@@ -1,0 +1,128 @@
+#!/bin/bash
+
+# Xiaoxin sGSI Build Tools - Multi Language Helper
+# en_US, English
+# Copyright (C) 2021 Xiaoxindada <2245062854@qq.com> && Jiuyu <2652609017@qq.com>
+
+# language_helper.sh
+TARGET_LANG="Target language: English"
+TRANSLATOR_NAME="Jiuyu"
+TRANSLATOR_EMAIL="2652609017@qq.com"
+LANG_AUTHOR="Language Translator: $TRANSLATOR_NAME <$TRANSLATOR_EMAIL>"
+
+# Debug
+INFO_STR="INFO"
+ERROR_STR="ERROR"
+DEBUG_STR="DEBUG"
+
+# global
+OUTPUTTO_STR="Output to"
+DIR_STR="dir"
+EXITING_STR="Exiting"
+VERSION_STR="Version"
+SIZE_STR="Size"
+COPING_STR="Copying"
+TO_STR="To"
+ISNOT_STR="isn't"
+SCRIPT_STR="Script"
+PACK_STR="Pack"
+SUCCESS_STR="Success"
+START_STR="Start"
+NOTFOUND_STR="not found"
+DIR_NOT_FOUND_STR="dir not found"
+PARTITION_STR="Partition"
+GENERATRING_STR="Generating"
+GENERATED_STR="Generated"
+GENERATEFAILED_STR="Fail to generate"
+DYNAMIC_PARTITION_DETECTED="Dynamic Partition Detected"
+
+# setup.sh
+WELCOME="Welcome Xiaoxindada sGSI Build Tools"
+ENVSETUP_TOOLS="Build Environment Setup"
+SELECT_LANG_STR="If you need to switch language, run language_helper.sh script"
+DETECTING_SYSTEM="Detecting System"
+DETECTED_LINUX="Linux Detected"
+DETECTED_MAC="macOS Detected"
+INSTPKG_WITH_APT="Installing packages with apt"
+INSTPKG_WITH_HB="Installing Packages with homebrew"
+FAILED_INSTPKG="Failed to install packages"
+SUCCFINISH_OPER="Successfully finished operate"
+PY2ANDPIP_INST="Installing Python2 and pip2"
+INSTALLING_JAVAPKG="Installing Java Package"
+INSTALLING_PYTHONMOD="Installing Python Modules"
+
+# make.sh
+NOTFOUNDFW="Firmware not found"
+UNZIPINGPLB="Unpacking payload.bin"
+MOVINGTOOUT="Moving to the output dir"
+INITINGENV="Initing Environment，Please wait"
+ENVINITFINISH="Successfully Inited Environment"
+NOTFOUNDSYSTEMIMG="system.img not found, which caused failure to build sGSI"
+MOVINGIMG="Moving image file to the tool's dir"
+UNPACKING_STR="Unpacking"
+SPLIT_DETECTED="Split detected"
+MERGING_STR="Merging"
+
+# image_extract.sh
+EXTRACTING_STR="Extracting"
+FAILEXTRACT_STR="Failed to extract"
+MERGE_SUCCESS="Merged Success"
+
+# simg2img.sh
+CONVERTINGTOSIMG="Converting to Sparse Image"
+CONVERT_SUCCESS="Successfully Converted"
+CONVERTING_RAW_IMAGE="Converting RAW Image"
+SIMG2IMG_SKIP="isn't Sparse Image, Skipping converting RAW Image"
+CONVERTFAIL="Fail to convert"
+CONVERTFAIL="Successfully converted"
+
+# SGSI.sh
+SYSTEMDIR_NF="system dir not found"
+PROCESSING_RAMDISK_SYSTEM="Processing ramdisk system"
+PROCESS_SUCCESS="Process success"
+OTHER_PROCESSINGS="Running other processing"
+QSSI_DETECTED="qssi detected"
+DEVICE_PROP_FIX_STARTED="Fixing device properties config"
+CURR_DEVICE_PROPS="Original ROM Device Properties"
+FIX_FINISHED_STR="Successfully fixed"
+MAKING_A_ONLY="Making A-Only sGSI"
+NOTSUPPAONLY="Building A-only's sGSI isn't supported"
+NOT_SUPPORT_MAKE_AONLY="This ROM didn't support to be made A-Only sGSI"
+START_BUG_FIX="Start fixing bug"
+IS_NORMAL_PT="Is Normal Project Treble ROM"
+START_NOR_PROCESS_PLAN="Starting normal process plan"
+SGSI_IFY_SUCCESS="sGSI-ify Processed successfully"
+SIGNING_WITH_AOSPKEY="Resigning with AOSP Keys"
+
+# makeimg.sh
+MKIMG_FAIL="Failed to make"
+CURR_IMG_SIZE="Now img size"
+CURR_IMG_REPACK_SIZE="Target repack size"
+
+# rm.sh
+CLEANINGWORKSPACE_STR="Cleaning Workspace"
+WORKSPACECLEAND_STR="Successfully cleaned Workspace!"
+
+# update.sh
+UPDATER_MSG1="Whether update with git?"
+UPDATER_MSG2="Forcing updating"
+
+# make/romtype.sh
+ADDING_PATCHFILE_FS="Add Patch files fs data"
+PIXEL_DETECTED="Pixel System Detected"
+DEBLOATING_STR="Debloating"
+FIXING_ROM="Fixing ROM"
+
+# make/rom_support_list.txt
+UNSUPPORTED_ROM="Not supported ROM"
+SUPPORTED_ROM_LIST="Supported ROM"
+
+# make/apex_vndk_start/make.sh
+DETECTED_APEX="Apex Detected"
+DETECTED_FLATTEN_APEX="Flatten Apex Detected"
+EXTRACTING_EXTRA_APEX="Extracting extra Apex"
+
+# fixbug/fixbug.sh
+SUPPORTED_ROM_STR="Support ROM:"
+NOT_SUPPORT_FIX_BUG="Fixing bug doesn't support"
+FIXING_STR="Fixing"

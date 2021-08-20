@@ -11,7 +11,7 @@ EOT
 
 #echo "in mkerofsimage.sh PATH=$PATH"
 
-LOCALDIR=`cd "$( dirname $0 )" && pwd`
+LOCALDIR=`cd "$( dirname ${BASH_SOURCE[0]} )" && pwd`
 
 if [ $# -lt 2 ]; then
     usage
