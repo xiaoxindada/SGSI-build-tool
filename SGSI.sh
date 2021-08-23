@@ -27,21 +27,21 @@ case $1 in
   "-A"|"-a"|"--a-only")
     build_type="--a-only"
     echo "$NOTSUPPAONLY"
-    exit
+    exit 1
     ;;
   "-h"|"--help")
     Usage
-    exit
+    exit 1
     ;;    
   *)
     Usage
-    exit
+    exit 1
     ;;
 esac
 
 if [ $# -lt 2 ];then
   Usage
-  exit
+  exit 1
 fi
 
 os_type="$2"
@@ -431,13 +431,8 @@ function fix_bug() {
     cd $LOCALDIR
 }
 
-if [[ "$1" = "--fix-bug" ]];then
-  other_args+="--fix-bug"
-  shift
-fi
-
-if (echo ${other_args} | grep -qo "fix-bug");then
-  bug_fix="true"
+if (echo $@ | grep -qo -- "--fix-bug") ;then
+  other_args+=" --fix-bug"
 fi
 
 rm -rf ./SGSI
@@ -482,7 +477,7 @@ if [ -L $systemdir/vendor ];then
       ./make/apex_flat/add_apex_fs.sh
       ./make/add_repack_fs.sh
       echo "$SGSI_IFY_SUCCESS"
-      if [ $bug_fix = "true" ];then
+      if (echo $other_args | grep -qo -- "--fix-bug") ;then
         fix_bug
       fi
       ./makeimg.sh "--a-only${use_config}"
@@ -505,11 +500,11 @@ if [ -L $systemdir/vendor ];then
         fi
       done
       echo "$SGSI_IFY_SUCCESS"
-      if [ $bug_fix = "true" ];then
+      if (echo $other_args | grep -qo -- "--fix-bug") ;then
         fix_bug
       fi
       echo "$SIGNING_WITH_AOSPKEY"
-      python $bin/tools/signapk/resign.py "$systemdir" $bin/tools/signapk/AOSP_security "$bin/$HOST/$platform/lib64"> $TARGETDIR/resign.log
+      python $bin/tools/signapk/resign.py "$systemdir" "$bin/tools/signapk/AOSP_security" "$bin/$HOST/$platform/lib64"> $TARGETDIR/resign.log
       ./makeimg.sh "--ab${use_config}"
       exit 0
       ;;

@@ -28,21 +28,21 @@ case $1 in
   "-A"|"-a"|"--a-only")
     build_type="-a"
     echo $NOTSUPPAONLY
-    exit
+    exit 1
     ;;
   "-h"|"--help")
     Usage
-    exit
+    exit 1
     ;;    
   *)
     Usage
-    exit
+    exit 1
     ;;
 esac
 
 if [ $# -lt 3 ];then
   Usage
-  exit
+  exit 1
 fi
 os_type="$2"
 firmware="$3"
@@ -145,9 +145,8 @@ mkdir -p $IMAGESDIR
 mkdir -p $TARGETDIR
 echo $ENVINITFINISH
 
-if [[ "$1" = "--fix-bug" ]];then
-  other_args+="--fix-bug"
-  shift
+if (echo $@ | grep -qo -- "--fix-bug") ;then
+  other_args+=" --fix-bug"
 fi
 
 firmware_extract
