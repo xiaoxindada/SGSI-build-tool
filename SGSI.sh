@@ -493,9 +493,11 @@ if [ -L $systemdir/vendor ];then
       cd ./make
       ./add_repack_fs.sh
       cd $LOCALDIR
-      # Clean FS blank line
+      # Format output
       for i in $(ls $configdir);do
         if [ -f $configdir/$i ];then
+          sort -u $configdir/$i > $configdir/${i}-tmp
+          mv -f $configdir/${i}-tmp $configdir/$i
           sed -i '/^\s*$/d' $configdir/$i
         fi
       done

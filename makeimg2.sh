@@ -51,9 +51,8 @@ fi
 if [ -s ./out/$species.img ];then
   echo "打包完成"
   echo "输出至images文件夹"
-  rm -rf ./images
-  mkdir ./images
-  mv ./out/$species.img ./images
+  mkdir -p ./images
+  mv -f ./out/$species.img ./images
   chmod 777 -R ./images
 else
   echo "打包失败，错误日志如上"

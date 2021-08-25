@@ -10,6 +10,7 @@
 
 ## 感谢九雨梦舟 https://github.com/pomelohan 的帮助  
 ## 感谢 Col_or https://github.com/color597 的帮助  
+## 感谢 thka2016 https://github.com/thka2016 的帮助  
 
 # 本工具为PC版
 

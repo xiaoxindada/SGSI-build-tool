@@ -12,5 +12,11 @@ mkdir ./out
 echo ""
 read -p "请输入要接包的分区(别带.img): " species
 
-echo "正在解压$species......."
-python3 $bin/imgextractor.py ./$species'.img' ./out
+echo "正在解压$species..."
+if ! python3 $bin/imgextractor.py ./$species'.img' ./out ;then
+  echo "正在尝试使用erofs解压"
+  if ! $bin/erofsUnpackKt $species'.img' ./out 2&>/dev/null ;then
+    echo "$species'.img 解压失败！"
+  fi
+fi
+

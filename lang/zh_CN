@@ -32,6 +32,7 @@ GENERATRING_STR="正在生成"
 GENERATED_STR="生成成功"
 GENERATEFAILED_STR="生成失败"
 EXITING_STR="正在退出"
+EROFS_STR="erofs 文件系统"
 DYNAMIC_PARTITION_DETECTED="检测到当前为动态分区"
 
 # setup.sh
