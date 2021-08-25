@@ -5,3 +5,6 @@ make/*/add_repack_contexts
 make/*/add_repack_fs
 tmp/
 workspace/
+out/
+boot/
+images/

@@ -9,8 +9,8 @@
 * 对上述列表表示感谢  
 
 ## 感谢九雨梦舟 https://github.com/pomelohan 的帮助  
-
-***因为部分原因 开源形式不采用文件夹上传 tar解压就是源码 没封包***
+## 感谢 Col_or https://github.com/color597 的帮助  
+## 感谢 thka2016 https://github.com/thka2016 的帮助  
 
 # 本工具为PC版
 

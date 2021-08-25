@@ -34,6 +34,7 @@ PARTITION_STR="Partition"
 GENERATRING_STR="Generating"
 GENERATED_STR="Generated"
 GENERATEFAILED_STR="Fail to generate"
+EROFS_STR="erofs filesystem"
 DYNAMIC_PARTITION_DETECTED="Dynamic Partition Detected"
 
 # setup.sh
