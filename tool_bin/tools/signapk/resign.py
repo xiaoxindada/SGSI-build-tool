@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from __future__ import print_function
 from xml.dom import minidom
 import re, os, mmap, subprocess, fnmatch, argparse, fileinput
 from shutil import rmtree
@@ -45,7 +46,10 @@ def CheckCert(filetoopen, cert):
         return False
 
 def getcert(jar, out):
-    extractjar = "7z e " + jar + " META-INF/CERT.RSA -o" + tmpdir
+    if os.system("7z l -ba " + jar + " | rev | awk '{print $1}' | rev | grep -q 'CERT.RSA' ") != 0:
+        return
+
+    extractjar = "7z e -y " + jar + " META-INF/CERT.RSA -o" + tmpdir
     output = subprocess.check_output(['bash','-c', extractjar])
 
     if os.path.exists(tmpdir + "/CERT.RSA"):
@@ -59,7 +63,7 @@ def sign(jar, certtype):
     if not os.path.exists(securitydir + "/" + certtype + ".pk8"):
         print(certtype + ".pk8 not found in security dir")
         return False
-    
+
     jartmpdir = tmpdir + "/JARTMP"
     if not os.path.exists(jartmpdir):
         os.makedirs(jartmpdir)
@@ -99,7 +103,7 @@ for root, dirs, files in os.walk(romdir):
             out = "foo.cer"
             if os.path.exists(out):
                 os.remove(out)
-            
+
             getcert(jarfile, out)
             if not os.path.exists(out):
                 print(file + " : No Siganture => Skip")
@@ -107,6 +111,8 @@ for root, dirs, files in os.walk(romdir):
                 index = 0
                 for seinfo in seinfos:
                     if CheckCert(out, signatures64[index]):
+                        if os.system("7z l -ba " + jarfile + " | rev | awk '{print $1}' | rev | grep -q 'CERT.RSA' ") != 0:
+                            break
                         sign(jarfile, seinfo)
                         break
                     index += 1
@@ -123,6 +129,6 @@ for s in itemlist:
         output = subprocess.check_output(['bash','-c', pemtoder])
         newsignature = output.encode("hex")
         for line in fileinput.input(mac_permissions, inplace=True):
-            print line.replace(oldsignature, newsignature),
+            print(line.replace(oldsignature, newsignature))
 
 rmtree(tmpdir)
