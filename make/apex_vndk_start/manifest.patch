@@ -1,6 +1,3 @@
-   <!-- <vendor-ndk>
-        <version>28</version>
-    </vendor-ndk> -->
     <vendor-ndk>
         <version>29</version>
     </vendor-ndk>
