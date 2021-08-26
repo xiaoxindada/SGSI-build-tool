@@ -337,93 +337,6 @@ function normal() {
   echo "<!-- oem hal -->" >> ./make/add_etc_vintf_patch/manifest_custom
 }
 
-function make_Aonly() {
-
-  echo "$MAKING_A_ONLY"
-  
-  # Remove AB Feature
-  ## build
-  sed -i '/system_root_image/d' $systemdir/build.prop
-  sed -i '/ro.build.ab_update/d' $systemdir/build.prop
-  sed -i '/sar/d' $systemdir/build.prop
-
-  ## Remove useless files
-  rm -rf $systemdir/etc/init/update_engine.rc
-  rm -rf $systemdir/etc/init/update_verifier.rc
-  rm -rf $systemdir/etc/update_engine
-  rm -rf $systemdir/bin/update_engine
-  rm -rf $systemdir/bin/update_verifier
-
-  # Add OEM RC
-  oemrc_files=$(ls $systemdir/../ | grep ".rc$")
-  for oemrc in $oemrc_files ;do
-    new_oemrc=$(echo "${oemrc%.*}" | sed 's/$/&-treble.rc/g')
-    cp -fr $systemdir/../$oemrc $systemdir/etc/init/$new_oemrc
-    # Clean up new_oemrc's wrong import
-    for i in $systemdir/etc/init/$new_oemrc ;do 
-      echo "$(cat $i | grep -v "^import")" > $i 
-    done
-    # Add fs data to rc
-    echo "/system/system/etc/init/$new_oemrc u:object_r:system_file:s0" >> $configdir/system_file_contexts
-    echo "system/system/etc/init/$new_oemrc 0 0 0644" >> $configdir/system_fs_config
-  done
-
-  # Disable /system/etc/ueventd.rc
-  rm -rf $systemdir/etc/ueventd.rc
-
-  # Use Kernel init.usb.rc
-  #rm -rf $systemdir/etc/init/hw/init.usb.rc
-  #rm -rf $systemdir/etc/init/hw/init.usb.configfs.rc
-  #sed -i '/\/system\/etc\/init\/hw\/init.usb.rc/d' $systemdir/etc/init/hw/init.rc
-  #sed -i '/\/system\/etc\/init\/hw\/init.usb.configfs.rc/d' $systemdir/etc/init/hw/init.rc
-
-  # Remove importing init.environ.rc
-  sed -i '/\/init.environ.rc/d' $systemdir/etc/init/hw/init.rc
-  
-  modify_init_environ() {
-    # Modify init.environ.rc
-    sed -i 's/on early\-init/on init/g' $systemdir/etc/init/init.environ-treble.rc
-    sed -i '/ANDROID\_BOOTLOGO/d' $systemdir/etc/init/init.environ-treble.rc
-    sed -i '/ANDROID\_ROOT/d' $systemdir/etc/init/init.environ-treble.rc
-    sed -i '/ANDROID\_ASSETS/d' $systemdir/etc/init/init.environ-treble.rc
-    sed -i '/ANDROID\_DATA/d' $systemdir/etc/init/init.environ-treble.rc
-    sed -i '/ANDROID\_STORAGE/d' $systemdir/etc/init/init.environ-treble.rc
-    sed -i '/EXTERNAL\_STORAGE/d' $systemdir/etc/init/init.environ-treble.rc
-    sed -i '/ASEC\_MOUNTPOINT/d' $systemdir/etc/init/init.environ-treble.rc
-  }
-  if [ -f $systemdir/etc/init/init.environ-treble.rc ];then
-    modify_init_environ
-  else
-    echo "$NOT_SUPPORT_MAKE_AONLY"
-    exit 1 
-  fi
-
-  # Move /system/etc/hw/*.rc to /system/etc/init for old devices
-  old_rc_flies=$(ls $systemdir/etc/init/hw)
-  for old_rc in $old_rc_flies ;do
-    new_rc=$(echo "${old_rc%.*}" | sed 's/$/&-treble.rc/g')
-    cp -frp $systemdir/etc/init/hw/$old_rc $systemdir/etc/init/$new_rc
-    # Add fs data to new rc
-    echo "/system/system/etc/init/$new_rc u:object_r:system_file:s0" >> $configdir/system_file_contexts
-    echo "system/system/etc/init/$new_rc 0 0 0644" >> $configdir/system_fs_config  
-  done 
-  
-  # Add A-only related files
-  cp -frp ./make/init_A/system/* $systemdir/
-
-  # Patch apex-setup.rc
-  cat $systemdir/etc/init/apex-setup.rc >> $systemdir/etc/init/add_apex-setup.rc
-  mv -f $systemdir/etc/init/add_apex-setup.rc $systemdir/etc/init/apex-setup.rc
-
-  # Fix permissiver start delay
-  sed -i "s/on early\-init/on init/" $systemdir/etc/init/permissiver.rc
-
-  # apex_vndk common process
-  cd ./make/apex_vndk_start
-  ./make_A.sh
-  cd $LOCALDIR 
-}
-
 function fix_bug() {
     echo "$START_BUG_FIX"
     cd ./fixbug
@@ -469,20 +382,6 @@ if [ -L $systemdir/vendor ];then
   echo "$IS_NORMAL_PT"
   echo "$START_NOR_PROCESS_PLAN"
   case $build_type in
-    "-A"|"-a"|"--a-only")
-      echo "A"
-      normal
-      make_Aonly
-      # Merge FS Data
-      ./make/apex_flat/add_apex_fs.sh
-      ./make/add_repack_fs.sh
-      echo "$SGSI_IFY_SUCCESS"
-      if (echo $other_args | grep -qo -- "--fix-bug") ;then
-        fix_bug
-      fi
-      ./makeimg.sh "--a-only${use_config}"
-      exit 0
-      ;;
       "--AB"|"--ab")
       echo "AB"
       normal
