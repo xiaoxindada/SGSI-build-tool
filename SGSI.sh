@@ -115,9 +115,6 @@ function normal() {
   true > ./make/add_build/oem_prop
   echo "" >> ./make/add_build/oem_prop
   echo "# oem common prop" >> ./make/add_build/oem_prop
- 
-  # Add logcat support
-  cp -frp ./make/add_logcat/system/* $systemdir/
 
   # Modify USB State
   cp -frp ./make/aosp_usb/* $systemdir/etc/init/hw/

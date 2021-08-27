@@ -11,11 +11,11 @@ rm -rf $target_contexts
 
 for files in $(find ./system/ -name "*");do
   if [ -f $files ];then
-    echo $files | sed "s#\./#/#g" | sed "s/^/&\/system/g" | sed "s/$/& u:object_r:system_lib_file:s0/g" >> $target_contexts
+    echo $files | sed "s#\./#/#g" | sed "s/^/&\/system/g" | sed "s/$/& u:object_r:system_lib_file:s0/g" | sed 's|\.|\\.|g' >> $target_contexts
     echo $files | sed "s#\./#/#g" | sed "s/^/&system/g" | sed "s/$/& 0 0 0644/g" >> $target_fs
   fi
   if [ -L $files ];then
-    echo $files | sed "s#\./#/#g" | sed "s/^/&\/system/g" | sed "s/$/& u:object_r:system_lib_file:s0/g" >> $target_contexts
+    echo $files | sed "s#\./#/#g" | sed "s/^/&\/system/g" | sed "s/$/& u:object_r:system_lib_file:s0/g" | sed 's|\.|\\.|g' >> $target_contexts
     echo $files | sed "s#\./#/#g" | sed "s/^/&system/g" | sed "s/$/& 0 0 0644/g" >> $target_fs
   fi  
 done
