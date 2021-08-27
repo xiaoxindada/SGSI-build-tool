@@ -42,12 +42,10 @@ for partition in $partition_name ;do
       contexts_header=$(grep -n -o -E "^/ u:" $dynamic_fs_dir/$i | head -n 1 | grep -o -E "^[0-9]+")
       [ -n "$contexts_header" ] && sed -i "${contexts_header}d" $dynamic_fs_dir/$i
       sed -i '/\?/d' $dynamic_fs_dir/$i
-      sed -i "/^\/system\/${partition} /d" $target_contexts
+      sed -i "/system\/${partition} /d" $target_contexts
       echo -e "\n" >> $target_contexts
       echo "/system/${partition} u:object_r:system_file:s0" >> $target_contexts
       sed -i "s/^/&\/system\/system/g" $dynamic_fs_dir/$i
-      sort -u $dynamic_fs_dir/$i > $dynamic_fs_dir/${i}-tmp
-      mv -f $dynamic_fs_dir/${i}-tmp $dynamic_fs_dir/$i
       cat $dynamic_fs_dir/$i >> $dynamic_fs_dir/${partition}_merge_contexts
       cat $dynamic_fs_dir/${partition}_merge_contexts >> $target_contexts
     fi
@@ -57,12 +55,10 @@ for partition in $partition_name ;do
     if [ -e $dynamic_fs_dir/$i ];then
       config_header=$(grep -n -o -E "^/ 0" $dynamic_fs_dir/$i | head -n 1 | grep -o -E "^[0-9]+")
       [ -n "$config_header" ] && sed -i "${config_header}d" $dynamic_fs_dir/$i
-      sed -i "/^system\/${partition} /d" $target_fs
+      sed -i "/system\/${partition} /d" $target_fs
       echo -e "\n" >> $target_fs
       echo "system/${partition} 0 0 0644 /system/${partition}" >> $target_fs      
       sed -i "s/^/&system\/system\//g" $dynamic_fs_dir/$i
-      sort -u $dynamic_fs_dir/$i > $dynamic_fs_dir/${i}-tmp
-      mv -f $dynamic_fs_dir/${i}-tmp $dynamic_fs_dir/$i
       cat $dynamic_fs_dir/$i >> $dynamic_fs_dir/${partition}_merge_fs_config
       cat $dynamic_fs_dir/${partition}_merge_fs_config >> $target_fs
     fi
