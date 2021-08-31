@@ -20,6 +20,7 @@ OUTPUTTO_STR="Output to"
 DIR_STR="dir"
 EXITING_STR="Exiting"
 VERSION_STR="Version"
+SYSTEM_STR="system"
 SIZE_STR="Size"
 COPING_STR="Copying"
 TO_STR="To"
@@ -108,8 +109,8 @@ UPDATER_MSG1="Whether update with git?"
 UPDATER_MSG2="Forcing updating"
 
 # make/romtype.sh
+OS_TYPE_CHECK_STR="Detected current system type is"
 ADDING_PATCHFILE_FS="Add Patch files fs data"
-PIXEL_DETECTED="Pixel System Detected"
 DEBLOATING_STR="Debloating"
 FIXING_ROM="Fixing ROM"
 
@@ -123,6 +124,6 @@ DETECTED_FLATTEN_APEX="Flatten Apex Detected"
 EXTRACTING_EXTRA_APEX="Extracting extra Apex"
 
 # fixbug/fixbug.sh
-SUPPORTED_ROM_STR="Support ROM:"
+SUPPORTED_ROM_STR="Support ROM"
 NOT_SUPPORT_FIX_BUG="Fixing bug doesn't support"
 FIXING_STR="Fixing"

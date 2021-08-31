@@ -28,6 +28,7 @@ PARTITION_STR="分区"
 COPING_STR="正在复制"
 TO_STR="至"
 VERSION_STR="版本"
+SYSTEM_STR="系统"
 GENERATRING_STR="正在生成"
 GENERATED_STR="生成成功"
 GENERATEFAILED_STR="生成失败"
@@ -106,8 +107,8 @@ UPDATER_MSG1="检测到当前为使用git同步工具，是否为你强制使用
 UPDATER_MSG2="正在强制使用git更新中,请准备好梯子"
 
 # make/romtype.sh
+OS_TYPE_CHECK_STR="检测到当前系统类型为"
 ADDING_PATCHFILE_FS="正在添加 Patch 文件的 fs 数据"
-PIXEL_DETECTED="检测当前为 Pixel 系统"
 DEBLOATING_STR="正在精简文件"
 FIXING_ROM="正在修复 ROM"
 
