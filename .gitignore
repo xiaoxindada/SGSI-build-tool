@@ -1,4 +1,5 @@
 *.pyc
+*.img
 .lang_flag
 SGSI/
 make/*/add_repack_contexts
@@ -8,3 +9,5 @@ workspace/
 out/
 boot/
 images/
+dtbo/
+dtbs/

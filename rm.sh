@@ -34,6 +34,7 @@ find ./ -type f -name '*.bak' -delete
 find ./ -type f -name '*.ozip' -delete
 find ./ -type f -name '*.bin' -delete
 find ./ -type f -name '*.img' -delete
+find ./ -type f -name 'dtb*' -delete
 find ./ -maxdepth 1 -type f -name '*.txt' -delete
 $bin/rm.sh
 ./make/rm.sh
