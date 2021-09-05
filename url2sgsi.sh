@@ -98,4 +98,10 @@ if [ $AB == true ]; then
    "$PROJECT_DIR"/make.sh AB "${SRCTYPE}" "XiaoxindadaSGSIs/tmp/update.zip" || LEAVE
 fi
 
+rm -rf "XiaoxindadaSGSIs/SGSI/*zip"
+rm -rf "XiaoxindadaSGSIs/SGSI/Guide.txt"
+rm -rf XiaoxindadaSGSIs/SGSI/*zip
+rm -rf XiaoxindadaSGSIs/SGSI/Guide.txt
+ls XiaoxindadaSGSIs/SGSI
+ls "XiaoxindadaSGSIs/SGSI"
 echo "-> Porting GSI done!"
