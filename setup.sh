@@ -67,6 +67,8 @@ pip_module_install(){
             sudo pip3 install -r $requirements_list
         done
     fi
+    sudo pip install --upgrade "protobuf"
+    sudo pip3 install --upgrade "protobuf"
 }
 
 debug_packages_version(){
@@ -113,4 +115,4 @@ debug_packages_version Java java
 debug_packages_version Busybox busybox
 
 echo -e "\033[32m [$INFO_STR] $SUCCFINISH_OPER: $ENVSETUP_TOOLS \033[0m"
-echo -e "\033[32m [$INFO_STR] $SELECT_LANG, $EXITING_STR... \033[0m"
+echo -e "\033[32m [$INFO_STR] $SELECT_LANG_STR, $EXITING_STR... \033[0m"
