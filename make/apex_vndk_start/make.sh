@@ -24,8 +24,8 @@ apex_check
 echo "$EXTRACTING_EXTRA_APEX"
 7z x -y $LOCALDIR/com.android.vndk.v29.apex.7z -o$systemdir/apex/ > /dev/null 2>&1
 7z x -y $LOCALDIR/com.android.vndk.v30.apex.7z -o$systemdir/apex/ > /dev/null 2>&1
-cd $LOCALDIR/../apex_flat
-./apex_extractor.sh "$systemdir/apex"
+cd $bin/apex_tools
+./apex_extractor.sh "$TARGETDIR" "$systemdir/apex"
 cd $LOCALDIR
 
 # Clean up default apex state
