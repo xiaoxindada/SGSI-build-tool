@@ -39,7 +39,7 @@ DYNAMIC_PARTITION_DETECTED="检测到当前为动态分区"
 # setup.sh
 WELCOME="欢迎使用小新大大 sGSI 构建系统"
 ENVSETUP_TOOLS="构建环境安装"
-SELECT_LANG="如果需要切换语言，请手动执行 language_helper.sh 脚本"
+SELECT_LANG_STR="如果需要切换语言，请手动执行 language_helper.sh 脚本"
 DETECTING_SYSTEM="正在检测系统"
 DETECTED_LINUX="检测到 Linux"
 DETECTED_MAC="检测到 macOS"
