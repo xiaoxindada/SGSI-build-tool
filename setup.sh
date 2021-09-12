@@ -71,6 +71,8 @@ pip_module_install(){
             sudo pip3 install -r $requirements_list
         done
     fi
+    sudo pip install --upgrade "protobuf"
+    sudo pip3 install --upgrade "protobuf"
 }
 
 debug_packages_version(){
