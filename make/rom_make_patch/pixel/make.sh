@@ -41,20 +41,6 @@ if [ $(cat $systemdir/build.prop | grep "ro.build.version.codename" | head -n 1 
   init_environ_patch
 fi
 
-# Disable updatable apex for 12 for a moment
-enable_apex() {
-  sed -i '/ro.apex.updatable/d' $systemdir/build.prop
-  sed -i '/ro.apex.updatable/d' $systemdir/product/etc/build.prop
-  sed -i '/ro.apex.updatable/d' $systemdir/system_ext/etc/build.prop
-  echo "" >> $systemdir/product/etc/build.prop
-  echo "ro.apex.updatable=true" >> $systemdir/product/etc/build.prop
-  for apex_dir in $(ls $systemdir/apex);do
-    if [ -d $systemdir/apex/$apex_dir ];then
-      rm -rf $systemdir/apex/$apex_dir
-    fi
-  done
-}
 if [ $(cat $systemdir/build.prop | grep "ro.build.version.sdk" | head -n 1 | cut -d "=" -f 2) = "31" ];then
-  enable_apex
   cp -frp $LOCALDIR/system/* $systemdir/
 fi

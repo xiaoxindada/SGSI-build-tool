@@ -34,25 +34,43 @@ sed -i '/ro.apex.updatable/d' $systemdir/product/etc/build.prop
 sed -i '/ro.apex.updatable/d' $systemdir/system_ext/etc/build.prop
 
 apex_flatten() {
-  # Force using flatten apex
+  # Force use flatten apex
+  echo "" >> $systemdir/product/etc/build.prop
+  echo "# Apex state" >> $systemdir/product/etc/build.prop  
   echo "ro.apex.updatable=false" >> $systemdir/product/etc/build.prop
-
-  # Cleanup apex
-  apex_files=$(ls $systemdir/apex | grep ".apex$")
+  
+  echo "$ENABLE_CLEAN_APEX_FILES"
+  local apex_files=$(ls $systemdir/apex | grep ".apex$")
   for apex in $apex_files ;do
     if [ -f $systemdir/apex/$apex ];then
-      echo "skip remove apex"
-     # rm -rf $systemdir/apex/$apex
+      rm -rf $systemdir/apex/$apex
     fi
   done
 
-  # Removing cts's apex when flatten apex is enabled
-  for cts_files in $(find $systemdir/apex -type d -name "*" | grep -E "apex.cts.*");do
-    [ -z $cts_files ] && continue
-    rm -rf $cts_files
+  # Not mount apex setup
+  [ -f $systemdir/etc/init/apex-sharedlibs.rc ] && rm -rf $systemdir/etc/init/apex-sharedlibs.rc
+}
+
+apex_enable() {
+  # Force enable apex
+  echo "" >> $systemdir/product/etc/build.prop
+  echo "# Apex state" >> $systemdir/product/etc/build.prop
+  echo "ro.apex.updatable=true" >> $systemdir/product/etc/build.prop
+  echo "$ENABLE_CLEAN_APEX_DIRS"
+  
+  local apex_dirs=$(find $systemdir/apex -maxdepth 1 -type d | grep -v "$systemdir/apex$")
+  for apex_dir in $apex_dirs;do
+    if [ -d $apex_dir ];then
+      rm -rf $apex_dir
+    fi
   done
 }
-apex_flatten
+
+if [ $(cat $TARGETDIR/apex_state) = true ];then
+  apex_enable
+elif [ $(cat $TARGETDIR/apex_state) = false ];then
+  apex_flatten
+fi
 
 # Create vndk symlinks
 rm -rf $systemdir/lib/vndk-29 $systemdir/lib/vndk-sp-29
