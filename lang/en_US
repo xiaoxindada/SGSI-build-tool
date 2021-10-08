@@ -114,6 +114,7 @@ ADDING_PATCHFILE_FS="Add Patch files fs data"
 DEBLOATING_STR="Debloating"
 FIXING_ROM="Fixing ROM"
 
+
 # make/rom_support_list.txt
 UNSUPPORTED_ROM="Not supported ROM"
 SUPPORTED_ROM_LIST="Supported ROM"
@@ -122,6 +123,8 @@ SUPPORTED_ROM_LIST="Supported ROM"
 DETECTED_APEX="Apex Detected"
 DETECTED_FLATTEN_APEX="Flatten Apex Detected"
 EXTRACTING_EXTRA_APEX="Extracting extra Apex"
+ENABLE_CLEAN_APEX_DIRS="Enable cleanup apex dirs"
+ENABLE_CLEAN_APEX_FILES="Enable cleanup .apex files"
 
 # fixbug/fixbug.sh
 SUPPORTED_ROM_STR="Support ROM"

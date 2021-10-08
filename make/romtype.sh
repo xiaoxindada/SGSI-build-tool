@@ -58,4 +58,6 @@ if [ $os_type = "Pixel" ];then
   $rom_folder/make.sh
   echo "$DEBLOATING_STR"
   $debloat_foldir/$debloat_script "$systemdir"
+  # Not flatten apex
+  echo "true" > $TARGETDIR/apex_state
 fi

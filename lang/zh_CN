@@ -120,6 +120,8 @@ SUPPORTED_ROM_LIST="本工具支持的系统列表:"
 DETECTED_APEX="检测到 Apex"
 DETECTED_FLATTEN_APEX="检测到扁平化 Apex"
 EXTRACTING_EXTRA_APEX="正在提取额外 Apex"
+ENABLE_CLEAN_APEX_DIRS="清理apex目录"
+ENABLE_CLEAN_APEX_FILES="清理.apex文件"
 
 # fixbug/fixbug.sh
 SUPPORTED_ROM_STR="支持的 ROM"

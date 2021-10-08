@@ -1,0 +1,7 @@
+# Copyright (C) 2021 Xiaoxindada <2245062854@qq.com>
+
+on post-fs-data
+    mkdir /apex/com.mainline.primary.libs bind
+    mkdir /apex/sharedlibs 0777 root root
+    mount none /system/apex/com.google.mainline.primary.libs /apex/com.mainline.primary.libs bind
+    mount none /apex/com.mainline.primary.libs /apex/sharedlibs bind

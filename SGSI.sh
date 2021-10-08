@@ -99,11 +99,6 @@ function normal() {
   }
   ramdisk_modify
   echo "$PROCESS_SUCCESS"
- 
-  # Common apex_vndk process
-  cd ./make/apex_vndk_start
-  ./make.sh
-  cd $LOCALDIR 
 
   echo "$OTHER_PROCESSINGS"
 
@@ -303,9 +298,17 @@ function normal() {
   #./camera.sh
   #cd $LOCALDIR
 
+  # Default flatten apex
+  echo "false" > $TARGETDIR/apex_state
+
   # Detect ROM Type
   cd ./make
   ./romtype.sh "$os_type"
+  cd $LOCALDIR
+
+  # Common apex_vndk process
+  cd ./make/apex_vndk_start
+  ./make.sh
   cd $LOCALDIR
 
   # ROM Patch Process
