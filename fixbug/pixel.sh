@@ -15,8 +15,10 @@ src_dir=$LOCALDIR/$(echo ${scirpt_name%%.*})
 echo "${scirpt_name%%.*} fixing"
 
 # Fix Media Provider
-if [ -d $systemdir/apex/com.google.android.mediaprovider ];then
-  cp -frp $src_dir/system/apex/com.google.android.mediaprovider/* $systemdir/apex/com.google.android.mediaprovider/
+if [ $(cat $systemdir/build.prop | grep "ro.build.version.sdk" | head -n 1 | cut -d "=" -f 2) = "31" ];then
+  if [ -d $systemdir/apex/com.google.android.mediaprovider ];then
+    cp -frp $src_dir/system/apex/com.google.android.mediaprovider/* $systemdir/apex/com.google.android.mediaprovider/
+  fi
 fi
 
 # Disable media.c2
