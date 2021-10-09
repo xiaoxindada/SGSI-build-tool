@@ -228,6 +228,14 @@ function normal() {
       echo "# Property Read Order" >> $systemdir/build.prop
       echo "ro.product.property_source_order=system,product,system_ext,vendor,odm" >> $systemdir/build.prop
     fi
+    
+    # Partial Devices Sim fix
+    sed -i '/persist.sys.fflag.override.settings\_provider\_model\=/d' $systemdir/build.prop
+    sed -i '/persist.sys.fflag.override.settings\_provider\_model\=/d' $systemdir/system_ext/etc/build.prop
+    sed -i '/persist.sys.fflag.override.settings\_provider\_model\=/d' $systemdir/product/etc/build.prop
+    echo "" >> $systemdir/product/etc/build.prop
+    echo "# Partial ROM sim fix" >> $systemdir/product/etc/build.prop
+    echo "persist.sys.fflag.override.settings_provider_model=false" >> $systemdir/product/etc/build.prop
   }
   build_modify
 
@@ -246,7 +254,7 @@ function normal() {
   
   # Add missing libs
   cp -frpn ./make/add_libs/system/* $systemdir
- 
+
   # Enable debug feature
   sed -i 's/persist.sys.usb.config=none/persist.sys.usb.config=adb/g' $systemdir/build.prop
   sed -i 's/ro.debuggable=0/ro.debuggable=1/g' $systemdir/build.prop
