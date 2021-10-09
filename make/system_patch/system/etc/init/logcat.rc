@@ -1,16 +1,22 @@
-on post-fs-data
-    mkdir /data/logs 0777 root root
-    rm /data/logs/log
 
-service persistentLogging /system/bin/logcat -v time -f /data/logs/log
-    user system
-    group root system log
-    oneshot
+on fs
+    rm /cache/boot_logcat.txt
+    rm /cache/boot_dmesg.txt
+
+    start boot_lc_main
+    start boot_dmesg
+
+service boot_lc_main /system/bin/logcat -v time -f /cache/boot_logcat.txt
+    class main
+    user root
+    group root system
     disabled
+    oneshot
 
-on property:sys.boot_completed=0
-    start persistentLogging
-    
-on property:sys.boot_completed=1
-    stop persistentLogging
+service boot_dmesg /system/bin/sh -c "dmesg -w > /cache/boot_dmesg.txt"
+    class main
+    user root
+    group root system
+    disabled
+    oneshot
 
