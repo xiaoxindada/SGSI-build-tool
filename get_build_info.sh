@@ -7,12 +7,14 @@ prop_dir="$1"
 image_file="$2"
 
 device_manufacturer=$(cat $prop_dir/build.prop | grep "ro.product.system.manufacture" | head -n 1 | cut -d "=" -f 2)
+[ -z "$device_manufacturer" ] && device_manufacturer=$(cat $prop_dir/build.prop | grep "ro.product.manufacture" | head -n 1 | cut -d "=" -f 2)
 android_version=$(cat $prop_dir/build.prop | grep "ro.build.version.release" | head -n 1 | cut -d "=" -f 2)
 android_code_name=$(cat $prop_dir/build.prop | grep "ro.build.version.codename" | head -n 1 | cut -d "=" -f 2)
 device_product=$(cat $prop_dir/build.prop | grep "ro.build.product=" | head -n 1 | cut -d "=" -f 2)
 android_sdk=$(cat $prop_dir/build.prop | grep "ro.build.version.sdk" | head -n 1 | cut -d "=" -f 2)
 andriod_spl=$(cat $prop_dir/build.prop | grep "ro.build.version.security_patch" | head -n 1 | cut -d "=" -f 2)
 device_model=$(cat $prop_dir/build.prop | grep "ro.product.system.model" | head -n 1 | cut -d "=" -f 2)
+[ -z "$device_model" ] && device_model=$(cat $prop_dir/build.prop | grep "ro.product.model" | head -n 1 | cut -d "=" -f 2)
 description_info=$(cat $prop_dir/build.prop | grep "ro.build.description" | head -n 1 | cut -d "=" -f 2)
 android_fingerprint=$(cat $prop_dir/build.prop | grep "ro.system.build.fingerprint" | head -n 1 | cut -d "=" -f 2)
 android_image_name=$(echo ${image_file##*/})

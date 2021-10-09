@@ -50,6 +50,7 @@ bug_fix="false"
 use_config="_config"
 other_args=""
 systemdir="$TARGETDIR/system/system"
+vendordir="$TARGETDIR/vendor"
 configdir="$TARGETDIR/config"
 shift 2
 
@@ -139,40 +140,7 @@ function normal() {
     sed -i '/oem/d' $systemdir/system_ext/etc/selinux/system_ext_property_contexts
   fi
 
-  build_modify() {
-  # Fix Device Properties for qssi
-    qssi() {
-      cat $systemdir/build.prop | grep -qo 'qssi'
-    }
-    if qssi ;then
-      echo "$QSSI_DETECTED"
-      echo "$DEVICE_PROP_FIX_STARTED"
-      brand=$(cat $TARGETDIR/vendor/build.prop | grep 'ro.product.vendor.brand')
-      device=$(cat $TARGETDIR/vendor/build.prop | grep 'ro.product.vendor.device')
-      manufacturer=$(cat $TARGETDIR/vendor/build.prop | grep 'ro.product.vendor.manufacturer')
-      model=$(cat $TARGETDIR/vendor/build.prop | grep 'ro.product.vendor.model')
-      mame=$(cat $TARGETDIR/vendor/build.prop | grep 'ro.product.vendor.name')
-  
-      echo "$CURR_DEVICE_PROP:"
-      echo "$brand"
-      echo "$device"
-      echo "$manufacturer"
-      echo "$model"
-      echo "$mame"
-
-      echo "$FIXING_STR"
-      sed -i '/ro.product.system./d' $systemdir/build.prop
-      echo "" >> $systemdir/build.prop
-      echo "# Device Settings" >> $systemdir/build.prop
-      echo "$brand" >> $systemdir/build.prop
-      echo "$device" >> $systemdir/build.prop
-      echo "$manufacturer" >> $systemdir/build.prop
-      echo "$model" >> $systemdir/build.prop
-      echo "$mame" >> $systemdir/build.prop
-      sed -i 's/ro.product.vendor./ro.product.system./g' $systemdir/build.prop
-      echo "$FIX_FINISHED_STR"
-    fi
- 
+  build_modify() { 
     # Enable auto-adapting dpi
     sed -i 's/ro.sf.lcd/#&/' $systemdir/build.prop
     sed -i 's/ro.sf.lcd/#&/' $systemdir/product/etc/build.prop
@@ -218,16 +186,39 @@ function normal() {
       echo "qemu.hw.mainkeys=0" >> $systemdir/build.prop
     fi
 
-    # Hack qssi property read order
-    source_order() {
-      grep -q 'ro.product.property_source_order=' $systemdir/build.prop
-    }
-    if source_order ;then
-      sed -i '/ro.product.property\_source\_order\=/d' $systemdir/build.prop
-      echo "" >> $systemdir/build.prop
-      echo "# Property Read Order" >> $systemdir/build.prop
-      echo "ro.product.property_source_order=system,product,system_ext,vendor,odm" >> $systemdir/build.prop
-    fi
+    # Hack GSI property read order
+    sed -i '/ro.product.property\_source\_order\=/d' $systemdir/build.prop
+    sed -i '/ro.product.property\_source\_order\=/d' $systemdir/system_ext/etc/build.prop
+    sed -i '/ro.product.property\_source\_order\=/d' $systemdir/product/etc/build.prop
+    echo "" >> $systemdir/product/etc/build.prop
+    echo "# Property Read Order" >> $systemdir/product/etc/build.prop
+    echo "ro.product.property_source_order=product,system,system_ext,vendor,odm" >> $systemdir/product/etc/build.prop
+
+    # Fix Device Properties for all roms
+    echo "$DEVICE_PROP_FIX_STARTED"
+    brand=$(cat $TARGETDIR/vendor/build.prop | grep 'ro.product.vendor.brand')
+    device=$(cat $TARGETDIR/vendor/build.prop | grep 'ro.product.vendor.device')
+    manufacturer=$(cat $TARGETDIR/vendor/build.prop | grep 'ro.product.vendor.manufacturer')
+    model=$(cat $TARGETDIR/vendor/build.prop | grep 'ro.product.vendor.model')
+    mame=$(cat $TARGETDIR/vendor/build.prop | grep 'ro.product.vendor.name')
+
+    echo "$ORIGINAL_DEVICE_INFOS:"
+    echo "$brand"
+    echo "$device"
+    echo "$manufacturer"
+    echo "$model"
+    echo "$mame"
+    echo "$FIXING_STR"
+    sed -i '/ro.product.system./d' $systemdir/build.prop
+    echo "" >> $systemdir/build.prop
+    echo "# Device Settings" >> $systemdir/build.prop
+    echo "$brand" >> $systemdir/build.prop
+    echo "$device" >> $systemdir/build.prop
+    echo "$manufacturer" >> $systemdir/build.prop
+    echo "$model" >> $systemdir/build.prop
+    echo "$mame" >> $systemdir/build.prop
+    sed -i 's/ro.product.vendor./ro.product./g' $systemdir/build.prop
+    echo "$FIX_FINISHED_STR"
     
     # Partial Devices Sim fix
     sed -i '/persist.sys.fflag.override.settings\_provider\_model\=/d' $systemdir/build.prop
@@ -382,8 +373,8 @@ elif [[ ! -d $systemdir/system_ext ]];then
   exit 1
 fi
 
-model="$(cat $systemdir/build.prop | grep 'model')"
-echo "$CURR_DEVICE_PROPS:"
+model=$(cat $vendordir/build.prop | grep 'ro.product.vendor.model')
+echo "$ORIGINAL_DEVICE_MODEL:"
 echo "$model"
 
 if [ -L $systemdir/vendor ];then
