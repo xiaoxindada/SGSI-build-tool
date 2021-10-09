@@ -16,8 +16,6 @@ apex_check() {
   fi
   if ! (ls $systemdir/apex | grep -q ".apex$") ;then
     echo "$DETECTED_FLATTEN_APEX"
-    rm -rf $systemdir/apex/com.android.vndk.current
-    tar -xf $LOCALDIR/com.android.vndk.current.tar -C $systemdir/apex/
   fi
 }  
 apex_check
