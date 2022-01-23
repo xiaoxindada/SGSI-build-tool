@@ -3,9 +3,13 @@
 LOCALDIR=`cd "$( dirname $0 )" && pwd`
 cd $LOCALDIR
 
+systemrootdir="../../../out/system"
 systemdir="../../../out/system/system"
 configdir="../../../out/config"
 vendordir="../../../out/vendor"
+
+# 清除MIUI供应商分区挂载
+rm -f $systemrootdir/init.miui.cust.rc
 
 # 清除该死的miui推广上下文导致的几乎所有机型bootloop或者直接启动到rec
 sed -i '/miui.reverse.charge/d' $systemdir/system_ext/etc/selinux/system_ext_property_contexts
