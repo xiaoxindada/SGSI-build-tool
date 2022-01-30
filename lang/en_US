@@ -66,6 +66,8 @@ SPLIT_DETECTED="Split detected"
 MERGING_STR="Merging"
 
 # image_extract.sh
+DETECTED_EXT_FILESYSTEM_IMAGE="Detected ext filesystem image"
+DETECTED_EORFS_FILESYSTEM_IMAGE="Detected erofs filesystem image"
 EXTRACTING_STR="Extracting"
 FAILEXTRACT_STR="Failed to extract"
 MERGE_SUCCESS="Merged Success"
