@@ -123,7 +123,7 @@ class Extractor(object):
                             cap = '' + str(hex(int('%04x%04x%04x' % (raw_cap[3], raw_cap[2], raw_cap[1]), 16)))
                         cap = ' capabilities={cap}'.format(cap=cap)
                 if entry_inode.is_dir:
-                    dir_target = self.EXTRACT_DIR + entry_inode_path.replace(' ','_')
+                    dir_target = self.EXTRACT_DIR + entry_inode_path.replace(' ','_').replace('"','')
                     if not os.path.isdir(dir_target):
                         os.makedirs(dir_target)
                     if os.name == 'posix':
@@ -200,13 +200,13 @@ class Extractor(object):
                     if os.name == 'nt':
                         if entry_name.endswith('/'):
                             entry_name = entry_name[:-1]
-                        file_target = self.EXTRACT_DIR + entry_inode_path.replace('/', os.sep).replace(' ','_')
+                        file_target = self.EXTRACT_DIR + entry_inode_path.replace('/', os.sep).replace(' ','_').replace('"','')
                         if not os.path.isdir(os.path.dirname(file_target)):
                             os.makedirs(os.path.dirname(file_target))
                         with open(file_target, 'wb') as out:
                             out.write(raw)
                     if os.name == 'posix':
-                        file_target = self.EXTRACT_DIR + entry_inode_path.replace(' ','_')
+                        file_target = self.EXTRACT_DIR + entry_inode_path.replace(' ','_').replace('"','')
                         if not os.path.isdir(os.path.dirname(file_target)):
                             os.makedirs(os.path.dirname(file_target))
                         with open(file_target, 'wb') as out:
@@ -621,7 +621,8 @@ class Extractor(object):
         self.OUTPUT_MYIMAGE_FILE = os.path.basename(target)
         self.MYFileName = os.path.basename(self.OUTPUT_IMAGE_FILE).replace(".img", "")
         self.FileName = self.__file_name(os.path.basename(target))
-        target_type = self.__getTypeTarget(target)
+        #target_type = self.__getTypeTarget(target)
+        target_type = 'img'
         if sys.argv.__len__() == 3:
             self.CONFING_DIR = sys.argv[2] + os.sep + 'config'
         else:
