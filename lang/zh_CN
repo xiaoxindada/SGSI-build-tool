@@ -64,6 +64,8 @@ SPLIT_DETECTED="检测到分段"
 MERGING_STR="正在合并"
 
 # image_extract.sh
+DETECTED_EXT_FILESYSTEM_IMAGE="检查到 ext2/4 文件系统镜像"
+DETECTED_EORFS_FILESYSTEM_IMAGE="检测到 erofs 文件系统镜像"
 EXTRACTING_STR="正在提取"
 FAILEXTRACT_STR="无法提取"
 MERGE_SUCCESS="合并完成"
