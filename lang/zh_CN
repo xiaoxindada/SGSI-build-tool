@@ -61,13 +61,15 @@ NOTFOUNDSYSTEMIMG="未发现 system.img，无法制作 sGSI"
 MOVINGIMG="正在移动 image 文件到工具目录"
 UNPACKING_STR="正在解压"
 SPLIT_DETECTED="检测到分段"
-MERGING_STR="正在合并"
 
 # image_extract.sh
 DETECTED_EXT_FILESYSTEM_IMAGE="检查到 ext2/4 文件系统镜像"
 DETECTED_EORFS_FILESYSTEM_IMAGE="检测到 erofs 文件系统镜像"
 EXTRACTING_STR="正在提取"
 FAILEXTRACT_STR="无法提取"
+
+# partition_merge.sh
+MERGING_STR="正在合并"
 MERGE_SUCCESS="合并完成"
 
 # simg2img.sh

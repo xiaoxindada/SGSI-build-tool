@@ -63,13 +63,15 @@ NOTFOUNDSYSTEMIMG="system.img not found, which caused failure to build sGSI"
 MOVINGIMG="Moving image file to the tool's dir"
 UNPACKING_STR="Unpacking"
 SPLIT_DETECTED="Split detected"
-MERGING_STR="Merging"
 
 # image_extract.sh
 DETECTED_EXT_FILESYSTEM_IMAGE="Detected ext filesystem image"
 DETECTED_EORFS_FILESYSTEM_IMAGE="Detected erofs filesystem image"
 EXTRACTING_STR="Extracting"
 FAILEXTRACT_STR="Failed to extract"
+
+# partition_merge.sh
+MERGING_STR="Merging"
 MERGE_SUCCESS="Merged Success"
 
 # simg2img.sh
