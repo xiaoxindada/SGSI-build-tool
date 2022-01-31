@@ -28,7 +28,7 @@ rm -rf $outdir
 mkdir -p $outdir
 
 if [ -e $kdzfile ]; then
-  echo "正在提取$kdzfile..."
+  echo "extracting $kdzfile..."
   dz_file_dir="$LOCALDIR/dzfiles"
   rm -rf $dz_file_dir
   mkdir -p $dz_file_dir 
@@ -42,14 +42,14 @@ if [ -e $kdzfile ]; then
     rm -rf $dz_file_dir
     find "${outdir}" -maxdepth 1 -type f -name "*.image" | while read -r i; do mv "${i}" "${i/.image/.img}" 2>/dev/null; done
     find "${outdir}" -maxdepth 1 -type f -name "*_a.img" | while read -r i; do mv "${i}" "${i/_a.img/.img}" 2>/dev/null; done
-    echo "提取完成, 已输出至$LOCALDIR/out目录"
+    echo "Extraction complete, Exported to $LOCALDIR/out directory"
     chmod 777 -R $LOCALDIR/out
   else
-    echo "提取失败！"
+    echo "Extraction failed！"
     rm -rf $outdir
     rm -rf $dz_file_dir  
   fi
 else
-  echo "文件不存在！"
+  echo "file does not exist！"
   exit  
 fi

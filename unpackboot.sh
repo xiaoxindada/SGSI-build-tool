@@ -12,7 +12,7 @@ bootdir=$LOCALDIR/boot
 rm -rf $bootdir
 mkdir -p $bootdir
 
-[ ! -e $boot_img ] && echo "boot.img 不存在！" && exit 1
+[ ! -e $boot_img ] && echo "boot.img does not exist!" && exit 1
 cp -frp $boot_img $aik/
 cd $aik
 ./unpackimg.sh $(basename $boot_img)
@@ -21,12 +21,12 @@ if [ $? = "0" ];then
   mv ./ramdisk $bootdir
   mv ./split_img $bootdir
 else
-  echo -e "\033[33m 方案一解压失败，开始尝试第二种解压方案 \033[0m"
+  echo -e "\033[33m scheme 1 failed to decompress, start to try the second decompression scheme \033[0m"
   rm -rf $(basename $boot_img)
   ./cleanup.sh
   cd $LOCALDIR
   ./unpackboot_test.sh
-  [ $? != "0" ] && echo "解压失败" && exit
+  [ $? != "0" ] && echo "Failed to decompress" && exit
 fi
 cd $LOCALDIR
 chmod 777 -R $bootdir
