@@ -30,11 +30,11 @@ if [ ! -d ".git" ];then
 fi
 
 if [ ! -d ".git" ];then
-  echo "检测到当前为使用git同步工具，是否为你强制使用git同步并更新？"
+  echo "Detected that you are currently using the git synchronization tool, do you want to force git synchronization and update for you? "
   select update in "Update" "Exit" ;do
     case $update in
       "Update")
-        echo "正在强制使用git更新中,请准备好梯子"
+        echo "Forced to use git update, please prepare the ladder"
         git init
         git checkout -B 12
         git remote add origin https://github.com/xiaoxindada/SGSI-build-tool.git
