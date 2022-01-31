@@ -40,7 +40,7 @@ su
 https://github.com/xiaoxindada/SGSI-build-action
 
 
-# Install tool dependent environment (recommended to hang t)
+# Install tool dependent environment (recommended to use it)
 ```
 Test environment: Ubuntu 20.04
 (Debian series Linux support, Arch series does not support the need to change the script installation dependencies by yourself)
