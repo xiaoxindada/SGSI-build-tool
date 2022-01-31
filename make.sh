@@ -93,7 +93,7 @@ function firmware_extract() {
       python ./payload.py ./payload.bin ./out
       for i in $partition_list ;do
         if [ -e ./out/$i.img ];then
-          echo $MOVINGIMG
+          echo "$i.img $MOVINGIMG"
           mv ./out/$i.img $IMAGESDIR/
         fi
       done
