@@ -42,7 +42,7 @@ if [ -e $kdzfile ]; then
     rm -rf $dz_file_dir
     find "${outdir}" -maxdepth 1 -type f -name "*.image" | while read -r i; do mv "${i}" "${i/.image/.img}" 2>/dev/null; done
     find "${outdir}" -maxdepth 1 -type f -name "*_a.img" | while read -r i; do mv "${i}" "${i/_a.img/.img}" 2>/dev/null; done
-    echo "Extraction complete, 已输出至$LOCALDIR/out目录"
+    echo "Extraction complete, Exported to $LOCALDIR/out directory"
     chmod 777 -R $LOCALDIR/out
   else
     echo "Extraction failed！"
