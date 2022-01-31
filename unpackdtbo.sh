@@ -7,7 +7,7 @@ cd $LOCALDIR
 source ./bin.sh
 
 if [ ! -e $LOCALDIR/dtbo.img ];then
-  echo "dtbo.img不存在！"
+  echo "dtbo.img does not exist！"
   exit 1
 fi
 dtc="$bin/dtb_tools/dtc"
@@ -18,15 +18,15 @@ rm -rf $dtbodir
 mkdir -p $dtbodir/dtbo_files
 mkdir -p $dtbodir/dts_files
 
-echo "正在解压dtbo.img"
+echo "decompressing dtbo.img"
 $mkdtimg_tool dump "$LOCALDIR/dtbo.img" -b "$dtbodir/dtbo_files/dtbo" > $dtbodir/dtbo_imageinfo.txt
 
 dtbo_files_name=$(ls $dtbodir/dtbo_files)
 for dtbo_files in $dtbo_files_name ;do
   dts_files=$(echo "$dtbo_files" | sed 's/dtbo/dts/g')
-  echo "正在反编译$dtbo_files为$dts_files"
+  echo "decompiling $dtbo_files for $dts_files"
   $dtc -@ -I "dtb" -O "dts" "$dtbodir/dtbo_files/$dtbo_files" -o "$dtbodir/dts_files/$dts_files" > /dev/null 2>&1
-  [ $? != 0 ] && echo "反编译$dtbo_files失败" && exit 1
+  [ $? != 0 ] && echo "decompile $dtbo_files Fail" && exit 1
 done
-echo "解压完成，已输出至 $dtbodir"
+echo "The decompression is complete, and it has been output to $dtbodir"
 chmod 777 -R $dtbodir
