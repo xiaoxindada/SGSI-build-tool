@@ -15,15 +15,15 @@ rm -rf $LOCALDIR/out
 mkdir $LOCALDIR/out
 
 echo ""
-read -p "请输入要接包的分区(别带.img): " species
+read -p "Please enter the partition to receive the package (don't bring .img): " species
 if [ $(xxd -p -l "2" --skip "$EXT_OFFEST" "${species}.img") = "$EXT_MAGIC" ];then
-  echo "检测到 ${species}.img 为 ext2/3/4 文件系统"
-  echo "正在解压${species}.img..."
+  echo "Detected ${species}.img as ext2/3/4 filesystem"
+  echo "Extracting ${species}.img..."
   python3 $bin/imgextractor.py ${species}.img $LOCALDIR/out
-  [ $? != 0 ] && echo "解压 ${species}.img 失败" && exit 1
+  [ $? != 0 ] && echo "Failed to decompress ${species}.img Fail" && exit 1
 elif [ $(xxd -p -l "4" --skip "$EROFS_OFFEST" "${species}.img") = "$EROFS_MAGIC_V1" ];then
-  echo "检测到 ${species}.img 为 erofs 文件系统"
-  echo "正在解压${species}.img..."
+  echo "Detected ${species}.img as erofs filesystem"
+  echo "Extracting ${species}.img..."
   $bin/erofsUnpackKt ${species}.img $LOCALDIR/out 
-  [ $? != 0 ] && echo "解压 ${species}.img 失败" && exit 1
+  [ $? != 0 ] && echo "Failed to decompress ${species}.img Fail" && exit 1
 fi
