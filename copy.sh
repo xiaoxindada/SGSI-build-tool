@@ -23,4 +23,11 @@ cd ./SGSI/Vbmeta_Patch
 zip -r ../Vbmeta_Patch.zip ./* 2 &>/dev/null
 cd $LOCALDIR
 rm -rf ./SGSI/Vbmeta_Patch
+
+echo "$GENERATRING_STR vendor_boot_patch"
+cd ./SGSI/vendor_boot_patch
+zip -r ../vendor_boot_patch.zip ./* 2 &>/dev/null
+cd $LOCALDIR
+rm -rf ./SGSI/vendor_boot_patch
+
 chmod 777 -R ./SGSI
