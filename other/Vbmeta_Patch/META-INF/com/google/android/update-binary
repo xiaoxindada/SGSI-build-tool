@@ -1,0 +1,16 @@
+#!/sbin/sh
+# Author: Xiaoxindada
+HOME="/data/vbmeta_work"
+TMP="/tmp"
+TOOLSDIR="$HOME/tools"
+BB="$TOOLSDIR/busybox"
+MAGISTBOOT="$TOOLSDIR/magiskboot"
+ZIPFILE="$3"
+rm -rf $HOME
+mkdir -p $HOME
+cd $HOME
+unzip -o "$ZIPFILE"
+chmod 777 -R $HOME
+. $TOOLSDIR/util_functions.sh
+$HOME/patch.sh "$2"
+ui_print "Patch Done!"
