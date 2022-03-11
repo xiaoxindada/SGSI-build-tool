@@ -25,6 +25,9 @@ for partition in $partitions ;do
       echo "${partition}.img $EXTRACTING_STR"
       $bin/erofsUnpackKt "$IMAGESDIR/${partition}.img" "$TARGETDIR"
       [ $? != 0 ] && echo "${partition}.img $FAILEXTRACT_STR" && exit 1
+    else
+      echo "$partition $IMAGE_UNSUPPORT_EXTRACT"
+      exit 1
     fi
     continue
   fi

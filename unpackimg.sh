@@ -36,4 +36,7 @@ elif [ $(xxd -p -l "4" --skip "$EROFS_OFFSET" "${species}.img") = "$EROFS_MAGIC_
   echo "正在解压${species}.img..."
   $bin/erofsUnpackKt ${species}.img $LOCALDIR/out 
   [ $? != 0 ] && echo "解压 ${species}.img 失败" && exit 1
+else
+  echo "当前img不支持解压 请检查img的文件系统"
+  exit 1
 fi
