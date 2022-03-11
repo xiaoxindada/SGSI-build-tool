@@ -67,6 +67,7 @@ SPLIT_DETECTED="Split detected"
 # image_extract.sh
 DETECTED_EXT_FILESYSTEM_IMAGE="Detected ext filesystem image"
 DETECTED_EORFS_FILESYSTEM_IMAGE="Detected erofs filesystem image"
+DETECTED_SQUASHFS_FILESYSTEM_IMAGE="Detected squashfs filesystem image"
 EXTRACTING_STR="Extracting"
 FAILEXTRACT_STR="Failed to extract"
 IMAGE_UNSUPPORT_EXTRACT="Image not support ectract"
