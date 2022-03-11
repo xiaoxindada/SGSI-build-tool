@@ -117,27 +117,31 @@ function normal() {
 
   # Patch SELinux to ensure maximum device compatibility
   sed -i "/typetransition location_app/d" $systemdir/etc/selinux/plat_sepolicy.cil
-  #sed -i '/u:object_r:vendor_default_prop:s0/d' $systemdir/etc/selinux/plat_property_contexts
   sed -i '/software.version/d'  $systemdir/etc/selinux/plat_property_contexts
-  #sed -i '/sys.usb/d' $systemdir/etc/selinux/plat_property_contexts
-  sed -i '/ro.build.fingerprint    u:object_r:fingerprint_prop:s0/d' $systemdir/etc/selinux/plat_property_contexts
+  sed -i "/ro.build.fingerprint/d" $systemdir/etc/selinux/plat_property_contexts
+  
+  ./sepolicy_prop_remover.sh "$systemdir/etc/selinux/plat_property_contexts" "device/qcom/sepolicy" > "$systemdir/etc/selinux/plat_property_contexts.tmp"
+  mv -f "$systemdir/etc/selinux/plat_property_contexts.tmp" "$systemdir/etc/selinux/plat_property_contexts"
 
   if [ -e $systemdir/product/etc/selinux/mapping ];then
     find $systemdir/product/etc/selinux/mapping/ -type f -empty | xargs rm -rf
     sed -i '/software.version/d'  $systemdir/product/etc/selinux/product_property_contexts
-    sed -i '/vendor/d' $systemdir/product/etc/selinux/product_property_contexts
-    sed -i '/secureboot/d' $systemdir/product/etc/selinux/product_property_contexts
-    sed -i '/persist/d' $systemdir/product/etc/selinux/product_property_contexts
-    sed -i '/oem/d' $systemdir/product/etc/selinux/product_property_contexts
+    sed -i '/miui.reverse.charge/d' $systemdir/product/etc/selinux/product_property_contexts
+    sed -i '/ro.cust.test/d' $systemdir/product/etc/selinux/product_property_contexts
+
+    
+    ./sepolicy_prop_remover.sh "$systemdir/product/etc/selinux/product_property_contexts" "device/qcom/sepolicy" > "$systemdir/product/etc/selinux/product_property_contexts.tmp"
+    mv -f "$systemdir/product/etc/selinux/product_property_contexts.tmp" "$systemdir/product/etc/selinux/product_property_contexts"
   fi
  
   if [ -e $systemdir/system_ext/etc/selinux/mapping ];then
     find $systemdir/system_ext/etc/selinux/mapping/ -type f -empty | xargs rm -rf
     sed -i '/software.version/d'  $systemdir/system_ext/etc/selinux/system_ext_property_contexts
-    sed -i '/vendor/d' $systemdir/system_ext/etc/selinux/system_ext_property_contexts
-    sed -i '/secureboot/d' $systemdir/system_ext/etc/selinux/system_ext_property_contexts
-    sed -i '/persist/d' $systemdir/system_ext/etc/selinux/system_ext_property_contexts
-    sed -i '/oem/d' $systemdir/system_ext/etc/selinux/system_ext_property_contexts
+    sed -i '/ro.cust.test/d' $systemdir/system_ext/etc/selinux/system_ext_property_contexts
+    sed -i '/miui.reverse.charge/d' $systemdir/system_ext/etc/selinux/system_ext_property_contexts
+    
+    ./sepolicy_prop_remover.sh "$systemdir/system_ext/etc/selinux/system_ext_property_contexts" "device/qcom/sepolicy" > "$systemdir/system_ext/etc/selinux/system_ext_property_contexts.tmp"
+    mv -f "$systemdir/system_ext/etc/selinux/system_ext_property_contexts.tmp" "$systemdir/system_ext/etc/selinux/system_ext_property_contexts"
   fi
 
   build_modify() { 
