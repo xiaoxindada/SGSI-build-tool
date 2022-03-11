@@ -129,7 +129,6 @@ function normal() {
     sed -i '/miui.reverse.charge/d' $systemdir/product/etc/selinux/product_property_contexts
     sed -i '/ro.cust.test/d' $systemdir/product/etc/selinux/product_property_contexts
 
-    
     ./sepolicy_prop_remover.sh "$systemdir/product/etc/selinux/product_property_contexts" "device/qcom/sepolicy" > "$systemdir/product/etc/selinux/product_property_contexts.tmp"
     mv -f "$systemdir/product/etc/selinux/product_property_contexts.tmp" "$systemdir/product/etc/selinux/product_property_contexts"
   fi
@@ -231,6 +230,18 @@ function normal() {
     echo "" >> $systemdir/product/etc/build.prop
     echo "# Partial ROM sim fix" >> $systemdir/product/etc/build.prop
     echo "persist.sys.fflag.override.settings_provider_model=false" >> $systemdir/product/etc/build.prop
+    
+    # Clean devices custom properites
+    clean_custom_prop() {
+      ./clean_properites.sh "$systemdir/build.prop" "/system.prop" > "$systemdir/build.prop.tmp"
+      mv -f "$systemdir/build.prop.tmp" "$systemdir/build.prop"
+      ./clean_properites.sh "$systemdir/system_ext/etc/build.prop" "/system_ext.prop" > "$systemdir/system_ext/etc/build.prop.tmp"
+      mv -f "$systemdir/system_ext/etc/build.prop.tmp" "$systemdir/system_ext/etc/build.prop"
+      ./clean_properites.sh "$systemdir/product/etc/build.prop" "/product.prop" > "$systemdir/product/etc/build.prop.tmp"
+      mv -f "$systemdir/product/etc/build.prop.tmp" "$systemdir/product/etc/build.prop"
+    }
+    
+    [ $clean_prop = true ] && clean_custom_prop
   }
   build_modify
 
@@ -303,6 +314,13 @@ function normal() {
 
   # Default flatten apex
   echo "false" > $TARGETDIR/apex_state
+
+  # Default clean custom prop
+  if [ $os_type = "Generic" ];then
+    clean_prop=true
+  else
+    clean_prop=false
+  fi
 
   # Detect ROM Type
   cd ./make
