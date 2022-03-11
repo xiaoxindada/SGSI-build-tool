@@ -12,30 +12,3 @@ on property:sys.boot_completed=1
     start phh_on_boot
     chown wifi system /data/misc/wifi
     chown system wifi /data/misc/wifi/hostapd.conf
-
-on property:persist.sys.phh.mainkeys=*
-    setprop qemu.hw.mainkeys ${persist.sys.phh.mainkeys}
-  
-on property:persist.sys.phh.oppo.dt2w=*
-    exec - root -- /system/bin/phh-prop-handler.sh "persist.sys.phh.oppo.dt2w"
-
-on property:persist.sys.phh.oppo.gaming_mode=*
-    exec - root -- /system/bin/phh-prop-handler.sh "persist.sys.phh.oppo.gaming_mode"
-
-on property:persist.sys.phh.oppo.usbotg=*
-    exec - root -- /system/bin/phh-prop-handler.sh "persist.sys.phh.oppo.usbotg"
-
-on property:persist.sys.phh.xiaomi.dt2w=*
-    exec - root -- /system/bin/phh-prop-handler.sh "persist.sys.phh.xiaomi.dt2w"
-
-on property:persist.sys.phh.disable_audio_effects=*
-    exec - root -- /system/bin/phh-prop-handler.sh "persist.sys.phh.disable_audio_effects"
-
-on property:persist.sys.phh.caf.audio_policy=*
-    exec - root -- /system/bin/phh-prop-handler.sh "persist.sys.phh.caf.audio_policy"
-
-on property:persist.sys.phh.vsmart.dt2w=*
-    exec - root -- /system/bin/phh-prop-handler.sh "persist.sys.phh.vsmart.dt2w"
-
-on property:persist.sys.phh.backlight.scale=*
-    exec - root -- /system/bin/phh-prop-handler.sh "persist.sys.phh.backlight.scale"    
