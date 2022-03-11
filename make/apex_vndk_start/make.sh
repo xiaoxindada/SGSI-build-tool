@@ -20,6 +20,8 @@ apex_check() {
 }  
 apex_check
 echo "$EXTRACTING_EXTRA_APEX"
+rm -rf $systemdir/apex/com.android.vndk.current*
+7z x -y $LOCALDIR/com.android.vndk.current.apex.7z -o$systemdir/apex/ > /dev/null 2>&1
 7z x -y $LOCALDIR/com.android.vndk.v29.apex.7z -o$systemdir/apex/ > /dev/null 2>&1
 7z x -y $LOCALDIR/com.android.vndk.v30.apex.7z -o$systemdir/apex/ > /dev/null 2>&1
 cd $bin/apex_tools
