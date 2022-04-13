@@ -5,8 +5,11 @@
 
 LANGDIR=`cd "$( dirname ${BASH_SOURCE[0]} )" && pwd`
 
-usage(){
+helper_usage(){
 	echo "$0 <language>"
+	echo "Support list:"
+	dump_support_lang
+	exit 1
 }
 
 dump_support_lang(){
@@ -16,11 +19,10 @@ dump_support_lang(){
 
 CURRENT_LANG=$(echo $LANG | awk -F . '{print $1}')
 TARGET_LANG="$1"
+BASE_NAME="language_helper.sh"
 
-if [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
-	usage
-	echo "Support list:"
-	dump_support_lang
+if [[ ("$1" == "-h" && $BASE_NAME == $(basename $0)) || ("$1" == "--help" && $BASE_NAME == $(basename $0)) ]]; then
+	helper_usage
 	exit 1
 fi
 
@@ -44,6 +46,7 @@ case $TARGET_LANG in
 		echo "en_US" > $LANGDIR/.lang_flag
 		;;
 esac
+
 
 if [ ! -f $LANGDIR/.lang_flag ]; then
 	echo "Can't find $LANGDIR/.lang_flag use zh_CN language by default"
