@@ -36,7 +36,7 @@ for CAPEX in $CAPEXES; do
    mv -f "$APEXDIR/original_apex" "$APEXDIR/$CAPEXNAME.apex"
    mkdir -p "$APEXDIR/$CAPEXNAME"
    7z e -y "$APEXDIR/$CAPEXNAME.apex" apex_pubkey -o"$APEXDIR/$CAPEXNAME" >> $TARGETDIR/apex_extract.log
-   $APEXEXTRACT "$APEXDIR/$CAPEXNAME.apex" "$APEXDIR/$CAPEXNAME"
+   $APEXEXTRACT extract "$APEXDIR/$CAPEXNAME.apex" "$APEXDIR/$CAPEXNAME"
    rm -rf "$APEXDIR/$CAPEXNAME/lost+found"
    rm -rf "$APEXDIR/$CAPEX"
 done
