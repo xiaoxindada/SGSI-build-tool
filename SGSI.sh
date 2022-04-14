@@ -240,8 +240,12 @@ function normal() {
       ./clean_properites.sh "$systemdir/product/etc/build.prop" "/product.prop" > "$systemdir/product/etc/build.prop.tmp"
       mv -f "$systemdir/product/etc/build.prop.tmp" "$systemdir/product/etc/build.prop"
     }
-    
+
+    # Default clean custom prop
+    clean_prop=false
+    [ $os_type = "Generic" ] && clean_prop=true
     [ $clean_prop = true ] && clean_custom_prop
+
   }
   build_modify
 
@@ -314,13 +318,6 @@ function normal() {
 
   # Default flatten apex
   echo "false" > $TARGETDIR/apex_state
-
-  # Default clean custom prop
-  if [ $os_type = "Generic" ];then
-    clean_prop=true
-  else
-    clean_prop=false
-  fi
 
   # Detect ROM Type
   cd ./make
@@ -426,7 +423,7 @@ if [ -L $systemdir/vendor ];then
         fix_bug
       fi
       echo "$SIGNING_WITH_AOSPKEY"
-      python $bin/tools/signapk/resign.py "$systemdir" "$bin/tools/signapk/AOSP_security" "$bin/$HOST/$platform/lib64"> $TARGETDIR/resign.log
+      $bin/tools/signapk/resign.py "$systemdir" "$bin/tools/signapk/AOSP_security" "$bin/$HOST/$platform/lib64"> $TARGETDIR/resign.log
       ./makeimg.sh "--ab${use_config}"
       exit 0
       ;;
