@@ -10,3 +10,7 @@
 /system/system/lib64/vndk-30 u:object_r:system_lib_file:s0
 /system/system/lib/vndk-sp-30 u:object_r:system_lib_file:s0
 /system/system/lib64/vndk-sp-30 u:object_r:system_lib_file:s0
+/system/system/lib/vndk-31 u:object_r:system_lib_file:s0
+/system/system/lib64/vndk-31 u:object_r:system_lib_file:s0
+/system/system/lib/vndk-sp-31 u:object_r:system_lib_file:s0
+/system/system/lib64/vndk-sp-31 u:object_r:system_lib_file:s0

@@ -21,7 +21,13 @@ apex_check() {
 apex_check
 echo "$EXTRACTING_EXTRA_APEX"
 rm -rf $systemdir/apex/com.android.vndk.current*
+
+if [ $(cat $systemdir/build.prop | grep "ro.build.version.sdk" | head -n 1 | cut -d "=" -f 2) = "32" ];then
+7z x -y $LOCALDIR/com.android.vndk.v31.apex.7z -o$systemdir/apex/ > /dev/null 2>&1
+7z x -y $LOCALDIR/12L.vndk.current.apex.7z -o$systemdir/apex/ > /dev/null 2>&1
+else
 7z x -y $LOCALDIR/com.android.vndk.current.apex.7z -o$systemdir/apex/ > /dev/null 2>&1
+fi
 7z x -y $LOCALDIR/com.android.vndk.v29.apex.7z -o$systemdir/apex/ > /dev/null 2>&1
 7z x -y $LOCALDIR/com.android.vndk.v30.apex.7z -o$systemdir/apex/ > /dev/null 2>&1
 cd $bin/apex_tools
@@ -79,6 +85,8 @@ rm -rf $systemdir/lib/vndk-30 $systemdir/lib/vndk-sp-30
 rm -rf $systemdir/lib64/vndk-29 $systemdir/lib64/vndk-sp-29
 rm -rf $systemdir/lib64/vndk-28 $systemdir/lib64/vndk-sp-28
 rm -rf $systemdir/lib64/vndk-30 $systemdir/lib64/vndk-sp-30
+rm -rf $systemdir/lib/vndk-31 $systemdir/lib/vndk-sp-31
+rm -rf $systemdir/lib64/vndk-31 $systemdir/lib64/vndk-sp-31
 
 ln -s  /apex/com.android.vndk.v29/lib $systemdir/lib/vndk-29
 ln -s  /apex/com.android.vndk.v28/lib $systemdir/lib/vndk-28
@@ -86,6 +94,8 @@ ln -s  /apex/com.android.vndk.v30/lib $systemdir/lib/vndk-30
 ln -s  /apex/com.android.vndk.v29/lib $systemdir/lib/vndk-sp-29
 ln -s  /apex/com.android.vndk.v28/lib $systemdir/lib/vndk-sp-28
 ln -s  /apex/com.android.vndk.v30/lib $systemdir/lib/vndk-sp-30
+ln -s  /apex/com.android.vndk.v31/lib $systemdir/lib/vndk-31
+ln -s  /apex/com.android.vndk.v31/lib $systemdir/lib/vndk-sp-31
 
 ln -s  /apex/com.android.vndk.v29/lib64 $systemdir/lib64/vndk-29
 ln -s  /apex/com.android.vndk.v28/lib64 $systemdir/lib64/vndk-28
@@ -93,6 +103,8 @@ ln -s  /apex/com.android.vndk.v30/lib64 $systemdir/lib64/vndk-30
 ln -s  /apex/com.android.vndk.v29/lib64 $systemdir/lib64/vndk-sp-29
 ln -s  /apex/com.android.vndk.v28/lib64 $systemdir/lib64/vndk-sp-28
 ln -s  /apex/com.android.vndk.v30/lib64 $systemdir/lib64/vndk-sp-30
+ln -s  /apex/com.android.vndk.v31/lib64 $systemdir/lib64/vndk-31
+ln -s  /apex/com.android.vndk.v31/lib64 $systemdir/lib64/vndk-sp-31
 
 # Fix vintf for different vndk version
 manifest_file="$systemdir/system_ext/etc/vintf/manifest.xml"
