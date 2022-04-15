@@ -6,8 +6,6 @@
 
 LOCALDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 source ./bin.sh
-fixbug=true
-build="--ab"
 
 usage() {
 cat <<EOT
@@ -59,19 +57,19 @@ case $build in
     ;;
 esac
 
-fixbug="$1"
-case $fixbug in
+FIXBUG="$1"
+case $FIXBUG in
     fb|--fb|--FB|-fb|-FB)
-    fixbug=false
+    FIXBUG=""
     shift
     ;;
     *)
-    fixbug=true
+    FIXBUG="--fix-bug"
     shift
     ;;
 esac
 
-rm -rf tmp output workspace SGSI
+rm -rf output workspace SGSI
 
 LEAVE() {
     echo "SGSI failed! Exiting..."
@@ -80,6 +78,7 @@ LEAVE() {
 }
 
 if [[ "$URL" == "http"* ]]; then
+  rm -rf tmp
   echo "Downloading firmware..."
   mkdir -p "$LOCALDIR/tmp"
   ZIP="$LOCALDIR/tmp/update.zip"
@@ -90,11 +89,7 @@ else
   exit 1
 fi
 
-if [ $fixbug == true ]; then
-  "$LOCALDIR"/make.sh $build $TYPE $ZIP --fix-bug || LEAVE
-elif [ $fixbug == false ] ; then
-  "$LOCALDIR"/make.sh $build $TYPE $ZIP || LEAVE
-fi
+  "$LOCALDIR"/make.sh $build $TYPE $ZIP $FIXBUG || LEAVE
 
 rm -rf "$LOCALDIR/tmp"
 rm -rf "$LOCALDIR/workspace"
