@@ -8,6 +8,7 @@ tmp/
 workspace/
 out/
 boot/
+super/
 images/
 dtbo/
 dtbs/
