@@ -24,7 +24,6 @@ dependency_install(){
     if [[ "$OSTYPE" == "linux-gnu" ]]; then
         echo -e "\033[33m [$INFO_STR] $DETECTED_LINUX \033[0m"
         echo -e "\033[33m [$INFO_STR] $INSTPKG_WITH_APT ... \033[0m"
-        sudo apt update && sudo apt upgrade -y
         sudo apt install -y git p7zip curl wget unace unrar zip unzip p7zip-full p7zip-rar sharutils uudeview mpack arj cabextract file-roller aptitude device-tree-compiler squashfs-tools liblzma-dev liblz4-tool gawk aria2 selinux-utils
         sudo apt update --fix-missing
         
