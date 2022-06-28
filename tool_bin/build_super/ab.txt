@@ -1,2 +1,0 @@
-ab_update=true
-dynamic_partition_retrofit=true
