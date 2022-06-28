@@ -25,7 +25,7 @@ dependency_install(){
         echo -e "\033[33m [$INFO_STR] $DETECTED_LINUX \033[0m"
         echo -e "\033[33m [$INFO_STR] $INSTPKG_WITH_APT ... \033[0m"
         sudo apt update && sudo apt upgrade -y
-        sudo apt install git p7zip curl wget unace unrar zip unzip p7zip-full p7zip-rar sharutils uudeview mpack arj cabextract file-roller aptitude device-tree-compiler squashfs-tools liblzma-dev liblz4-tool gawk aria2 selinux-utils busybox -y
+        sudo apt install -y git p7zip curl wget unace unrar zip unzip p7zip-full p7zip-rar sharutils uudeview mpack arj cabextract file-roller aptitude device-tree-compiler squashfs-tools liblzma-dev liblz4-tool gawk aria2 selinux-utils
         sudo apt update --fix-missing
         
     elif [[ "$OSTYPE" == "darwin"* ]]; then
@@ -74,8 +74,6 @@ pip_module_install(){
 debug_packages_version(){
     if [[ "$2" == "java" ]] ; then
         $2 -version &> $2.ver
-    elif [[ "$2" == "busybox" ]] ; then
-        $2 --help | head -n 1 &> $2.ver    
     else
         $2 --version &> $2.ver
     fi
@@ -112,7 +110,6 @@ debug_packages_version Pip pip
 debug_packages_version Python3 python3
 debug_packages_version Pip3 pip3
 debug_packages_version Java java
-debug_packages_version Busybox busybox
 
 echo -e "\033[32m [$INFO_STR] $SUCCFINISH_OPER: $ENVSETUP_TOOLS \033[0m"
 echo -e "\033[32m [$INFO_STR] $SELECT_LANG_STR, $EXITING_STR... \033[0m"
