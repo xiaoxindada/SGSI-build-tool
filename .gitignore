@@ -7,7 +7,8 @@ make/*/add_repack_fs
 tmp/
 workspace/
 out/
-boot/
+boot_out/
+vendor_boot_out/
 super/
 images/
 dtbo/

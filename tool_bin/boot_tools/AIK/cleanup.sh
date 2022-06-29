@@ -28,7 +28,7 @@ if [ -d ramdisk ] && [ "$(stat $statarg ramdisk | head -n 1)" = "root" -o ! "$(f
   sudo=sudo;
 fi;
 
-$sudo rm -rf ramdisk split_img *new.* *ramdisk-*.* || exit 1;
+$sudo rm -rf ramdisk split_img *new.* *ramdisk-*.* extract_prog || exit 1;
 
 case $1 in
   --quiet) ;;

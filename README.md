@@ -70,15 +70,15 @@ su
 
 ```
 
-img打包解包: makeimg2.sh unpackimg.sh
-boot.img打包解包: makeboot.sh unpackboot.sh  
-dat/br生成: img2sdat.sh  
+其他分区img打包解包: makeimg2.sh unpackimg.sh
+boot.img/vendor_boot.img 打包解包: makeboot.sh unpackboot.sh  
+dat/br生成: img2sdat.sh
 解压img的apex: apex.sh (apex扁平化)  
-局部deodex: bin/oat2dex/deodex.sh  
-ozip解密: oppo_ozip 
+局部deodex: bin/oat2dex/deodex.sh
+ozip解密: oppo_ozip
 dtbo.img打包解包： makedtbo.sh unpackdtbo.sh
 apk签名： bin/tools/signapk/signapk.sh  
-LG kdz解包：unpack_kdz.sh  
+LG kdz解包：unpack_kdz.sh
 oppo/oneplus ops解包：unpack_ops.sh  
 
 ```
