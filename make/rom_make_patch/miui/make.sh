@@ -50,9 +50,11 @@ xml_name=$(ls $vendor_device_features)
 if [[ ! -e $device_features ]] && [[ -e $vendor_device_features ]];then
   cp -frp $vendor_device_features $systemdir/etc/
   echo "/system/system/etc/device_features u:object_r:system_file:s0" >> $configdir/system_file_contexts
-  echo "/system/system/etc/device_features/$xml_name u:object_r:system_file:s0" >> $configdir/system_file_contexts
   echo "system/system/etc/device_features 0 0 0755" >> $configdir/system_fs_config
-  echo "system/system/etc/device_features/$xml_name 0 0 0644" >> $configdir/system_fs_config
+  for xml in $xml_name; do
+  echo "/system/system/etc/device_features/$xml u:object_r:system_file:s0" >> $configdir/system_file_contexts
+  echo "system/system/etc/device_features/$xml 0 0 0644" >> $configdir/system_fs_config
+  done
   sed -i '/^\s*$/d' $configdir/system_file_contexts
   sed -i '/^\s*$/d' $configdir/system_fs_config
 fi
