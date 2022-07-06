@@ -3,13 +3,13 @@
 # Copyright (C) 2021 Xiaoxindada <2245062854@qq.com>
 set -e
 
-LOCALDIR=`cd "$( dirname ${BASH_SOURCE[0]} )" && pwd`
+LOCALDIR=$(cd "$(dirname ${BASH_SOURCE[0]})" && pwd)
 cd $LOCALDIR
 source ./bin.sh
 source ./language_helper.sh
 
 Usage() {
-cat <<EOT
+  cat <<EOT
 Usage:
 $0 <Build Type> <OS Type> [Other args]
   Build Type: [--AB|--ab] or [-A|-a|--a-only]
@@ -21,25 +21,25 @@ EOT
 }
 
 case $1 in
-  "--AB"|"--ab")
-    build_type="--ab"
-    ;;
-  "-A"|"-a"|"--a-only")
-    build_type="--a-only"
-    echo "$NOTSUPPAONLY"
-    exit 1
-    ;;
-  "-h"|"--help")
-    Usage
-    exit 1
-    ;;    
-  *)
-    Usage
-    exit 1
-    ;;
+"--AB" | "--ab")
+  build_type="--ab"
+  ;;
+"-A" | "-a" | "--a-only")
+  build_type="--a-only"
+  echo "$NOTSUPPAONLY"
+  exit 1
+  ;;
+"-h" | "--help")
+  Usage
+  exit 1
+  ;;
+*)
+  Usage
+  exit 1
+  ;;
 esac
 
-if [ $# -lt 2 ];then
+if [ $# -lt 2 ]; then
   Usage
   exit 1
 fi
@@ -54,12 +54,36 @@ vendordir="$TARGETDIR/vendor"
 configdir="$TARGETDIR/config"
 shift 2
 
-if ! (cat ./make/rom_support_list.txt | grep -qo "$os_type");then
+if ! (cat ./make/rom_support_list.txt | grep -qo "$os_type"); then
   echo $UNSUPPORTED_ROM
   echo $SUPPORTED_ROM_LIST
   cat ./make/rom_support_list.txt
   exit 1
 fi
+
+function check_source_version() {
+  export allow_build=false
+  export sourcever=""
+
+  # Detect Source API level
+  if grep -q ro.build.version.release_or_codename $systemdir/build.prop; then
+    export sourcever=$(grep ro.build.version.release_or_codename $systemdir/build.prop | cut -d "=" -f 2)
+  else
+    export sourcever=$(grep ro.build.version.release $systemdir/build.prop | cut -d "=" -f 2)
+  fi
+
+  local ret=0
+  echo $CURRENT_SYSTEM_VERSION: $sourcever
+  case $sourcever in
+  *12*) local ret=0 ;;
+  *) local ret=1 ;;
+  esac
+
+  if [ $ret != 0 ]; then
+    echo "$CURRENT_SYSTEM_VERSION $sourcever $UNSUPPORTED_STR"
+    exit 1
+  fi
+}
 
 function normal() {
   # Process ramdisk's system for all rom
@@ -74,28 +98,28 @@ function normal() {
     ln -s "/vendor/bt_firmware" "$systemdir/../bt_firmware"
     ln -s "/vendor/firmware" "$systemdir/../firmware"
 
-    if [ -f $configdir/system_file_contexts ];then
+    if [ -f $configdir/system_file_contexts ]; then
       sed -i '/\/system\/persist /d' $configdir/system_file_contexts
       sed -i '/\/system\/bt_firmware /d' $configdir/system_file_contexts
       sed -i '/\/system\/firmware /d' $configdir/system_file_contexts
       sed -i '/\/system\/cache /d' $configdir/system_file_contexts
 
-      echo "/system/persist u:object_r:mnt_vendor_file:s0" >> $configdir/system_file_contexts
-      echo "/system/bt_firmware u:object_r:bt_firmware_file:s0" >> $configdir/system_file_contexts
-      echo "/system/firmware u:object_r:firmware_file:s0" >> $configdir/system_file_contexts
-      echo "/system/cache u:object_r:cache_file:s0" >> $configdir/system_file_contexts
+      echo "/system/persist u:object_r:mnt_vendor_file:s0" >>$configdir/system_file_contexts
+      echo "/system/bt_firmware u:object_r:bt_firmware_file:s0" >>$configdir/system_file_contexts
+      echo "/system/firmware u:object_r:firmware_file:s0" >>$configdir/system_file_contexts
+      echo "/system/cache u:object_r:cache_file:s0" >>$configdir/system_file_contexts
     fi
 
-    if [ -f $configdir/system_fs_config ];then
+    if [ -f $configdir/system_fs_config ]; then
       sed -i '/system\/persist /d' $configdir/system_fs_config
       sed -i '/system\/bt_firmware /d' $configdir/system_fs_config
       sed -i '/system\/firmware /d' $configdir/system_fs_config
       sed -i '/system\/cache /d' $configdir/system_fs_config
 
-      echo "system/persist 0 0 0755" >> $configdir/system_fs_config
-      echo "system/bt_firmware 0 0 0644" >> $configdir/system_fs_config
-      echo "system/firmware 0 0 0644" >> $configdir/system_fs_config
-      echo "system/cache 1000 2001 0770" >> $configdir/system_fs_config
+      echo "system/persist 0 0 0755" >>$configdir/system_fs_config
+      echo "system/bt_firmware 0 0 0644" >>$configdir/system_fs_config
+      echo "system/firmware 0 0 0644" >>$configdir/system_fs_config
+      echo "system/cache 1000 2001 0770" >>$configdir/system_fs_config
     fi
   }
   ramdisk_modify
@@ -104,51 +128,51 @@ function normal() {
   echo "$OTHER_PROCESSINGS"
 
   # Reset manifest_custom
-  true > ./make/add_etc_vintf_patch/manifest_custom
-  echo "" >> ./make/add_etc_vintf_patch/manifest_custom
-  echo "<!-- oem hal -->" >> ./make/add_etc_vintf_patch/manifest_custom
+  true >./make/add_etc_vintf_patch/manifest_custom
+  echo "" >>./make/add_etc_vintf_patch/manifest_custom
+  echo "<!-- oem hal -->" >>./make/add_etc_vintf_patch/manifest_custom
 
-  true > ./make/add_build/oem_prop
-  echo "" >> ./make/add_build/oem_prop
-  echo "# oem common prop" >> ./make/add_build/oem_prop
+  true >./make/add_build/oem_prop
+  echo "" >>./make/add_build/oem_prop
+  echo "# oem common prop" >>./make/add_build/oem_prop
 
   # Modify USB State
   cp -frp ./make/aosp_usb/* $systemdir/etc/init/hw/
 
   # Patch SELinux to ensure maximum device compatibility
   sed -i "/typetransition location_app/d" $systemdir/etc/selinux/plat_sepolicy.cil
-  sed -i '/software.version/d'  $systemdir/etc/selinux/plat_property_contexts
+  sed -i '/software.version/d' $systemdir/etc/selinux/plat_property_contexts
   sed -i "/ro.build.fingerprint/d" $systemdir/etc/selinux/plat_property_contexts
-  
-  ./sepolicy_prop_remover.sh "$systemdir/etc/selinux/plat_property_contexts" "device/qcom/sepolicy" > "$systemdir/etc/selinux/plat_property_contexts.tmp"
+
+  ./sepolicy_prop_remover.sh "$systemdir/etc/selinux/plat_property_contexts" "device/qcom/sepolicy" >"$systemdir/etc/selinux/plat_property_contexts.tmp"
   mv -f "$systemdir/etc/selinux/plat_property_contexts.tmp" "$systemdir/etc/selinux/plat_property_contexts"
 
-  if [ -e $systemdir/product/etc/selinux/mapping ];then
+  if [ -e $systemdir/product/etc/selinux/mapping ]; then
     find $systemdir/product/etc/selinux/mapping/ -type f -empty | xargs rm -rf
-    sed -i '/software.version/d'  $systemdir/product/etc/selinux/product_property_contexts
+    sed -i '/software.version/d' $systemdir/product/etc/selinux/product_property_contexts
     sed -i '/miui.reverse.charge/d' $systemdir/product/etc/selinux/product_property_contexts
     sed -i '/ro.cust.test/d' $systemdir/product/etc/selinux/product_property_contexts
 
-    ./sepolicy_prop_remover.sh "$systemdir/product/etc/selinux/product_property_contexts" "device/qcom/sepolicy" > "$systemdir/product/etc/selinux/product_property_contexts.tmp"
+    ./sepolicy_prop_remover.sh "$systemdir/product/etc/selinux/product_property_contexts" "device/qcom/sepolicy" >"$systemdir/product/etc/selinux/product_property_contexts.tmp"
     mv -f "$systemdir/product/etc/selinux/product_property_contexts.tmp" "$systemdir/product/etc/selinux/product_property_contexts"
   fi
- 
-  if [ -e $systemdir/system_ext/etc/selinux/mapping ];then
+
+  if [ -e $systemdir/system_ext/etc/selinux/mapping ]; then
     find $systemdir/system_ext/etc/selinux/mapping/ -type f -empty | xargs rm -rf
-    sed -i '/software.version/d'  $systemdir/system_ext/etc/selinux/system_ext_property_contexts
+    sed -i '/software.version/d' $systemdir/system_ext/etc/selinux/system_ext_property_contexts
     sed -i '/ro.cust.test/d' $systemdir/system_ext/etc/selinux/system_ext_property_contexts
     sed -i '/miui.reverse.charge/d' $systemdir/system_ext/etc/selinux/system_ext_property_contexts
-    
-    ./sepolicy_prop_remover.sh "$systemdir/system_ext/etc/selinux/system_ext_property_contexts" "device/qcom/sepolicy" > "$systemdir/system_ext/etc/selinux/system_ext_property_contexts.tmp"
+
+    ./sepolicy_prop_remover.sh "$systemdir/system_ext/etc/selinux/system_ext_property_contexts" "device/qcom/sepolicy" >"$systemdir/system_ext/etc/selinux/system_ext_property_contexts.tmp"
     mv -f "$systemdir/system_ext/etc/selinux/system_ext_property_contexts.tmp" "$systemdir/system_ext/etc/selinux/system_ext_property_contexts"
   fi
 
-  build_modify() { 
+  build_modify() {
     # Enable auto-adapting dpi
     sed -i 's/ro.sf.lcd/#&/' $systemdir/build.prop
     sed -i 's/ro.sf.lcd/#&/' $systemdir/product/etc/build.prop
-    sed -i 's/ro.sf.lcd/#&/' $systemdir/system_ext/etc/build.prop    
-  
+    sed -i 's/ro.sf.lcd/#&/' $systemdir/system_ext/etc/build.prop
+
     # Cleanup properties
     sed -i '/vendor.display/d' $systemdir/build.prop
     sed -i '/vendor.perf/d' $systemdir/build.prop
@@ -166,36 +190,36 @@ function normal() {
     sed -i '/system_root_image/d' $systemdir/build.prop
     sed -i '/ro.control_privapp_permissions/d' $systemdir/build.prop
     sed -i '/ro.control_privapp_permissions/d' $systemdir/product/etc/build.prop
-    sed -i '/ro.control_privapp_permissions/d' $systemdir/system_ext/etc/build.prop  
-    cat ./make/add_build/system_prop >> $systemdir/build.prop
-    cat ./make/add_build/product_prop >> $systemdir/product/etc/build.prop
-    cat ./make/add_build/system_ext_prop >> $systemdir/system_ext/etc/build.prop
+    sed -i '/ro.control_privapp_permissions/d' $systemdir/system_ext/etc/build.prop
+    cat ./make/add_build/system_prop >>$systemdir/build.prop
+    cat ./make/add_build/product_prop >>$systemdir/product/etc/build.prop
+    cat ./make/add_build/system_ext_prop >>$systemdir/system_ext/etc/build.prop
 
     # Disable bpfloader
     rm -rf $systemdir/etc/init/bpfloader.rc
-    echo ""  >> $systemdir/product/etc/build.prop
-    echo "# Disable bpfloader" >> $systemdir/product/etc/build.prop
-    echo "bpf.progs_loaded=1" >> $systemdir/product/etc/build.prop
+    echo "" >>$systemdir/product/etc/build.prop
+    echo "# Disable bpfloader" >>$systemdir/product/etc/build.prop
+    echo "bpf.progs_loaded=1" >>$systemdir/product/etc/build.prop
 
     # Enable HW Mainkeys
     mainkeys() {
       grep -q 'qemu.hw.mainkeys=' $systemdir/build.prop
-    }  
-    if mainkeys ;then
+    }
+    if mainkeys; then
       sed -i 's/qemu.hw.mainkeys\=1/qemu.hw.mainkeys\=0/g' $systemdir/build.prop
     else
-      echo "" >> $systemdir/build.prop
-      echo "# Enable HW Mainkeys" >> $systemdir/build.prop
-      echo "qemu.hw.mainkeys=0" >> $systemdir/build.prop
+      echo "" >>$systemdir/build.prop
+      echo "# Enable HW Mainkeys" >>$systemdir/build.prop
+      echo "qemu.hw.mainkeys=0" >>$systemdir/build.prop
     fi
 
     # Hack GSI property read order
     sed -i '/ro.product.property\_source\_order\=/d' $systemdir/build.prop
     sed -i '/ro.product.property\_source\_order\=/d' $systemdir/system_ext/etc/build.prop
     sed -i '/ro.product.property\_source\_order\=/d' $systemdir/product/etc/build.prop
-    echo "" >> $systemdir/product/etc/build.prop
-    echo "# Property Read Order" >> $systemdir/product/etc/build.prop
-    echo "ro.product.property_source_order=product,system,system_ext,vendor,odm" >> $systemdir/product/etc/build.prop
+    echo "" >>$systemdir/product/etc/build.prop
+    echo "# Property Read Order" >>$systemdir/product/etc/build.prop
+    echo "ro.product.property_source_order=product,system,system_ext,vendor,odm" >>$systemdir/product/etc/build.prop
 
     # Fix Device Properties for all roms
     echo "$DEVICE_PROP_FIX_STARTED"
@@ -213,31 +237,31 @@ function normal() {
     echo "$mame"
     echo "$FIXING_STR"
     sed -i '/ro.product.system./d' $systemdir/build.prop
-    echo "" >> $systemdir/build.prop
-    echo "# Device Settings" >> $systemdir/build.prop
-    echo "$brand" >> $systemdir/build.prop
-    echo "$device" >> $systemdir/build.prop
-    echo "$manufacturer" >> $systemdir/build.prop
-    echo "$model" >> $systemdir/build.prop
-    echo "$mame" >> $systemdir/build.prop
+    echo "" >>$systemdir/build.prop
+    echo "# Device Settings" >>$systemdir/build.prop
+    echo "$brand" >>$systemdir/build.prop
+    echo "$device" >>$systemdir/build.prop
+    echo "$manufacturer" >>$systemdir/build.prop
+    echo "$model" >>$systemdir/build.prop
+    echo "$mame" >>$systemdir/build.prop
     sed -i 's/ro.product.vendor./ro.product./g' $systemdir/build.prop
     echo "$FIX_FINISHED_STR"
-    
+
     # Partial Devices Sim fix
     sed -i '/persist.sys.fflag.override.settings\_provider\_model\=/d' $systemdir/build.prop
     sed -i '/persist.sys.fflag.override.settings\_provider\_model\=/d' $systemdir/system_ext/etc/build.prop
     sed -i '/persist.sys.fflag.override.settings\_provider\_model\=/d' $systemdir/product/etc/build.prop
-    echo "" >> $systemdir/product/etc/build.prop
-    echo "# Partial ROM sim fix" >> $systemdir/product/etc/build.prop
-    echo "persist.sys.fflag.override.settings_provider_model=false" >> $systemdir/product/etc/build.prop
-    
+    echo "" >>$systemdir/product/etc/build.prop
+    echo "# Partial ROM sim fix" >>$systemdir/product/etc/build.prop
+    echo "persist.sys.fflag.override.settings_provider_model=false" >>$systemdir/product/etc/build.prop
+
     # Clean devices custom properites
     clean_custom_prop() {
-      ./clean_properites.sh "$systemdir/build.prop" "/system.prop" > "$systemdir/build.prop.tmp"
+      ./clean_properites.sh "$systemdir/build.prop" "/system.prop" >"$systemdir/build.prop.tmp"
       mv -f "$systemdir/build.prop.tmp" "$systemdir/build.prop"
-      ./clean_properites.sh "$systemdir/system_ext/etc/build.prop" "/system_ext.prop" > "$systemdir/system_ext/etc/build.prop.tmp"
+      ./clean_properites.sh "$systemdir/system_ext/etc/build.prop" "/system_ext.prop" >"$systemdir/system_ext/etc/build.prop.tmp"
       mv -f "$systemdir/system_ext/etc/build.prop.tmp" "$systemdir/system_ext/etc/build.prop"
-      ./clean_properites.sh "$systemdir/product/etc/build.prop" "/product.prop" > "$systemdir/product/etc/build.prop.tmp"
+      ./clean_properites.sh "$systemdir/product/etc/build.prop" "/product.prop" >"$systemdir/product/etc/build.prop.tmp"
       mv -f "$systemdir/product/etc/build.prop.tmp" "$systemdir/product/etc/build.prop"
     }
 
@@ -255,13 +279,13 @@ function normal() {
 
   # Revert fstab.postinstall to gsi state
   find $systemdir/../ -type f -name "fstab.postinstall" | xargs rm -rf
-  rm -rf $systemdir/etc/init/cppreopts.rc    
+  rm -rf $systemdir/etc/init/cppreopts.rc
   cp -frp ./make/fstab/system/* $systemdir
   sed -i '/fstab\\.postinstall/d' $configdir/system_file_contexts
   sed -i '/fstab.postinstall/d' $configdir/system_fs_config
-  cat ./make/fstab/fstab_contexts >> $configdir/system_file_contexts
-  cat ./make/fstab/fstab_fs >> $configdir/system_fs_config
-  
+  cat ./make/fstab/fstab_contexts >>$configdir/system_file_contexts
+  cat ./make/fstab/fstab_fs >>$configdir/system_fs_config
+
   # Add missing libs
   cp -frpn ./make/add_libs/system/* $systemdir
 
@@ -269,7 +293,7 @@ function normal() {
   sed -i 's/persist.sys.usb.config=none/persist.sys.usb.config=adb/g' $systemdir/build.prop
   sed -i 's/ro.debuggable=0/ro.debuggable=1/g' $systemdir/build.prop
   sed -i 's/ro.adb.secure=1/ro.adb.secure=0/g' $systemdir/build.prop
-  
+
   sed -i 's/persist.sys.usb.config=none/persist.sys.usb.config=adb/g' $systemdir/system_ext/etc/build.prop
   sed -i 's/ro.debuggable=0/ro.debuggable=1/g' $systemdir/system_ext/etc/build.prop
   sed -i 's/ro.adb.secure=1/ro.adb.secure=0/g' $systemdir/system_ext/etc/build.prop
@@ -277,10 +301,9 @@ function normal() {
   sed -i 's/persist.sys.usb.config=none/persist.sys.usb.config=adb/g' $systemdir/product/etc/build.prop
   sed -i 's/ro.debuggable=0/ro.debuggable=1/g' $systemdir/product/etc/build.prop
   sed -i 's/ro.adb.secure=1/ro.adb.secure=0/g' $systemdir/product/etc/build.prop
-  echo "" >> $systemdir/product/etc/build.prop
-  echo "# force debug" >> $systemdir/product/etc/build.prop
-  echo "ro.force.debuggable=1" >> $systemdir/product/etc/build.prop
-
+  echo "" >>$systemdir/product/etc/build.prop
+  echo "# force debug" >>$systemdir/product/etc/build.prop
+  echo "ro.force.debuggable=1" >>$systemdir/product/etc/build.prop
 
   # Remove qti_permissions
   find $systemdir -type f -name "qti_permissions.xml" | xargs rm -rf
@@ -290,7 +313,7 @@ function normal() {
 
   # Remove avb
   find $systemdir -type d -name "avb" | xargs rm -rf
-  
+
   # Remove com.qualcomm.location
   find $systemdir -type d -name "com.qualcomm.location" | xargs rm -rf
 
@@ -306,10 +329,10 @@ function normal() {
   cp -frp ./make/add_phh/system/* $systemdir/
 
   # Register selinux contexts related by phh system
-  cat ./make/add_phh_plat_file_contexts/plat_file_contexts >> $systemdir/etc/selinux/plat_file_contexts
+  cat ./make/add_phh_plat_file_contexts/plat_file_contexts >>$systemdir/etc/selinux/plat_file_contexts
 
   # Register selinux contexts related by added files
-  cat ./make/add_plat_file_contexts/plat_file_contexts >> $systemdir/etc/selinux/plat_file_contexts
+  cat ./make/add_plat_file_contexts/plat_file_contexts >>$systemdir/etc/selinux/plat_file_contexts
 
   # Replace to AOSP Camera
   #cd ./make/camera
@@ -317,7 +340,7 @@ function normal() {
   #cd $LOCALDIR
 
   # Default flatten apex
-  echo "false" > $TARGETDIR/apex_state
+  echo "false" >$TARGETDIR/apex_state
 
   # Detect ROM Type
   cd ./make
@@ -335,7 +358,7 @@ function normal() {
   cd $LOCALDIR
 
   # Add oem_build
-  cat ./make/add_build/oem_prop >> $systemdir/build.prop
+  cat ./make/add_build/oem_prop >>$systemdir/build.prop
 
   # Add OEM HAL Manifest Interfaces
   manifest_tmp="$TARGETDIR/vintf/manifest.xml"
@@ -343,26 +366,26 @@ function normal() {
   mkdir -p $(dirname $manifest_tmp)
   cp -frp $systemdir/etc/vintf/manifest.xml $(dirname $manifest_tmp)
   sed -i '/<\/manifest>/d' $manifest_tmp
-  cat ./make/add_etc_vintf_patch/manifest_common >> $manifest_tmp
-  cat ./make/add_etc_vintf_patch/manifest_custom >> $manifest_tmp
-  echo "" >> $manifest_tmp
-  echo "</manifest>" >> $manifest_tmp
+  cat ./make/add_etc_vintf_patch/manifest_common >>$manifest_tmp
+  cat ./make/add_etc_vintf_patch/manifest_custom >>$manifest_tmp
+  echo "" >>$manifest_tmp
+  echo "</manifest>" >>$manifest_tmp
   cp -frp $manifest_tmp $systemdir/etc/vintf/
   rm -rf $(dirname $manifest_tmp)
   cp -frp ./make/add_etc_vintf_patch/manifest_custom $TARGETDIR/manifest_custom
-  true > ./make/add_etc_vintf_patch/manifest_custom
-  echo "" >> ./make/add_etc_vintf_patch/manifest_custom
-  echo "<!-- oem hal -->" >> ./make/add_etc_vintf_patch/manifest_custom
+  true >./make/add_etc_vintf_patch/manifest_custom
+  echo "" >>./make/add_etc_vintf_patch/manifest_custom
+  echo "<!-- oem hal -->" >>./make/add_etc_vintf_patch/manifest_custom
 }
 
 function fix_bug() {
-    echo "$START_BUG_FIX"
-    cd ./fixbug
-    ./fixbug.sh "$os_type"
-    cd $LOCALDIR
+  echo "$START_BUG_FIX"
+  cd ./fixbug
+  ./fixbug.sh "$os_type"
+  cd $LOCALDIR
 }
 
-if (echo $@ | grep -qo -- "--fix-bug") ;then
+if (echo $@ | grep -qo -- "--fix-bug"); then
   other_args+=" --fix-bug"
 fi
 
@@ -378,54 +401,56 @@ cd $LOCALDIR
 # Extract Image
 ./image_extract.sh
 
-if [[ -d $systemdir/../system_ext && -L $systemdir/system_ext ]] \
-|| [[ -d $systemdir/../product && -L $systemdir/product ]];then
+if [[ -d $systemdir/../system_ext && -L $systemdir/system_ext ]] ||
+  [[ -d $systemdir/../product && -L $systemdir/product ]]; then
   echo "$DYNAMIC_PARTITION_DETECTED"
   ./partition_merge.sh
 fi
 
-if [[ ! -d $systemdir/product ]];then
+if [[ ! -d $systemdir/product ]]; then
   echo "$systemdir/product $DIR_NOT_FOUND_STR!"
   exit 1
-elif [[ ! -d $systemdir/system_ext ]];then
+elif [[ ! -d $systemdir/system_ext ]]; then
   echo "$systemdir/system_ext $DIR_NOT_FOUND_STR!"
   exit 1
 fi
+
+check_source_version
 
 model=$(cat $vendordir/build.prop | grep 'ro.product.vendor.model')
 echo "$ORIGINAL_DEVICE_MODEL:"
 echo "$model"
 
-if [ -L $systemdir/vendor ];then
+if [ -L $systemdir/vendor ]; then
   echo "$IS_NORMAL_PT"
   echo "$START_NOR_PROCESS_PLAN"
   case $build_type in
-      "--AB"|"--ab")
-      echo "AB"
-      normal
-      # Merge FS DATA
-      cd ./make/apex_flat
-      ./add_apex_fs.sh
-      cd $LOCALDIR
-      cd ./make
-      ./add_repack_fs.sh
-      cd $LOCALDIR
-      # Format output
-      for i in $(ls $configdir);do
-        if [ -f $configdir/$i ];then
-          sort -u $configdir/$i > $configdir/${i}-tmp
-          mv -f $configdir/${i}-tmp $configdir/$i
-          sed -i '/^\s*$/d' $configdir/$i
-        fi
-      done
-      echo "$SGSI_IFY_SUCCESS"
-      if (echo $other_args | grep -qo -- "--fix-bug") ;then
-        fix_bug
+  "--AB" | "--ab")
+    echo "AB"
+    normal
+    # Merge FS DATA
+    cd ./make/apex_flat
+    ./add_apex_fs.sh
+    cd $LOCALDIR
+    cd ./make
+    ./add_repack_fs.sh
+    cd $LOCALDIR
+    # Format output
+    for i in $(ls $configdir); do
+      if [ -f $configdir/$i ]; then
+        sort -u $configdir/$i >$configdir/${i}-tmp
+        mv -f $configdir/${i}-tmp $configdir/$i
+        sed -i '/^\s*$/d' $configdir/$i
       fi
-      echo "$SIGNING_WITH_AOSPKEY"
-      $bin/tools/signapk/resign.py "$systemdir" "$bin/tools/signapk/AOSP_security" "$bin/$HOST/$platform/lib64"> $TARGETDIR/resign.log
-      ./makeimg.sh "--ab${use_config}"
-      exit 0
-      ;;
-    esac 
+    done
+    echo "$SGSI_IFY_SUCCESS"
+    if (echo $other_args | grep -qo -- "--fix-bug"); then
+      fix_bug
+    fi
+    echo "$SIGNING_WITH_AOSPKEY"
+    $bin/tools/signapk/resign.py "$systemdir" "$bin/tools/signapk/AOSP_security" "$bin/$HOST/$platform/lib64" >$TARGETDIR/resign.log
+    ./makeimg.sh "--ab${use_config}"
+    exit 0
+    ;;
+  esac
 fi
