@@ -90,7 +90,7 @@ java_install(){
         sudo apt -y purge $UNINSTALL_PACKAGE
     fi
     echo -e "\033[33m [$INFO_STR] $INSTALLING_JAVAPKG: $JAVA_PACKAGE... \033[0m"
-    sudo apt install -y $JAVA_PACKAGE
+    sudo apt install -y $JAVA_PACKAGE default-jre
 }
 
 dump_welcome
