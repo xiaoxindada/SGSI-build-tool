@@ -50,13 +50,6 @@ build_type="$build_type"
 other_args=""
 shift 3
 
-if ! (cat $COMPONENT/rom_support_list.txt | grep -qo "$os_type");then
-  echo $UNSUPPORTED_ROM
-  echo $SUPPORTED_ROM_LIST
-  cat $COMPONENT/rom_support_list.txt
-  exit 1
-fi
-
 if [ ! -e $firmware ];then
   if [ ! -e $LOCALDIR/tmp/$firmware ];then
     echo $NOTFOUNDFW

@@ -54,7 +54,7 @@ vendordir="$TARGETDIR/vendor"
 configdir="$TARGETDIR/config"
 shift 2
 
-if ! (cat $COMPONENT/rom_support_list.txt | grep -qo "$os_type"); then
+if ! (cat $COMPONENT/rom_support_list.txt | tr " " "\n" | grep -qo ^$os_type$); then
   echo $UNSUPPORTED_ROM
   echo $SUPPORTED_ROM_LIST
   cat $COMPONENT/rom_support_list.txt
