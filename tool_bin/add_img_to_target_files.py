@@ -729,7 +729,7 @@ def AddImagesToTargetFiles(filename):
 
   It works with either a zip file (zip mode), or a directory that contains the
   files to be packed into a target_files.zip (dir mode). The latter is used when
-  being called from build/make/core/Makefile.
+  being called from build$COMPONENT/core/Makefile.
 
   The images will be created under IMAGES/ in the input target_files.zip.
 

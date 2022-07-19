@@ -37,10 +37,10 @@ shift
 TYPE=$1
 shift
 
-if ! (cat $LOCALDIR/make/rom_support_list.txt | grep -qo "$TYPE");then
+if ! (cat $COMPONENT/rom_support_list.txt | grep -qo "$TYPE");then
   echo "Current rom type not support"
   echo "List of supported:"
-  cat $LOCALDIR/make/rom_support_list.txt
+  cat $COMPONENT/rom_support_list.txt
   exit 1
 fi
 

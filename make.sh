@@ -50,10 +50,10 @@ build_type="$build_type"
 other_args=""
 shift 3
 
-if ! (cat $LOCALDIR/make/rom_support_list.txt | grep -qo "$os_type");then
+if ! (cat $COMPONENT/rom_support_list.txt | grep -qo "$os_type");then
   echo $UNSUPPORTED_ROM
   echo $SUPPORTED_ROM_LIST
-  cat $LOCALDIR/make/rom_support_list.txt
+  cat $COMPONENT/rom_support_list.txt
   exit 1
 fi
 

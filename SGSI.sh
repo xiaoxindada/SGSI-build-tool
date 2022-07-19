@@ -54,10 +54,10 @@ vendordir="$TARGETDIR/vendor"
 configdir="$TARGETDIR/config"
 shift 2
 
-if ! (cat ./make/rom_support_list.txt | grep -qo "$os_type"); then
+if ! (cat $COMPONENT/rom_support_list.txt | grep -qo "$os_type"); then
   echo $UNSUPPORTED_ROM
   echo $SUPPORTED_ROM_LIST
-  cat ./make/rom_support_list.txt
+  cat $COMPONENT/rom_support_list.txt
   exit 1
 fi
 
@@ -128,16 +128,16 @@ function normal() {
   echo "$OTHER_PROCESSINGS"
 
   # Reset manifest_custom
-  true >./make/add_etc_vintf_patch/manifest_custom
-  echo "" >>./make/add_etc_vintf_patch/manifest_custom
-  echo "<!-- oem hal -->" >>./make/add_etc_vintf_patch/manifest_custom
+  true >$COMPONENT/add_etc_vintf_patch/manifest_custom
+  echo "" >>$COMPONENT/add_etc_vintf_patch/manifest_custom
+  echo "<!-- oem hal -->" >>$COMPONENT/add_etc_vintf_patch/manifest_custom
 
-  true >./make/add_build/oem_prop
-  echo "" >>./make/add_build/oem_prop
-  echo "# oem common prop" >>./make/add_build/oem_prop
+  true >$COMPONENT/add_build/oem_prop
+  echo "" >>$COMPONENT/add_build/oem_prop
+  echo "# oem common prop" >>$COMPONENT/add_build/oem_prop
 
   # Modify USB State
-  cp -frp ./make/aosp_usb/* $systemdir/etc/init/hw/
+  cp -frp $COMPONENT/aosp_usb/* $systemdir/etc/init/hw/
 
   # Patch SELinux to ensure maximum device compatibility
   sed -i "/typetransition location_app/d" $systemdir/etc/selinux/plat_sepolicy.cil
@@ -191,9 +191,9 @@ function normal() {
     sed -i '/ro.control_privapp_permissions/d' $systemdir/build.prop
     sed -i '/ro.control_privapp_permissions/d' $systemdir/product/etc/build.prop
     sed -i '/ro.control_privapp_permissions/d' $systemdir/system_ext/etc/build.prop
-    cat ./make/add_build/system_prop >>$systemdir/build.prop
-    cat ./make/add_build/product_prop >>$systemdir/product/etc/build.prop
-    cat ./make/add_build/system_ext_prop >>$systemdir/system_ext/etc/build.prop
+    cat $COMPONENT/add_build/system_prop >>$systemdir/build.prop
+    cat $COMPONENT/add_build/product_prop >>$systemdir/product/etc/build.prop
+    cat $COMPONENT/add_build/system_ext_prop >>$systemdir/system_ext/etc/build.prop
 
     # Disable bpfloader
     rm -rf $systemdir/etc/init/bpfloader.rc
@@ -280,14 +280,14 @@ function normal() {
   # Revert fstab.postinstall to gsi state
   find $systemdir/../ -type f -name "fstab.postinstall" | xargs rm -rf
   rm -rf $systemdir/etc/init/cppreopts.rc
-  cp -frp ./make/fstab/system/* $systemdir
+  cp -frp $COMPONENT/fstab/system/* $systemdir
   sed -i '/fstab\\.postinstall/d' $configdir/system_file_contexts
   sed -i '/fstab.postinstall/d' $configdir/system_fs_config
-  cat ./make/fstab/fstab_contexts >>$configdir/system_file_contexts
-  cat ./make/fstab/fstab_fs >>$configdir/system_fs_config
+  cat $COMPONENT/fstab/fstab_contexts >>$configdir/system_file_contexts
+  cat $COMPONENT/fstab/fstab_fs >>$configdir/system_fs_config
 
   # Add missing libs
-  cp -frpn ./make/add_libs/system/* $systemdir
+  cp -frpn $COMPONENT/add_libs/system/* $systemdir
 
   # Enable debug feature
   sed -i 's/persist.sys.usb.config=none/persist.sys.usb.config=adb/g' $systemdir/build.prop
@@ -323,19 +323,19 @@ function normal() {
   rm -rf $systemdir/recovery-from-boot.*
 
   # Patch System
-  cp -frp ./make/system_patch/system/* $systemdir/
+  cp -frp $COMPONENT/system_patch/system/* $systemdir/
 
   # Patch system to phh system
-  cp -frp ./make/add_phh/system/* $systemdir/
+  cp -frp $COMPONENT/add_phh/system/* $systemdir/
 
   # Register selinux contexts related by phh system
-  cat ./make/add_phh_plat_file_contexts/plat_file_contexts >>$systemdir/etc/selinux/plat_file_contexts
+  cat $COMPONENT/add_phh_plat_file_contexts/plat_file_contexts >>$systemdir/etc/selinux/plat_file_contexts
 
   # Register selinux contexts related by added files
-  cat ./make/add_plat_file_contexts/plat_file_contexts >>$systemdir/etc/selinux/plat_file_contexts
+  cat $COMPONENT/add_plat_file_contexts/plat_file_contexts >>$systemdir/etc/selinux/plat_file_contexts
 
   # Replace to AOSP Camera
-  #cd ./make/camera
+  #cd $COMPONENT/camera
   #./camera.sh
   #cd $LOCALDIR
 
@@ -343,22 +343,22 @@ function normal() {
   echo "false" >$TARGETDIR/apex_state
 
   # Detect ROM Type
-  cd ./make
+  cd $COMPONENT
   ./romtype.sh "$os_type"
   cd $LOCALDIR
 
   # Common apex_vndk process
-  cd ./make/apex_vndk_start
+  cd $COMPONENT/apex_vndk_start
   ./make.sh
   cd $LOCALDIR
 
   # ROM Patch Process
-  cd ./make/rom_make_patch
+  cd $COMPONENT/rom_make_patch
   ./make.sh
   cd $LOCALDIR
 
   # Add oem_build
-  cat ./make/add_build/oem_prop >>$systemdir/build.prop
+  cat $COMPONENT/add_build/oem_prop >>$systemdir/build.prop
 
   # Add OEM HAL Manifest Interfaces
   manifest_tmp="$TARGETDIR/vintf/manifest.xml"
@@ -366,16 +366,16 @@ function normal() {
   mkdir -p $(dirname $manifest_tmp)
   cp -frp $systemdir/etc/vintf/manifest.xml $(dirname $manifest_tmp)
   sed -i '/<\/manifest>/d' $manifest_tmp
-  cat ./make/add_etc_vintf_patch/manifest_common >>$manifest_tmp
-  cat ./make/add_etc_vintf_patch/manifest_custom >>$manifest_tmp
+  cat $COMPONENT/add_etc_vintf_patch/manifest_common >>$manifest_tmp
+  cat $COMPONENT/add_etc_vintf_patch/manifest_custom >>$manifest_tmp
   echo "" >>$manifest_tmp
   echo "</manifest>" >>$manifest_tmp
   cp -frp $manifest_tmp $systemdir/etc/vintf/
   rm -rf $(dirname $manifest_tmp)
-  cp -frp ./make/add_etc_vintf_patch/manifest_custom $TARGETDIR/manifest_custom
-  true >./make/add_etc_vintf_patch/manifest_custom
-  echo "" >>./make/add_etc_vintf_patch/manifest_custom
-  echo "<!-- oem hal -->" >>./make/add_etc_vintf_patch/manifest_custom
+  cp -frp $COMPONENT/add_etc_vintf_patch/manifest_custom $TARGETDIR/manifest_custom
+  true >$COMPONENT/add_etc_vintf_patch/manifest_custom
+  echo "" >>$COMPONENT/add_etc_vintf_patch/manifest_custom
+  echo "<!-- oem hal -->" >>$COMPONENT/add_etc_vintf_patch/manifest_custom
 }
 
 function fix_bug() {
@@ -429,10 +429,10 @@ if [ -L $systemdir/vendor ]; then
     echo "AB"
     normal
     # Merge FS DATA
-    cd ./make/apex_flat
+    cd $COMPONENT/apex_flat
     ./add_apex_fs.sh
     cd $LOCALDIR
-    cd ./make
+    cd $COMPONENT
     ./add_repack_fs.sh
     cd $LOCALDIR
     # Format output
