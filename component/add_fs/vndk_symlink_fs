@@ -1,7 +1,3 @@
-system/system/lib/vndk-28 0 0 0644 /apex/com.android.vndk.v28/lib
-system/system/lib64/vndk-28 0 0 0644 /apex/com.android.vndk.v28/lib64
-system/system/lib/vndk-sp-28 0 0 0644 /apex/com.android.vndk.v28/lib
-system/system/lib64/vndk-sp-28 0 0 0644 /apex/com.android.vndk.v28/lib64
 system/system/lib/vndk-29 0 0 0644 /apex/com.android.vndk.v29/lib
 system/system/lib64/vndk-29 0 0 0644 /apex/com.android.vndk.v29/lib64
 system/system/lib/vndk-sp-29 0 0 0644 /apex/com.android.vndk.v29/lib
@@ -10,3 +6,7 @@ system/system/lib/vndk-30 0 0 0644 /apex/com.android.vndk.v30/lib
 system/system/lib64/vndk-30 0 0 0644 /apex/com.android.vndk.v30/lib64
 system/system/lib/vndk-sp-30 0 0 0644 /apex/com.android.vndk.v30/lib
 system/system/lib64/vndk-sp-30 0 0 0644 /apex/com.android.vndk.v30/lib64
+system/system/lib/vndk-31 0 0 0644 /apex/com.android.vndk.v31/lib
+system/system/lib64/vndk-31 0 0 0644 /apex/com.android.vndk.v31/lib64
+system/system/lib/vndk-sp-31 0 0 0644 /apex/com.android.vndk.v31/lib
+system/system/lib64/vndk-sp-31 0 0 0644 /apex/com.android.vndk.v31/lib64
