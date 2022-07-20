@@ -34,13 +34,13 @@ ui_print "current partition: $block$slot";
 
 # ui_print current selinux status
 selinux_status() {
-local status;
-status=$(grep -o "androidboot.selinux=permissive" $1);
-if [ ! -z "$status" ]; then
-  ui_print "selinux status is: permissive";
-else
-  ui_print "selinux status is: force";
-fi;
+  local status;
+  status=$(grep -qo "androidboot.selinux=permissive" $1);
+  if $status; then
+    ui_print "selinux status is: permissive";
+  else
+    ui_print "selinux status is: force";
+  fi;
 }
 selinux_status /proc/cmdline;
 

@@ -4,7 +4,7 @@ CLEAN=true
 
 author="Xiaoxindada"
 email="https://github.com/xiaoxindada"
-HOME="/data/vendor_boot_work"
+HOME="/data/media/vendor_boot_work"
 TMP="/tmp"
 TOOLSDIR="$HOME/tools"
 BB="$TOOLSDIR/busybox"

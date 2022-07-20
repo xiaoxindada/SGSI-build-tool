@@ -4,7 +4,7 @@ CLEAN=true
 
 author="Xiaoxindada"
 email="https://github.com/xiaoxindada"
-HOME="/data/vbmeta_work"
+HOME="/data/media/vbmeta_work"
 TMP="/tmp"
 TOOLSDIR="$HOME/tools"
 BB="$TOOLSDIR/busybox"
@@ -50,14 +50,9 @@ unset_mount() {
 patch_vbmeta() {
   # see https://cs.android.com/android/platform/superproject/+/master:system/core/fastboot/fastboot.cpp;l=972;drc=master
   # https://cs.android.com/android/platform/superproject/+/master:system/core/fastboot/fastboot.cpp;l=975;drc=master
-  # disable offset is 120
-  # Common flags 3 for new devices from
-  # https://github.com/LineageOS/android_device_xiaomi_sm8250-common/blob/lineage-18.1/BoardConfigCommon.mk#L237
+  # disable offset is 123
 
   local backup=true
-  local original_hex="00000000000000006176"
-  local patch_flags2_hex="0000000200000006176" # flags 2
-  local patch_flags3_hex="0000000300000006176" # flags 3
   export system="$HOME/system"
   [ -e $system/system ] && export system="$system/system"
   export vendor="$HOME/vendor"
@@ -65,18 +60,18 @@ patch_vbmeta() {
   [ ! -f $HOME/system.prop ] && cp -f $system/build.prop $HOME/system.prop
   [ ! -f $HOME/vendor.prop ] && cp -f $vendor/build.prop $HOME/vendor.prop
 
-  if [ -e /dev/block/by-name/vbmeta$slot ]; then
-    [ $DEBUG = true ] && ui_print "found vbmeta partition, start patching..."
-    $BB dd if=/dev/block/by-name/vbmeta$slot of=$HOME/vbmeta_original.img
-    if $BB cat $HOME/vendor.prop | $BB grep -qo "ro.boot.dynamic_partitions=true"; then
-      $BB xxd -p -c "256" $HOME/vbmeta_original.img | $BB sed "s/$original_hex/$patch_flags3_hex/" | xxd -p -r >$HOME/vbmeta_patch.img
-      [ $? = 0 ] && ui_print "patch vbmeta flags 3 success!"
-    else
-      $BB xxd -p -c "256" $HOME/vbmeta_original.img | $BB sed "s/$original_hex/$patch_flags2_hex/" | xxd -p -r >$HOME/vbmeta_patch.img
-      [ $? = 0 ] && ui_print "patch vbmeta flags 2 success!"
+  local partitions="vbmeta$slot vbmeta_system$slot vbmeta_vendor$slot"
+  for partition in $partitions; do
+    if [ -e /dev/block/by-name/$partition ]; then
+      [ $DEBUG = true ] && ui_print "found $partition, start patching..."
+      [ $backup = true ] && $BB dd if=/dev/block/by-name/$partition of=$HOME/${partition}_original.img
+      $BB printf "\x03" | $BB dd of=/dev/block/by-name/$partition seek=123 bs=1 conv=notrunc # patch flags 3
     fi
-    $BB dd if=$HOME/vbmeta_patch.img of=/dev/block/by-name/vbmeta$slot conv=notrunc
-  fi
+  done
+}
+
+clean() {
+  rm -rf $TMP $HOME
 }
 
 set_mount "system" "vendor"
