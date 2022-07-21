@@ -102,33 +102,23 @@ fi
 # Create vndk symlinks
 rm -rf $systemdir/lib/vndk-29 $systemdir/lib/vndk-sp-29
 rm -rf $systemdir/lib/vndk-30 $systemdir/lib/vndk-sp-30
+rm -rf $systemdir/lib/vndk-31 $systemdir/lib/vndk-sp-31
 if [ $current_sdk_ver = 32 ]; then
-  rm -rf $systemdir/lib/vndk-31 $systemdir/lib/vndk-sp-31
+  rm -rf $systemdir/lib/vndk-32 $systemdir/lib/vndk-sp-32
 fi
 
 rm -rf $systemdir/lib64/vndk-29 $systemdir/lib64/vndk-sp-29
 rm -rf $systemdir/lib64/vndk-30 $systemdir/lib64/vndk-sp-30
+rm -rf $systemdir/lib64/vndk-31 $systemdir/lib64/vndk-sp-31
 if [ $current_sdk_ver = 32 ]; then
-  rm -rf $systemdir/lib64/vndk-31 $systemdir/lib64/vndk-sp-31
+  rm -rf $systemdir/lib64/vndk-32 $systemdir/lib64/vndk-sp-32
 fi
 
 ln -s /apex/com.android.vndk.v29/lib $systemdir/lib/vndk-29
 ln -s /apex/com.android.vndk.v29/lib $systemdir/lib/vndk-sp-29
-ln -s /apex/com.android.vndk.v30/lib $systemdir/lib/vndk-30
-ln -s /apex/com.android.vndk.v30/lib $systemdir/lib/vndk-sp-30
-if [ $current_sdk_ver = 32 ]; then
-  ln -s /apex/com.android.vndk.v31/lib $systemdir/lib/vndk-31
-  ln -s /apex/com.android.vndk.v31/lib $systemdir/lib/vndk-sp-31
-fi
 
 ln -s /apex/com.android.vndk.v29/lib64 $systemdir/lib64/vndk-29
 ln -s /apex/com.android.vndk.v29/lib64 $systemdir/lib64/vndk-sp-29
-ln -s /apex/com.android.vndk.v30/lib64 $systemdir/lib64/vndk-30
-ln -s /apex/com.android.vndk.v30/lib64 $systemdir/lib64/vndk-sp-30
-if [ $current_sdk_ver = 32 ]; then
-  ln -s /apex/com.android.vndk.v31/lib64 $systemdir/lib64/vndk-31
-  ln -s /apex/com.android.vndk.v31/lib64 $systemdir/lib64/vndk-sp-31
-fi
 
 # Fix vintf for different vndk version
 manifest_file="$systemdir/system_ext/etc/vintf/manifest.xml"
