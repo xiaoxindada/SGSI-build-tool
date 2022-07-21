@@ -317,6 +317,12 @@ function normal() {
   # Remove com.qualcomm.location
   find $systemdir -type d -name "com.qualcomm.location" | xargs rm -rf
 
+  # Remove SSRestartDetector
+  find $systemdir -type d -name "SSRestartDetector" | xargs rm -rf
+
+  # Remove com.qualcomm.qti.services.secureui
+  find $systemdir -type d -name "com.qualcomm.qti.services.secureui" | xargs rm -rf
+
   # Remove some useless files
   rm -rf $systemdir/../verity_key
   rm -rf $systemdir/../init.recovery*
