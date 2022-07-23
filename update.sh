@@ -4,7 +4,7 @@ LOCALDIR=$(cd "$(dirname ${BASH_SOURCE[0]})" && pwd)
 cd $LOCALDIR
 source ./language_helper.sh
 
-url= "https://github.com/xiaoxindada/SGSI-build-tool"
+url="https://github.com/xiaoxindada/SGSI-build-tool"
 branch="12"
 
 if [ ! -d ".git" ]; then
