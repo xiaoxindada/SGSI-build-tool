@@ -537,7 +537,7 @@ function dynamic() {
 
 function make_Aonly() {
 
-  echo "正在制造A-onlay"
+  echo "正在制造A-only"
   
   # 为所有rom去除ab特性
   ## build
