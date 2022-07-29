@@ -82,7 +82,7 @@ _________________
 size=`du -sk $systemdir | awk '{$1*=1024;$1=int($1*1.05);printf $1}'`
 echo "当前打包大小：${size} B"
 echo ""
-read -p "按任意键开始打包" var
+read -s -n1 -p "按任意键开始打包" var
 #mke2fs+e2fsdroid打包
 #$bin/mke2fs -L / -t ext4 -b 4096 ./out/system.img $size
 #$bin/e2fsdroid -e -T 0 -S ./out/config/system_file_contexts -C ./out/config/system_fs_config  -a /system -f ./out/system ./out/system.img
