@@ -601,6 +601,8 @@ function make_Aonly() {
   for old_rc in $old_rc_flies ;do
     new_rc=$(echo "${old_rc%.*}" | sed 's/$/&-treble.rc/g')
     cp -frp $systemdir/etc/init/hw/$old_rc $systemdir/etc/init/$new_rc
+    echo "/system/system/etc/init/$new_rc u:object_r:system_file:s0" >> $configdir/system_file_contexts
+    echo "system/system/etc/init/$new_rc 0 0 0644" >> $configdir/system_fs_config
   done 
   
   # 添加启动A-only必备文件 
