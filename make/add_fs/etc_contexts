@@ -9,3 +9,5 @@
 /system/system/etc/init/qti_permissions_remove.rc u:object_r:system_file:s0
 /system/system/etc/permissions/qti_permissions.xml u:object_r:system_file:s0
 /system/system/etc/init/permissiver.rc u:object_r:system_file:s0
+/system/system/usr/keylayout/uinput-fpc.kl u:object_r:system_file:s0
+/system/system/usr/keylayout/uinput-goodix.kl u:object_r:system_file:s0
