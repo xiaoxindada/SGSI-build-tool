@@ -1,0 +1,11 @@
+<manifest version="1.0" type="framework">
+    <hal>
+        <name>android.frameworks.cameraservice.service</name>
+        <transport>hwbinder</transport>
+        <version>2.1</version>
+        <interface>
+            <name>ICameraService</name>
+            <instance>default</instance>
+        </interface>
+    </hal>
+</manifest>

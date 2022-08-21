@@ -1,0 +1,4 @@
+service factoryhelper-hal-1-0 /system/bin/hw/com.blackshark.factoryhelper.hal@1.0-service
+    class hal
+    user root
+    group root system

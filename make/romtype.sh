@@ -75,6 +75,8 @@ if joy ;then
   echo "system/system/etc/init/init.blackshark.common.rc 0 0 0644" >> ../out/config/system_fs_config
   echo "system/system/etc/init/init.blackshark.rc 0 0 0644" >> ../out/config/system_fs_config
   sed -i '/^\s*$/d' ../out/config/system_fs_config
+  echo "正在进行专有处理"
+  ./rom_make_patch/joyui/make.sh
 fi
 
 # nubia

@@ -1,0 +1,4 @@
+# Force device to be provisioned on boot_completed
+
+on property:sys.boot_completed=1
+    exec - root -- /system/bin/sh -c "settings put secure user_setup_complete 1 && settings put global device_provisioned 1"

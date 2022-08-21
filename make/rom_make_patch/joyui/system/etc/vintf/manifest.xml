@@ -1,0 +1,165 @@
+<!--
+    Input:
+        manifest.xml
+        framework_manifest.xml
+-->
+<manifest version="2.0" type="framework">
+    <hal format="hidl">
+        <name>android.frameworks.displayservice</name>
+        <transport>hwbinder</transport>
+        <version>1.0</version>
+        <interface>
+            <name>IDisplayService</name>
+            <instance>default</instance>
+        </interface>
+        <fqname>@1.0::IDisplayService/default</fqname>
+    </hal>
+    <hal format="hidl">
+        <name>android.frameworks.schedulerservice</name>
+        <transport>hwbinder</transport>
+        <version>1.0</version>
+        <interface>
+            <name>ISchedulingPolicyService</name>
+            <instance>default</instance>
+        </interface>
+        <fqname>@1.0::ISchedulingPolicyService/default</fqname>
+    </hal>
+    <hal format="hidl">
+        <name>android.frameworks.sensorservice</name>
+        <transport>hwbinder</transport>
+        <version>1.0</version>
+        <interface>
+            <name>ISensorManager</name>
+            <instance>default</instance>
+        </interface>
+        <fqname>@1.0::ISensorManager/default</fqname>
+    </hal>
+    <hal format="hidl">
+        <name>android.hidl.manager</name>
+        <transport>hwbinder</transport>
+        <version>1.2</version>
+        <interface>
+            <name>IServiceManager</name>
+            <instance>default</instance>
+        </interface>
+        <fqname>@1.2::IServiceManager/default</fqname>
+    </hal>
+    <hal format="hidl">
+        <name>android.hidl.memory</name>
+        <transport arch="32+64">passthrough</transport>
+        <version>1.0</version>
+        <interface>
+            <name>IMapper</name>
+            <instance>ashmem</instance>
+        </interface>
+        <fqname>@1.0::IMapper/ashmem</fqname>
+    </hal>
+    <hal format="hidl">
+        <name>android.hidl.token</name>
+        <transport>hwbinder</transport>
+        <version>1.0</version>
+        <interface>
+            <name>ITokenManager</name>
+            <instance>default</instance>
+        </interface>
+        <fqname>@1.0::ITokenManager/default</fqname>
+    </hal>
+    <hal format="hidl">
+        <name>android.system.net.netd</name>
+        <transport>hwbinder</transport>
+        <version>1.1</version>
+        <interface>
+            <name>INetd</name>
+            <instance>default</instance>
+        </interface>
+        <fqname>@1.1::INetd/default</fqname>
+    </hal>
+    <hal format="hidl">
+        <name>android.system.wifi.keystore</name>
+        <transport>hwbinder</transport>
+        <version>1.0</version>
+        <interface>
+            <name>IKeystore</name>
+            <instance>default</instance>
+        </interface>
+        <fqname>@1.0::IKeystore/default</fqname>
+    </hal>
+    <hal format="native">
+        <name>netutils-wrapper</name>
+        <version>1.0</version>
+    </hal>
+    <hal format="hidl">
+        <name>vendor.qti.hardware.qccsyshal</name>
+        <transport>hwbinder</transport>
+        <version>1.0</version>
+        <interface>
+            <name>IQccsyshal</name>
+            <instance>qccsyshal</instance>
+        </interface>
+        <fqname>@1.0::IQccsyshal/qccsyshal</fqname>
+    </hal>
+    <hal format="hidl">
+        <name>vendor.qti.hardware.radio.atcmdfwd</name>
+        <transport>hwbinder</transport>
+        <version>1.0</version>
+        <interface>
+            <name>IAtCmdFwd</name>
+            <instance>AtCmdFwdService</instance>
+        </interface>
+        <fqname>@1.0::IAtCmdFwd/AtCmdFwdService</fqname>
+    </hal>
+    <hal format="hidl">
+        <name>vendor.qti.hardware.wifi.keystore</name>
+        <transport>hwbinder</transport>
+        <version>1.0</version>
+        <interface>
+            <name>IKeystoreExt</name>
+            <instance>default</instance>
+        </interface>
+        <fqname>@1.0::IKeystoreExt/default</fqname>
+    </hal>
+    <system-sdk>
+        <version>28</version>
+        <version>29</version>
+        <version>30</version>
+    </system-sdk>
+<!-- 
+************************************
+             小新SGSI-2022-Tool
+************************************
+-->
+
+<!-- phh通用接口 -->
+    <hal format="hidl">
+        <name>android.hardware.wifi.hostapd</name>
+        <transport>hwbinder</transport>
+        <version>1.0</version>
+        <interface>
+            <name>IHostapd</name>
+            <instance>default</instance>
+        </interface>
+        <fqname>@1.0::IHostapd/default</fqname>
+    </hal>
+
+<!-- oem自定义接口 -->
+    <hal format="hidl">
+        <name>com.blackshark.factoryhelper.hal</name>
+        <transport>hwbinder</transport>
+        <version>1.0</version>
+        <interface>
+            <name>IFactoryHelper</name>
+            <instance>default</instance>
+        </interface>
+        <fqname>@1.0::IFactoryHelper/default</fqname>
+    </hal>
+    <hal format="hidl">
+        <name>com.blackshark.oeminfo</name>
+        <transport>hwbinder</transport>
+        <version>1.0</version>
+        <interface>
+            <name>IOeminfo</name>
+            <instance>default</instance>
+        </interface>
+        <fqname>@1.0::IOeminfo/default</fqname>
+    </hal>
+</manifest>

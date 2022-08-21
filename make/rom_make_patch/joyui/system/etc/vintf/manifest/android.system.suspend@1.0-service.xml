@@ -1,0 +1,11 @@
+<manifest version="1.0" type="framework">
+    <hal>
+        <name>android.system.suspend</name>
+        <transport>hwbinder</transport>
+        <version>1.0</version>
+        <interface>
+            <name>ISystemSuspend</name>
+            <instance>default</instance>
+        </interface>
+    </hal>
+</manifest>
