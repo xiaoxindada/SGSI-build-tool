@@ -17,6 +17,15 @@ Flyme
 H2OS
 
 Color
+
+Nubia
+
+MyOS
+
+OOS
+
+Vivo
+
 --------------------
 "
 read -p "请选择系统种类(用小写输出): " fix
@@ -53,3 +62,34 @@ else
  echo "" > /dev/null 2>&1
 fi
 
+if [ $fix = "nubia" ];then
+ ./nubia.sh
+ echo "修复完成"
+ cd ../
+else
+ echo "" > /dev/null 2>&1
+fi
+
+if [ $fix = "myos" ];then
+ ./myos.sh
+ echo "修复完成"
+ cd ../
+else
+ echo "" > /dev/null 2>&1
+fi
+
+if [ $fix = "oos" ];then
+ ./oos.sh
+ echo "修复完成"
+ cd ../
+else
+ echo "" > /dev/null 2>&1
+fi
+
+if [ $fix = "vivo" ];then
+ ./vivo.sh
+ echo "修复完成"
+ cd ../
+else
+ echo "" > /dev/null 2>&1
+fi
