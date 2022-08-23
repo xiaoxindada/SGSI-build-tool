@@ -48,8 +48,9 @@ for file in $files ;do
   fi 
 done
 
-files=$(find ../../out/system/system/system_ext/apex/ -name '*')
-for file in $files ;do
+if [ -d ../../out/system/system/system_ext/apex ];then
+  files=$(find ../../out/system/system/system_ext/apex/ -name '*')
+  for file in $files ;do
   if [ -d "$file" ];then
     echo "$file" | sed 's#../../out/#/#g' | sed 's/$/& 0 0 0755/g' | sed 's/.//' >>$fs
     if [ $(echo "$file" | grep "lib") ];then
@@ -78,7 +79,8 @@ for file in $files ;do
     echo "$file" | sed 's#../../out/#/#g' | sed 's/$/& u:object_r:system_file:s0/g' >>$contexts
     fi
   fi 
-done
+  done
+fi
 
 sed -i '/\/system\/system\/apex/d' ../../out/config/system_file_contexts
 sed -i '/system\/system\/apex/d' ../../out/config/system_fs_config

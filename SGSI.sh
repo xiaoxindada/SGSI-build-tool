@@ -57,41 +57,7 @@ function normal() {
   cd $LOCALDIR
   echo "修改完成"
 
-  # 为所有rom启用apex扁平化处理
-  rm -rf ./make/apex
-  apex_ls() {
-    cd $systemdir/apex
-    ls
-    cd $LOCALDIR
-  }
-  apex_file() {
-    apex_ls | grep -q '.apex'
-  }
-  if apex_file ;then
-    echo "检测到apex，开始apex扁平化处理"
-    ./make/apex_flat/apex.sh "official"
- fi
-
-  # 如果原包不支持apex封装，则添加 *.apex 
-  if ! apex_file ;then
-    echo "正在添加AOSP_APEXs"
-    7z x ./make/add_apexs/apex_common.7z -o$systemdir/apex/ > /dev/null 2>&1
-    android_art_debug_check() {
-      apex_ls | grep -q "art.debug" 
-    }
-    android_art_release_check() {
-      apex_ls | grep -q "art.release"
-    }
-    if android_art_debug_check ;then
-      7z x ./make/add_apexs/art.debug.7z -o$systemdir/apex/ > /dev/null 2>&1
-    fi
-
-    if android_art_release_check ;then
-      7z x ./make/add_apexs/art.release.7z -o$systemdir/apex/ > /dev/null 2>&1
-    fi
-  fi
-
-  # apex_vndk调用处理
+  # apex_vndk 修改
   cd ./make/apex_vndk_start
   ./make.sh
   cd $LOCALDIR 
@@ -177,11 +143,6 @@ function normal() {
       sed -i 's/ro.product.vendor./ro.product.system./g' $systemdir/build.prop
       echo "修复完成"
     fi
-
-    # 为所有rom改用自适应apex更新支持状态
-    sed -i '/ro.apex.updatable/d' $systemdir/build.prop
-    sed -i '/ro.apex.updatable/d' $systemdir/product/build.prop
-    sed -i '/ro.apex.updatable/d' $systemdir/system_ext/build.prop
  
     # 为所有rom改用分辨率自适应
     sed -i 's/ro.sf.lcd/#&/' $systemdir/build.prop
