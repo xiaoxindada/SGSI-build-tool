@@ -5,6 +5,9 @@ cd $LOCALDIR
 
 systemdir=" ../out/system/system"
 
+echo "正在清理多余的apex"
+rm -rf $systemdir/apex/com.*.apex
+
 # pixel
 pixel() {
   cat $systemdir/build.prop | grep -qo "Pixel"  \
