@@ -102,12 +102,6 @@ fi
 mount -o remount,ro /system || true
 mount -o remount,ro / || true
 
-# Dynamic partition mount read write testing
-if [ -L /dev/block/mapper/system ];then
-    blockdev --setrw /dev/block/mapper/system
-    mount -o remount,rw / || mount -o remount,rw /system || true
-fi
-
 for part in /dev/block/bootdevice/by-name/oppodycnvbk  /dev/block/platform/bootdevice/by-name/nvdata;do
     if [ -b "$part" ];then
         oppoName="$(grep -aohE '(RMX|CPH)[0-9]{4}' "$part" |head -n 1)"
@@ -137,19 +131,6 @@ fi
 if getprop ro.vendor.build.fingerprint | grep -iq \
     -e Lenovo/jd2019; then
     setprop persist.sys.qcom-brightness -1
-fi
-
-if getprop ro.vendor.build.fingerprint | grep -qi oneplus/oneplus6/oneplus6; then
-    resize2fs /dev/block/platform/soc/1d84000.ufshc/by-name/userdata
-fi
-
-if grep -qF 'mkdir /data/.fps 0770 system fingerp' vendor/etc/init/hw/init.mmi.rc; then
-    mkdir -p /data/.fps
-    chmod 0770 /data/.fps
-    chown system:9015 /data/.fps
-
-    chown system:9015 /sys/devices/soc/soc:fpc_fpc1020/irq
-    chown system:9015 /sys/devices/soc/soc:fpc_fpc1020/irq_cnt
 fi
 
 if getprop ro.vendor.build.fingerprint | grep -q -i \
@@ -207,35 +188,6 @@ if [ -n "$(getprop ro.boot.product.hardware.sku)" ] && [ -z "$(getprop ro.hw.oem
 	setprop ro.hw.oemName "$(getprop ro.boot.product.hardware.sku)"
 fi
 
-if getprop ro.vendor.build.fingerprint | grep -qiE '^samsung/' && [ "$vndk" -ge 28 ];then
-	setprop persist.sys.phh.samsung_fingerprint 0
-	#obviously broken perms
-	if [ "$(stat -c '%U' /sys/class/sec/tsp/cmd)" == "root" ] &&
-		[ "$(stat -c '%G' /sys/class/sec/tsp/cmd)" == "root" ];then
-
-		chcon u:object_r:sysfs_ss_writable:s0 /sys/class/sec/tsp/ear_detect_enable
-		chown system /sys/class/sec/tsp/ear_detect_enable
-
-		chcon u:object_r:sysfs_ss_writable:s0 /sys/class/sec/tsp/cmd{,_list,_result,_status}
-		chown system /sys/class/sec/tsp/cmd{,_list,_result,_status}
-
-		chown system /sys/class/power_supply/battery/wc_tx_en
-		chcon u:object_r:sysfs_app_writable:s0 /sys/class/power_supply/battery/wc_tx_en
-	fi
-
-	if [ "$(stat -c '%U' /sys/class/sec/tsp/input/enabled)" == "root" ] &&
-		[ "$(stat -c '%G' /sys/class/sec/tsp/input/enabled)" == "root" ];then
-			chown system:system /sys/class/sec/tsp/input/enabled
-			chcon u:object_r:sysfs_ss_writable:s0 /sys/class/sec/tsp/input/enabled
-			setprop ctl.restart sec-miscpower-1-0
-	fi
-	if [ "$(stat -c '%U' /sys/class/camera/flash/rear_flash)" == "root" ] &&
-		[ "$(stat -c '%G' /sys/class/camera/flash/rear_flash)" == "root" ];then
-        chown system:system /sys/class/camera/flash/rear_flash
-        chcon u:object_r:sysfs_camera_writable:s0 /sys/class/camera/flash/rear_flash
-    fi
-fi
-
 for abi in "" 64;do
     f=/vendor/lib$abi/libstagefright_foundation.so
     if [ -f "$f" ];then
@@ -251,45 +203,6 @@ if getprop ro.boot.boot_devices |grep -v , |grep -qE .;then
     ln -s /dev/block/platform/$(getprop ro.boot.boot_devices) /dev/block/bootdevice
 fi
 
-if [ -c /dev/dsm ];then
-    # /dev/dsm is a magic device on Kirin chipsets that teecd needs to access.
-    # Make sure that permissions are right.
-    chown system:system /dev/dsm
-    chmod 0660 /dev/dsm
-
-    # The presence of /dev/dsm indicates that we have a teecd,
-    # which needs /sec_storage and /data/sec_storage_data
-
-    mkdir -p /data/sec_storage_data
-    chown system:system /data/sec_storage_data
-    chcon -R u:object_r:teecd_data_file:s0 /data/sec_storage_data
-
-    if mount | grep -q " on /sec_storage " ; then
-        # /sec_storage is already mounted by the vendor, don't try to create and mount it
-        # ourselves. However, some devices have /sec_storage owned by root, which means that
-        # the fingerprint daemon (running as system) cannot access it.
-        chown -R system:system /sec_storage
-        chmod -R 0660 /sec_storage
-        chcon -R u:object_r:teecd_data_file:s0 /sec_storage
-    else
-        # No /sec_storage provided by vendor, mount /data/sec_storage_data to it
-        mount /data/sec_storage_data /sec_storage
-        chown system:system /sec_storage
-        chcon u:object_r:teecd_data_file:s0 /sec_storage
-    fi
-fi
-
-has_hostapd=false
-for i in odm oem vendor product;do
-    if grep -qF android.hardware.wifi.hostapd /$i/etc/vintf/manifest.xml;then
-        has_hostapd=true
-    fi
-done
-
-if [ "$has_hostapd" = false ];then
-    setprop persist.sys.phh.system_hostapd true
-fi
-
 # SPRD GL causes crashes in system_server (not currently observed in other processes)
 # Tell the system to avoid using hardware acceleration in system_server.
 setprop ro.config.avoid_gfx_accel true
@@ -301,11 +214,6 @@ if getprop ro.vendor.build.fingerprint | grep -iq \
     setprop persist.sys.phh.radio.use_old_mnc_format true
 fi
 
-if getprop ro.build.overlay.deviceid |grep -qE '^RMX';then
-    setprop oppo.camera.packname com.oppo.camera
-    setprop sys.phh.xx.brand realme
-fi
-
 if [ -f /sys/firmware/devicetree/base/oppo,prjversion ];then
     setprop ro.separate.soft $((0x$(od -w4 -j4  -An -tx1 /sys/firmware/devicetree/base/oppo,prjversion |tr -d ' ' |head -n 1)))
 fi
@@ -314,72 +222,30 @@ if [ -f /proc/oppoVersion/prjVersion ];then
     setprop ro.separate.soft $(cat /proc/oppoVersion/prjVersion)
 fi
 
-echo 1 >  /proc/tfa98xx/oppo_tfa98xx_fw_update
-echo 1 > /proc/touchpanel/tp_fw_update
-
-if getprop ro.build.overlay.deviceid |grep -qE '^RMX';then
-    chmod 0660 /sys/devices/platform/soc/soc:fpc_fpc1020/{irq,irq_enable,wakelock_enable}
-    if [ "$(stat -c '%U' /sys/devices/platform/soc/soc:fpc_fpc1020/irq)" == "root" ] &&
-		[ "$(stat -c '%G' /sys/devices/platform/soc/soc:fpc_fpc1020/irq)" == "root" ];then
-            chown system:system /sys/devices/platform/soc/soc:fpc_fpc1020/{irq,irq_enable,wakelock_enable}
-            setprop persist.sys.phh.fingerprint.nocleanup true
-    fi
-fi
-
-if getprop ro.vendor.build.fingerprint |grep -qiE \
-        -e Nokia/Plate2 \
-        -e razer/cheryl ; then
-    setprop media.settings.xml "/vendor/etc/media_profiles_vendor.xml"
-fi
-resetprop service.adb.root 0
-
-if getprop ro.vendor.build.fingerprint |grep -qiE '^xiaomi/';then
-    setprop persist.sys.phh.fod.xiaomi true
-fi
-
-if getprop ro.vendor.build.fingerprint |grep -qiE '^oneplus/';then
-    setprop persist.sys.phh.fod.bbk true
-fi
-if getprop ro.build.overlay.deviceid |grep -qiE -e '^RMX' -e '^CPH';then
-    setprop persist.sys.phh.fod.bbk true
-fi
-
-if getprop ro.build.overlay.deviceid |grep -iq -e RMX1941 -e RMX1945 -e RMX1943 -e RMX1942;then	
-    setprop persist.sys.qcom-brightness "$(cat /sys/class/leds/lcd-backlight/max_brightness)"
-    setprop persist.sys.phh.mainkeys 0
-fi
-
-resetprop ro.bluetooth.library_name libbluetooth.so
-
-if getprop ro.vendor.build.fingerprint |grep -iq xiaomi/cepheus;then
-    setprop ro.netflix.bsp_rev Q855-16947-1
-fi
-
-if getprop ro.vendor.build.fingerprint |grep -qi redmi/curtana;then
-    setprop ro.netflix.bsp_rev Q6250-19132-1
-fi
-
-# Set props for Vsmart Live's fod
-if getprop ro.vendor.build.fingerprint |grep -q vsmart/V620A_open;then
-    setprop persist.sys.fp.fod.location.X_Y 447,1812
-    setprop persist.sys.fp.fod.size.width_height 186,186
-fi
-
-setprop vendor.display.res_switch_en 1
-
 if getprop ro.bionic.cpu_variant |grep -q kryo300;then
     resetprop ro.bionic.cpu_variant cortex-a75
     setprop dalvik.vm.isa.arm64.variant cortex-a75
     setprop dalvik.vm.isa.arm64.features runtime
 fi
 
-resetprop ro.control_privapp_permissions log
+setprop ro.control_privapp_permissions disable
+resetprop ro.control_privapp_permissions disable
 
 if grep -q /mnt/vendor/persist /vendor/etc/fstab.qcom;then
     mount /mnt/vendor/persist /persist
 fi
 
-for f in $(find /sys -name fts_gesture_mode);do
-    setprop persist.sys.phh.focaltech_node "$f"
-done
+# qssi devices audio policy
+sku="$(getprop ro.boot.product.vendor.sku)"
+if [ -f /vendor/etc/audio_policy_configuration_sec.xml ];then
+    mount /vendor/etc/audio_policy_configuration_sec.xml /vendor/etc/audio_policy_configuration.xml
+elif [ -f /vendor/etc/audio/sku_${sku}_qssi/audio_policy_configuration.xml ] && [ -f /vendor/etc/audio/sku_$sku/audio_policy_configuration.xml ];then
+    mount /vendor/etc/audio/sku_${sku}_qssi/audio_policy_configuration.xml /vendor/etc/audio/sku_$sku/audio_policy_configuration.xml
+elif [ -f /vendor/etc/audio/audio_policy_configuration.xml ];then
+    mount /vendor/etc/audio/audio_policy_configuration.xml /vendor/etc/audio_policy_configuration.xml
+elif [ -f /vendor/etc/audio_policy_configuration_base.xml ];then
+    mount /vendor/etc/audio_policy_configuration_base.xml /vendor/etc/audio_policy_configuration.xml
+fi
 
+# Disable secondary watchdogs
+echo -n V > /dev/watchdog1
