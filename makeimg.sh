@@ -79,7 +79,7 @@ _________________
 `du -sb $systemdir | awk '{print $1}' | bc -q | sed 's/$/&B/'`
 _________________
 "
-size=`du -sk $systemdir | awk '{$1*=1024;$1=int($1*1.05);printf $1}'`
+size=`du -sk $systemdir | awk '{$1*=1024;$1=int($1*1.02);printf $1}'`
 echo "当前打包大小：${size} B"
 echo ""
 read -s -n1 -p "按任意键开始打包" var
