@@ -15,34 +15,30 @@ EOT
 
 case $1 in 
   "AB"|"ab"|"A"|"a")
-    echo "" > /dev/null 2>&1
     ;;
   *)
     Usage
-    exit
+    exit 1
     ;;
 esac
 
 echo "环境初始化中 请稍候..."
 mkdir -p ./tmp
 chmod -R 777 ./
-chown -R root:root ./
 rm -rf ./*.img
 ./workspace_cleanup.sh > /dev/null 2>&1
 echo "初始化环境完成"
 read -p "请输入需要解压的zip: " zip
+zip=$(echo "$zip" | tr -d '"' | tr -d "'")
 echo "解压刷机包中..."
 
-if [ -e $zip ] || [ -e ./tmp/$zip ];then
-  if [ -e ./tmp/$zip ];then
-    7z x "./tmp/$zip" -o"./tmp/"
-  else 
-    7z x "$zip" -o"./tmp/"
-  fi
-  echo "解压zip完成"
+if [ -e ./tmp/$zip ];then
+  7z x "./tmp/$zip" -o"./tmp/"
+elif [ -e $zip ];then
+  7z x "$zip" -o"./tmp/"
 else
   echo "当前zip不存在！"
-  exit 
+  exit 1
 fi
 
 cd ./tmp
@@ -232,24 +228,24 @@ fi
 cd $LOCALDIR
 
 make_type=$1
-
 if [ -e ./system.img ];then
   case $make_type in
     "A"|"a") 
       ./SGSI.sh "A"
       ./workspace_cleanup.sh
+      exit 0
       ;;
     "AB"|"ab")  
       ./SGSI.sh "AB"
-      ./workspace_cleanup.sh   
+      ./workspace_cleanup.sh
+      exit 0
       ;;
     *)
       echo "error!"
-      exit
+      exit 1
       ;;
-    esac   
-  exit
+    esac
 else
   echo "未检测到system.img, 无法制作SGSI！"
-  exit
+  exit 1
 fi
