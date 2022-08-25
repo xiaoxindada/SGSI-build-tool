@@ -1,0 +1,24 @@
+# Copyright (C) 2020 Xiaoxindada <2245062854@qq.com>
+
+# Bind oneplus odm_feature_list to odm partition
+
+on early-init
+    mount none /system/etc/odm_feature_list /odm/etc/odm_feature_list bind
+
+on init
+    mount none /system/etc/odm_feature_list /odm/etc/odm_feature_list bind
+
+on early-boot
+    mount none /system/etc/odm_feature_list /odm/etc/odm_feature_list bind
+
+on boot
+    mount none /system/etc/odm_feature_list /odm/etc/odm_feature_list bind
+
+on fs
+    mount none /system/etc/odm_feature_list /odm/etc/odm_feature_list bind
+
+on post-fs
+    mount none /system/etc/odm_feature_list /odm/etc/odm_feature_list bind
+
+on post-fs-data
+    mount none /system/etc/odm_feature_list /odm/etc/odm_feature_list bind

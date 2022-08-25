@@ -56,93 +56,6 @@ on fs
     restorecon /sys/class/leds/vibrator/brightness
     restorecon /sys/class/leds/vibrator/duration
     restorecon /sys/class/leds/vibrator/state
-#change ownership and premission for awinic haptic shock with music
-    chown audioserver audioserver /dev/awinic_haptic
-    chown audioserver audioserver /sys/class/leds/vibrator/haptic_audio
-    chown audioserver audioserver /sys/class/leds/vibrator/gun_type
-    chown audioserver audioserver /sys/class/leds/vibrator/bullet_nr
-    chmod 777 /sys/class/leds/vibrator/gun_type
-    chmod 777 /sys/class/leds/vibrator/bullet_nr
-    chmod 777 /sys/class/leds/vibrator/register
-#    /* add for aging apk to set node */
-    chown system system /sys/class/power_supply/battery/is_aging_test
-    chown system system /sys/class/power_supply/battery/dump_reg
-
-#add for tri_state_key
-    chown system system /sys/bus/platform/devices/soc/soc\:tri_state_key/hall_data_calib
-    chown system system /sys/bus/platform/devices/soc/soc\:tri_state_key/hall_set_value
-
-#add for tp debug log
-    chown system system /proc/touchpanel/tp_debug_log
-    chown system system /proc/touchpanel/tp_switch_dead_zone
-    chown system system /proc/touchpanel/tp_switch_corner_dead_l_zone
-    chown system system /proc/touchpanel/tp_switch_corner_dead_p_zone
-#   /* add for wireless charge */
-    chown system system /proc/wireless/enable_tx
-    chown system system /proc/wireless/enable_rx
-    chown system system /proc/wireless/epp_or_bpp
-    chown system system /proc/wireless/current_out
-    chown system system /proc/wireless/rx_voltage
-    chown system system /proc/wireless/charge_pump_en
-    chown system system /proc/wireless/deviated
-    chown system system /proc/wireless/quiet_mode
-    chown system system /proc/wireless/fast_skin_threld
-
-    chown system system /proc/enhance_dash
-#ifdef VENDOR_EDIT
-#uma.mahesh@Imaging 2020/4/8 add for factory item
-    chown system system /sys/class/leds/led:torch_0/brightness
-    chmod 666 /sys/class/leds/led:torch_0/brightness
-    chown system system /sys/class/leds/led:torch_1/brightness
-    chmod 666 /sys/class/leds/led:torch_1/brightness
-    chown system system /sys/class/leds/led:switch_0/brightness
-    chmod 666 /sys/class/leds/led:switch_0/brightness
-    chown system system /sys/class/leds/led:switch_1/brightness
-    chmod 666 /sys/class/leds/led:switch_1/brightness
-    chown system system /sys/class/leds/led:switch_2/brightness
-    chmod 666 /sys/class/leds/led:switch_2/brightness
-    chown system system /sys/class/leds/led:torch_2/brightness
-    chmod 666 /sys/class/leds/led:torch_2/brightness
-    chown system system /sys/class/leds/led:switch_3/brightness
-    chmod 666 /sys/class/leds/led:switch_3/brightness
-    mkdir /mnt/vendor/persist/camera 0777 system system
-#add for laser
-    chown system system /dev/stmvl53l1_ranging
-    chmod 0666 /dev/stmvl53l1_ranging
-    start vl53l1_daemon_main
-#add for ams-tof
-    chown system system /sys/kernel/tof_control/app0/capture
-    chmod 666 /sys/kernel/tof_control/app0/capture
-    chown system system /sys/kernel/tof_control/app0/app0_get_fac_calib
-    chmod 666 /sys/kernel/tof_control/app0/app0_get_fac_calib
-    chown system system /sys/kernel/tof_control/app0/app0_get_distance
-    chmod 666 /sys/kernel/tof_control/app0/app0_get_distance
-    chown system system /sys/kernel/tof_control/app0/app0_read_peak_crosstalk
-    chmod 666 /sys/kernel/tof_control/app0/app0_read_peak_crosstalk
-#add for ois debug
-    chown system system /sys/kernel/ois_control/dump_registers
-    chmod 666 /sys/kernel/ois_control/dump_registers
-#endif
-
-#   Power@bsp, 2020/2/27, add for thermal
-    chown system system /dev/msm_thermal
-    chown system system /dev/skin_thermal
-    chown system system /dev/modem_skin_thermal
-    chown system system /dev/mmw0_thermal
-    chown system system /dev/mmw1_thermal
-    chown system system /dev/mmw2_thermal
-    chmod 0664 /dev/msm_thermal
-    chmod 0664 /dev/skin_thermal
-    chmod 0664 /dev/modem_skin_thermal
-    chmod 0664 /dev/mmw0_thermal
-    chmod 0664 /dev/mmw1_thermal
-    chmod 0664 /dev/mmw2_thermal
-
-#ifdef VENDOR_EDIT
-#if OP_FEATURE_MM_ADSP_MINIDUMP == 1
-#   zhangrun@MM, 2020/09/12, implement to collect adsp minidump
-    chmod 664 /dev/ramdump_adsp
-#endif
 
 #ifdef VENDOR_EDIT
 #   BSP add for display  2020/04/17 @Leo_BSP
@@ -151,127 +64,9 @@ on fs
     chmod 0666 /sys/class/backlight/panel0-backlight/brightness
 #endif
 
-#   ken.lin@ASTI, 2019/6/21, add for fsc
-    chown system system /sys/module/fsc/parameters/enable
-    chmod 0664 /sys/module/fsc/parameters/enable
-
-#add for tp update when boot
-on boot
-    write /sys/devices/platform/soc/a94000.i2c/i2c-4/4-004b/tp_fw_update 0
-    write /sys/devices/platform/soc/a94000.i2c/i2c-4/4-0048/tp_fw_update 0
-
-#Leo@BSP 2020/04/17 add for qsee_log tz_log
-    chmod 0666 /proc/tzdbg/qsee_log
-    chmod 0666 /proc/tzdbg/tz_log
-#Norman@Connectivity 2020/04/24 add for default country code
-    setprop ro.boot.wificountrycode 00
-
-
-
-#martin.li@BSP, 2019/12/03,support for EngineeringMode tool start
-   chown system system /proc/rf_cable_config
-   chown system system /proc/rf_factory_mode
-#martin.li@BSP, 2019/12/03,support for EngineeringMode tool end
-#ifdef VENDOR_EDIT
-#Set TCP MTU probing to automatic
-   write /proc/sys/net/ipv4/tcp_mtu_probing 1
-#endif /*VENDOR_EDIT*/
-
 on init
     setprop vendor.boot.verifiedbootstate ${ro.boot.verifiedbootstate}
     setprop vendor.boot.hw_version ${ro.boot.hw_version}
-
-
-
-on post-fs
-#ifdef VENDOR_EDIT
-#oscar.wei@SYSTEM, 2019/10/02, [AN-604] opdiagnose porting, create folder and binary file.
-    mkdir /mnt/vendor/persist/OPDiagnose 0770 system system
-    chmod 660 /mnt/vendor/persist/OPDiagnose/opdiagnosedata
-    chown system system /mnt/vendor/persist/OPDiagnose/opdiagnosedata
-#endif
-    chmod 0664 /sys/module/qpnp_smb5/parameters/usb_connector_temp
-    chown system system /sys/module/qpnp_smb5/parameters/usb_connector_temp
-    chmod 0664 /sys/module/qpnp_smb5/parameters/disable_connector_protect
-    chown system system /sys/module/qpnp_smb5/parameters/disable_connector_protect
-    chmod 0664 /sys/module/qpnp_smb5/parameters/usb_interval_temp
-    chown system system /sys/module/qpnp_smb5/parameters/usb_interval_temp
-    chmod 0664 /sys/module/qpnp_smb5/parameters/call_on
-    chown radio radio /sys/module/qpnp_smb5/parameters/call_on
-    chmod 0666 /sys/module/qpnp_smb5/parameters/video_call_on
-    chown system system /sys/module/qpnp_smb5/parameters/video_call_on
-    chown system system /proc/skin_temp_thrd/fastchg_thd
-    chown system system /proc/skin_temp_thrd/fastchg_lcdoff_thd
-    chown system system /proc/skin_temp_thrd/norchg_thd
-    chown system system /proc/skin_temp_thrd/norchg_lcdoff_thd
-    chmod 0444 /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_cur_freq
-    chmod 0444 /sys/devices/system/cpu/cpu1/cpufreq/cpuinfo_cur_freq
-    chmod 0444 /sys/devices/system/cpu/cpu2/cpufreq/cpuinfo_cur_freq
-    chmod 0444 /sys/devices/system/cpu/cpu3/cpufreq/cpuinfo_cur_freq
-    chmod 0444 /sys/devices/system/cpu/cpu4/cpufreq/cpuinfo_cur_freq
-    chmod 0444 /sys/devices/system/cpu/cpu5/cpufreq/cpuinfo_cur_freq
-    chmod 0444 /sys/devices/system/cpu/cpu6/cpufreq/cpuinfo_cur_freq
-    chmod 0444 /sys/devices/system/cpu/cpu7/cpufreq/cpuinfo_cur_freq
-#ifdef VENDOR_EDIT
-#brandon.zeng@Conn,2020/05/08. add for nfc pnscr tool
-    chown system system /system/xbin/nfc_trasmit_start.sh
-    chmod 0777  /system/xbin/nfc_trasmit_start.sh
-    chown system system /system/xbin/nfc_trasmit_stop.sh
-    chmod 0777  /system/xbin/nfc_trasmit_stop.sh
-    chown system system system/xbin/pnscr
-    chmod 0777  system/xbin/pnscr
-#endif
-
-#ifdef VENDOR_EDIT
-#   /* create a empty file for wifi hal to write mac address */
-    mkdir /mnt/vendor/persist/qca6390 0770 wifi wifi
-    write /mnt/vendor/persist/qca6390/wlan_mac.bin ""
-    chown wifi wifi /mnt/vendor/persist/qca6390/wlan_mac.bin
-    copy /vendor/etc/wifi/qca6390/WCNSS_qcom_cfg.ini /mnt/vendor/persist/qca6390/WCNSS_qcom_cfg.ini
-    chown wifi wifi /mnt/vendor/persist/qca6390/WCNSS_qcom_cfg.ini
-#   /* create a empty file for wifi hal to write qca6490 mac address */
-    write /mnt/vendor/persist/wlan_mac.bin ""
-    chown wifi wifi /mnt/vendor/persist/wlan_mac.bin
-#   /* Implement the function of forced Chain0/1 insmod WCNSS_qcom_cfg.ini */
-    copy /vendor/etc/wifi/WCNSS_qcom_cfg.ini /mnt/vendor/persist/WCNSS_qcom_cfg.ini
-    chown wifi wifi /mnt/vendor/persist/WCNSS_qcom_cfg.ini
-#endif
-
-#ifdef VENDOR_EDIT
-#henry.cao@system, add for engineermode
-    mkdir /mnt/vendor/persist/engineermode  0777 system system
-#endif
-    chown system system /proc/ship_mode
-    chown system system /dev/param
-
-#ifdef VENDOR_EDIT
-#create path for NV items
-
-#ifdef VENDOR_EDIT
-#ken.chenxm@SYSTEM, 2019/10/10, add for [OSP-3172] charging optimizated
-    chown system system /sys/class/power_supply/battery/op_disable_charge
-    chmod 660 /sys/class/power_supply/battery/op_disable_charge
-    chown system system /sys/class/power_supply/bms/battery_h
-    chmod 660 /sys/class/power_supply/bms/battery_h
-#endif
-#ifdef VENDOR_EDIT
-#randle.liu@optimization, 2020/04/24, [OSP-6116] avoid waking up when wireless charging disconnects
-    chown system system /sys/class/power_supply/wireless/icon_delay
-    chmod 660 /sys/class/power_supply/wireless/icon_delay
-#endif
-#jay.fa@OPTI, 2020/08/12, add for [OPTI-42] hypnus
-    chown root system /sys/class/thermal/cooling_device0/cur_state
-    chown root system /sys/class/thermal/cooling_device1/cur_state
-    chown root system /sys/class/thermal/cooling_device2/cur_state
-    chown root system /sys/class/kgsl/kgsl-3d0/max_pwrlevel
-    chown root system /sys/class/kgsl/kgsl-3d0/min_pwrlevel
-    chown root system /sys/class/thermal/cooling_device14/cur_state
-    chmod 660 /sys/class/thermal/cooling_device0/cur_state
-    chmod 660 /sys/class/thermal/cooling_device1/cur_state
-    chmod 660 /sys/class/thermal/cooling_device2/cur_state
-    chmod 660 /sys/class/kgsl/kgsl-3d0/max_pwrlevel
-    chmod 660 /sys/class/kgsl/kgsl-3d0/min_pwrlevel
-    chmod 660 /sys/class/thermal/cooling_device14/cur_state
 
 on post-fs-data
     mkdir /data/vendor/oemnvitems 0771 radio radio
@@ -309,20 +104,6 @@ on post-fs-data
     chown system system /dev/cc_ctl
     chown system system /proc/cc_ctl
 
-#endif /* VENDOR_EDIT */
-#ifdef VENDOR_EDIT
-# TomCheng@Core ,2020/06/22, HDCP provision key feature
-    mkdir /mnt/vendor/persist/hdcp/media_dump 0770 mediaex mediadrm
-    mkdir /mnt/vendor/persist/hdcp  775 media mediadrm
-    restorecon /mnt/vendor/persist/hdcp
-#endif
-
-# ifdef VENDOR_EDIT
-# denzel.chen@performance, 2020/05/12, add for OPBRITN-3462
-    chmod 664 /sys/module/memplus_core/parameters/memory_plus_wake_memex
-    chown system system /sys/module/memplus_core/parameters/memory_plus_wake_memex
-# endif
-
     # neil.sun@Connectivity, 2020/08/12, add for wifi minidump
     mkdir /data/vendor/ramdump/wifi 0770 system system
 
@@ -330,56 +111,6 @@ on post-fs-data
 # zhangrun@MM, 2020/09/12, implement to collect adsp minidump
     mkdir /data/vendor/ramdump/adsp 0770 system system
 # endif
-
-
-
-
-
-
-
-on init
-    mount tmpfs none /sys/fs/cgroup mode=0750,uid=0,gid=1000
-    mkdir /sys/fs/cgroup/freezer 0750 root system
-    mount cgroup none /sys/fs/cgroup/freezer  freezer
-    chmod 777 /sys/fs/cgroup/freezer
-
-    mkdir /sys/fs/cgroup/net_cls
-    chmod 777 /sys/fs/cgroup/net_cls
-    mount cgroup  none /sys/fs/cgroup/net_cls net_cls
-    chmod 777 /sys/fs/cgroup/net_cls/tasks
-    mkdir /sys/fs/cgroup/net_cls/background 0777
-    chmod 777 /sys/fs/cgroup/net_cls/background/tasks
-#ifdef VENDOR_EDIT
-    setprop persist.vendor.mdm_helper.fail_action cold_reset,s3_reset,panic
-#endif
-
-# alex.huang@Connectivity, 2020/04/29, Porting *#8019# function
-#ifdef VENDOR_EDIT
-
-
-
-
-
-
-
-# denzel.chen@performance, 2020/05/12, add for OPBRITN-3462
-# system server cannot write to /proc/sys files,
-# and chown/chmod does not work for /proc/sys/ entries.
-# So proxy writes through init.
-on property:sys.sysctl.watermark_boost_factor=*
-    write /proc/sys/vm/watermark_boost_factor ${sys.sysctl.watermark_boost_factor}
-
-
-
-
-
-
-
-
-on property:persist.sys.memplus.swappiness=*
-    write /proc/sys/vm/swappiness ${persist.sys.memplus.swappiness}
-on property:persist.sys.memplus.direct_swappiness=*
-    write /proc/sys/vm/direct_swappiness ${persist.sys.memplus.direct_swappiness}
 
 #ifdef VENDOR_EDIT
 #brandon.zeng@Conn,2020/05/08. add for nfc pnscr tool
@@ -410,84 +141,8 @@ on property:nfc.transmit.stop=0
     stop nfctransmitstop
 #endif
 
-#ifdef VENDOR_EDIT
-on property:sys.usb.config=diag,adb && property:sys.usb.configfs=1
-    start wifitestdiag
-
-
-
-
-
 #oscar.wei@SYSTEM, 2019/10/02, [AN-604] opdiagnose porting : create opdiagnose service
 service opdiagnose /system_ext/bin/OPDiagnoseservice
     class core
     user root
     group system
-
-service opdiagdatacopy /system_ext/bin/OPDiagdataCopy
-    class core
-    user root
-    group system everybody
-    oneshot
-    disabled
-
-on property:vendor.copy.opdiagnose.data=1
-    start opdiagdatacopy
-
-service copy_qxdm_log /system_ext/bin/OPDiagdataCopy -q ${copy.qxdm.log}
-    class core
-    user root
-    group system everybody
-    oneshot
-    disabled
-#endif
-
-#ifdef VENDOR_EDIT
-#kim@bsp 2019/10/25 add to fix apsd wrong issue when boot with dash connected
-on property:sys.boot_completed=1
-    write /sys/module/smb5_lib/parameters/sys_boot_complete 1
-#@bsp Add OTG switch
-on property:persist.sys.oem.otg_support=true
-    write /sys/class/power_supply/usb/otg_switch 1
-on property:persist.sys.oem.otg_support=false
-    write /sys/class/power_supply/usb/otg_switch 0
-#endif
-
-on property:vendor.sys.op.game=1
-    write  /proc/sys/kernel/sched_skip_affinity 1
-
-on property:vendor.sys.op.game=0
-    write  /proc/sys/kernel/sched_skip_affinity 0
-
-
-service filebuilderd /system_ext/bin/filebuilderd
-    class core
-    user root
-    group root system
-    disabled
-    oneshot
-    seclabel u:r:vold:s0
-
-on property:sys.boot_completed=1 && property:persist.sys.ufs_hpb_disable=1
-    write /sys/devices/platform/soc/1d84000.ufshc/ufshpb_lu0/release 171
-
-on property:sys.boot_completed=1
-    write /sys/devices/platform/soc/1d84000.ufshc/ufstw_lu0/tw_enable 1
-    write /sys/devices/platform/soc/1d84000.ufshc/ufstw_lu0/flush_enable 1
-    write /sys/devices/platform/soc/1d84000.ufshc/ufstw_lu0/flush_during_hibern_enter 1
-
-
-
-#alden.zhang@OPTI, 2020/7/18. [OSP-8064], add for IOLIMIT
-on property:persist.sys.iolimiter.enable=true
-    write /proc/iolimit_enable 1
-	write /sys/module/oneplus_healthinfo/parameters/ohm_action_ctrl Y
-	chown system system /sys/module/oneplus_healthinfo
-	chown system system /sys/module/oneplus_healthinfo/parameters
-	chown system system /sys/module/oneplus_healthinfo/parameters/ohm_iowait_h_ms
-	chown system system /sys/module/oneplus_healthinfo/parameters/ohm_iowait_l_ms
-	chown system system /sys/module/oneplus_healthinfo/parameters/ohm_read_thresh
-	chown system system /sys/module/oneplus_healthinfo/parameters/ohm_write_thresh
-	chown system system /sys/module/oneplus_healthinfo/parameters/ohm_sample_time
-	chown system system /sys/module/oneplus_healthinfo/parameters/ohm_action_ctrl
-	chown system system /proc/iolimit_enable

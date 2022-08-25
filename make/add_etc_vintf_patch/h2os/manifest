@@ -1,14 +1,4 @@
     <hal format="hidl">
-        <name>vendor.oneplus.hardware.cwb</name>
-        <transport>hwbinder</transport>
-        <version>1.0</version>
-        <interface>
-            <name>ICwbService</name>
-            <instance>default</instance>
-        </interface>
-        <fqname>@1.0::ICwbService/default</fqname>
-    </hal>
-    <hal format="hidl">
         <name>vendor.oneplus.hardware.display</name>
         <transport>hwbinder</transport>
         <version>1.0</version>
@@ -19,6 +9,16 @@
         <fqname>@1.0::IOneplusDisplay/default</fqname>
     </hal>
     <hal format="hidl">
+        <name>vendor.display.postproc</name>
+        <transport>hwbinder</transport>
+        <version>1.0</version>
+        <interface>
+            <name>IDisplayPostproc</name>
+            <instance>default</instance>
+        </interface>
+        <fqname>@1.0::IDisplayPostproc/default</fqname>
+    </hal>
+    <hal format="hidl">
         <name>vendor.oneplus.hardware.param</name>
         <transport>hwbinder</transport>
         <version>1.0</version>
@@ -27,16 +27,6 @@
             <instance>default</instance>
         </interface>
         <fqname>@1.0::IOneplusParam/default</fqname>
-    </hal>    
-    <hal format="hidl">
-        <name>vendor.oneplus.hardware.rpmb</name>
-        <transport>hwbinder</transport>
-        <version>1.0</version>
-        <interface>
-            <name>IOneplusRpmb</name>
-            <instance>default</instance>
-        </interface>
-        <fqname>@1.0::IOneplusRpmb/default</fqname>
     </hal>
     <hal format="hidl">
         <name>vendor.oneplus.hardware.wifi</name>

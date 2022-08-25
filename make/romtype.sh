@@ -24,7 +24,7 @@ fi
  
 # 一加
 oneplus=$(find ../out/system/ -type d -name 'reserve')
-if [ ! $oneplus = "" ] ;then
+if [ -n "$oneplus" ] ;then
   echo "检测当前为一加系统"
   echo "正在完善特性"
   #./add_build.sh
