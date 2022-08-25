@@ -223,6 +223,7 @@ function normal() {
  
   # 为default启用debug调试
   sed -i 's/persist.sys.usb.config=none/persist.sys.usb.config=adb/g' $systemdir/etc/prop.default
+  sed -i 's/ro.secure=1/ro.secure=0/g' $systemdir/etc/prop.default
   sed -i 's/ro.debuggable=0/ro.debuggable=1/g' $systemdir/etc/prop.default
   sed -i 's/ro.adb.secure=1/ro.adb.secure=0/g' $systemdir/etc/prop.default
   echo "ro.force.debuggable=1" >> $systemdir/etc/prop.default
