@@ -1,1 +1,7 @@
 *.pyc
+*.img
+SGSI/
+tmp/
+out/
+make/apex_fs/
+make/lib_fs/
