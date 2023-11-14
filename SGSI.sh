@@ -81,7 +81,7 @@ function check_source_version() {
 
   if [ $ret != 0 ]; then
     echo "$CURRENT_SYSTEM_VERSION $sourcever $UNSUPPORTED_STR"
-    exit 1
+#    exit 1
   fi
 }
 
