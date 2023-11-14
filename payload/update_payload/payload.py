@@ -64,7 +64,7 @@ class Payload(object):
     """Update payload header struct."""
 
     # Header constants; sizes are in bytes.
-    _MAGIC = 'CrAU'
+    _MAGIC = b'CrAU'
     _VERSION_SIZE = 8
     _MANIFEST_LEN_SIZE = 8
     _METADATA_SIGNATURE_LEN_SIZE = 4

@@ -25,7 +25,7 @@ from update_payload.error import PayloadError
 #
 # Constants.
 #
-PSEUDO_EXTENT_MARKER = (1L << 64) - 1  # UINT64_MAX
+PSEUDO_EXTENT_MARKER = (1 << 64) - 1  # UINT64_MAX
 
 SIG_ASN1_HEADER = (
     '\x30\x31\x30\x0d\x06\x09\x60\x86'
@@ -146,7 +146,7 @@ def Read(file_obj, length, offset=None, hasher=None):
 
   try:
     data = file_obj.read(length)
-  except IOError, e:
+  except IOError as e:
     raise PayloadError('error reading from file (%s): %s' % (file_obj.name, e))
 
   if len(data) != length:
